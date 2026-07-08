@@ -13,11 +13,19 @@ import {
   IconDownload,
   IconLoader2,
   IconRefresh,
+  IconSwitchHorizontal,
   IconUpload,
   IconWand,
   IconX,
 } from '@tabler/icons-react'
-import { createOcrWorker, recognizeWithMistral, recognizeWithTesseract } from '../lib/ocr'
+import {
+  createOcrWorker,
+  mapWithConcurrency,
+  recognizeWithMistral,
+  recognizeWithTesseract,
+} from '../lib/ocr'
+
+const AI_CONCURRENCY = 3
 
 const ACCEPTED_TYPES = ['image/jpeg', 'image/png', 'image/webp']
 const ACCEPTED_EXT = '.jpg,.jpeg,.png,.webp'
@@ -33,6 +41,8 @@ type FileResult = {
   file: File
   previewUrl: string
   text: string
+  confidence: number
+  engine: Engine
 }
 
 type PreviewImage = {
@@ -45,11 +55,25 @@ const formatFileSize = (bytes: number) => {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
 }
 
+const CONFIDENCE_LEVELS = {
+  high: { label: 'Confianza alta', className: 'bg-emerald-100 text-emerald-700' },
+  medium: { label: 'Confianza media', className: 'bg-amber-100 text-amber-700' },
+  low: { label: 'Confianza baja', className: 'bg-red-100 text-red-700' },
+} as const
+
+const getConfidenceLevel = (confidence: number) => {
+  if (confidence >= 80) return CONFIDENCE_LEVELS.high
+  if (confidence >= 50) return CONFIDENCE_LEVELS.medium
+  return CONFIDENCE_LEVELS.low
+}
+
 const Ocr = () => {
   const [engine, setEngine] = useState<Engine>('fast')
   const [files, setFiles] = useState<PendingFile[]>([])
   const [results, setResults] = useState<FileResult[] | null>(null)
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null)
+  const [copiedAll, setCopiedAll] = useState(false)
+  const [retryingIndex, setRetryingIndex] = useState<number | null>(null)
   const [previewImage, setPreviewImage] = useState<PreviewImage | null>(null)
   const [isConverting, setIsConverting] = useState(false)
   const [progress, setProgress] = useState({ done: 0, total: 0 })
@@ -109,8 +133,8 @@ const Ocr = () => {
         try {
           const newResults: FileResult[] = []
           for (const { file, previewUrl } of files) {
-            const { text } = await recognizeWithTesseract(worker, file)
-            newResults.push({ file, previewUrl, text })
+            const { text, confidence } = await recognizeWithTesseract(worker, file)
+            newResults.push({ file, previewUrl, text, confidence, engine: 'fast' })
             setProgress((prev) => ({ ...prev, done: prev.done + 1 }))
           }
           setResults(newResults)
@@ -118,17 +142,19 @@ const Ocr = () => {
           await worker.terminate()
         }
       } else {
-        const newResults: FileResult[] = []
-        for (const { file, previewUrl } of files) {
-          let text = ''
+        const newResults = await mapWithConcurrency(files, AI_CONCURRENCY, async ({ file, previewUrl }) => {
+          let text: string
+          let confidence = 100
           try {
-            text = (await recognizeWithMistral(file)).text
+            const result = await recognizeWithMistral(file)
+            text = result.text
+            confidence = result.confidence
           } catch (error) {
             text = error instanceof Error ? `[Error] ${error.message}` : '[Error desconocido]'
           }
-          newResults.push({ file, previewUrl, text })
           setProgress((prev) => ({ ...prev, done: prev.done + 1 }))
-        }
+          return { file, previewUrl, text, confidence, engine: 'ai' as const }
+        })
         setResults(newResults)
       }
     } finally {
@@ -162,6 +188,62 @@ const Ocr = () => {
     URL.revokeObjectURL(url)
   }
 
+  const combineResultsText = (items: FileResult[]) =>
+    items.map((r) => `--- ${r.file.name} ---\n${r.text}`).join('\n\n')
+
+  const copyAllText = async () => {
+    if (!results) return
+    await navigator.clipboard.writeText(combineResultsText(results))
+    setCopiedAll(true)
+    setTimeout(() => setCopiedAll(false), 1500)
+  }
+
+  const downloadAllText = () => {
+    if (!results) return
+    downloadText('textos-reconocidos', combineResultsText(results))
+  }
+
+  const retryResult = async (index: number) => {
+    const target = results?.[index]
+    if (!target) return
+
+    const nextEngine: Engine = target.engine === 'fast' ? 'ai' : 'fast'
+    setRetryingIndex(index)
+
+    try {
+      let text: string
+      let confidence: number
+
+      if (nextEngine === 'fast') {
+        const worker = await createOcrWorker()
+        try {
+          const result = await recognizeWithTesseract(worker, target.file)
+          text = result.text
+          confidence = result.confidence
+        } finally {
+          await worker.terminate()
+        }
+      } else {
+        const result = await recognizeWithMistral(target.file)
+        text = result.text
+        confidence = result.confidence
+      }
+
+      setResults(
+        (prev) =>
+          prev &&
+          prev.map((r, i) => (i === index ? { ...r, text, confidence, engine: nextEngine } : r)),
+      )
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Error desconocido'
+      setResults(
+        (prev) => prev && prev.map((r, i) => (i === index ? { ...r, text: `[Error] ${message}` } : r)),
+      )
+    } finally {
+      setRetryingIndex(null)
+    }
+  }
+
   return (
     <section
       className={`mx-auto px-6 py-16 ${files.length > 0 ? 'max-w-4/5' : 'max-w-5xl'}`}
@@ -180,7 +262,7 @@ const Ocr = () => {
               files.length > 0 ? 'lg:grid-cols-2' : ''
             }`}
           >
-            <div className={`flex flex-col gap-4 ${files.length > 0 ? 'lg:h-[26rem]' : ''}`}>
+            <div className={`flex flex-col gap-4 ${files.length > 0 ? 'lg:h-104' : ''}`}>
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <button
                   type="button"
@@ -261,7 +343,7 @@ const Ocr = () => {
             </div>
 
             {files.length > 0 && (
-              <div className="flex flex-col overflow-hidden rounded-xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900 lg:h-[26rem]">
+              <div className="flex flex-col overflow-hidden rounded-xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900 lg:h-104">
                 <ul className="max-h-80 flex-1 space-y-2 overflow-y-auto p-3 lg:max-h-none">
                   {files.map(({ file, previewUrl }, i) => (
                     <li
@@ -311,17 +393,37 @@ const Ocr = () => {
 
       {results && (
         <div className="mt-8">
-          <button
-            type="button"
-            onClick={handleReset}
-            className="mb-6 inline-flex cursor-pointer items-center gap-2 rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-800 transition-colors hover:border-emerald-600 hover:text-emerald-600 dark:border-slate-800 dark:text-slate-100 dark:hover:border-emerald-400 dark:hover:text-emerald-400"
-          >
-            <IconRefresh size={18} />
-            Volver a empezar
-          </button>
+          <div className="mb-6 flex flex-wrap gap-2">
+            <button
+              type="button"
+              onClick={handleReset}
+              className="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-800 transition-colors hover:border-emerald-600 hover:text-emerald-600 dark:border-slate-800 dark:text-slate-100 dark:hover:border-emerald-400 dark:hover:text-emerald-400"
+            >
+              <IconRefresh size={18} />
+              Volver a empezar
+            </button>
+            <button
+              type="button"
+              onClick={copyAllText}
+              className="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-800 transition-colors hover:border-emerald-600 hover:text-emerald-600 dark:border-slate-800 dark:text-slate-100 dark:hover:border-emerald-400 dark:hover:text-emerald-400"
+            >
+              {copiedAll ? <IconCheck size={18} /> : <IconCopy size={18} />}
+              Copiar todo
+            </button>
+            <button
+              type="button"
+              onClick={downloadAllText}
+              className="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-800 transition-colors hover:border-emerald-600 hover:text-emerald-600 dark:border-slate-800 dark:text-slate-100 dark:hover:border-emerald-400 dark:hover:text-emerald-400"
+            >
+              <IconDownload size={18} />
+              Descargar todo
+            </button>
+          </div>
 
           <div className="space-y-6">
-            {results.map((result, i) => (
+            {results.map((result, i) => {
+              const confidenceLevel = getConfidenceLevel(result.confidence)
+              return (
               <div
                 key={`${result.file.name}-${i}`}
                 className="rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900"
@@ -340,10 +442,34 @@ const Ocr = () => {
                       className="h-14 w-14 object-cover"
                     />
                   </button>
-                  <h3 className="truncate font-semibold text-slate-800 dark:text-slate-100">
-                    {result.file.name}
-                  </h3>
+                  <div className="min-w-0 flex-1">
+                    <h3 className="truncate font-semibold text-slate-800 dark:text-slate-100">
+                      {result.file.name}
+                    </h3>
+                    {result.engine === 'fast' && (
+                      <span
+                        className={`mt-1 inline-block rounded-full px-2 py-0.5 text-xs font-medium ${confidenceLevel.className}`}
+                      >
+                        {confidenceLevel.label}
+                      </span>
+                    )}
+                  </div>
                   <div className="ml-auto flex shrink-0 gap-2">
+                    <button
+                      type="button"
+                      onClick={() => retryResult(i)}
+                      disabled={retryingIndex === i}
+                      title={
+                        result.engine === 'fast' ? 'Reintentar con IA' : 'Reintentar con Rápido'
+                      }
+                      className="cursor-pointer rounded-lg border border-slate-200 p-2 text-slate-500 hover:text-emerald-600 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-800 dark:text-slate-400"
+                    >
+                      {retryingIndex === i ? (
+                        <IconLoader2 size={18} className="animate-spin" />
+                      ) : (
+                        <IconSwitchHorizontal size={18} />
+                      )}
+                    </button>
                     <button
                       type="button"
                       onClick={() => copyText(result.text, i)}
@@ -368,7 +494,8 @@ const Ocr = () => {
                   className="mt-3 w-full rounded-lg border border-slate-200 bg-slate-50 p-3 text-sm text-slate-800 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100"
                 />
               </div>
-            ))}
+              )
+            })}
           </div>
         </div>
       )}
