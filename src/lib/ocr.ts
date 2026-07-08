@@ -1,27 +1,72 @@
-import { createWorker, type Worker } from 'tesseract.js'
+import { createWorker, OEM, type Worker } from 'tesseract.js'
 
-const ROTATIONS = [0, 90, 180, 270] as const
+const MAX_DIMENSION = 2000
 
 export type OcrResult = {
   text: string
   confidence: number
 }
 
+/**
+ * Corre `fn` sobre `items` con un máximo de `limit` tareas en simultáneo.
+ * Pensado para el motor con IA (llamadas de red, no CPU local) — el motor
+ * Tesseract sigue siendo secuencial porque un solo worker procesa de a uno.
+ */
+export const mapWithConcurrency = async <T, R>(
+  items: T[],
+  limit: number,
+  fn: (item: T, index: number) => Promise<R>,
+): Promise<R[]> => {
+  const results: R[] = new Array(items.length)
+  let cursor = 0
+
+  const runNext = async (): Promise<void> => {
+    while (cursor < items.length) {
+      const current = cursor++
+      results[current] = await fn(items[current], current)
+    }
+  }
+
+  await Promise.all(Array.from({ length: Math.min(limit, items.length) }, runNext))
+  return results
+}
+
 const loadBitmap = (file: File) => createImageBitmap(file)
 
-const drawRotated = (bitmap: ImageBitmap, degrees: number): HTMLCanvasElement => {
+// Achica imágenes gigantes (fotos de celular, 4000px+) antes de procesar.
+// Tesseract y Mistral no ganan precisión pasado cierto tamaño, solo tiempo.
+const drawScaled = (bitmap: ImageBitmap): HTMLCanvasElement => {
+  const scale = Math.min(1, MAX_DIMENSION / Math.max(bitmap.width, bitmap.height))
+  const canvas = document.createElement('canvas')
+  canvas.width = Math.round(bitmap.width * scale)
+  canvas.height = Math.round(bitmap.height * scale)
+
+  const ctx = canvas.getContext('2d')
+  if (!ctx) throw new Error('No se pudo crear el contexto de canvas')
+  ctx.drawImage(bitmap, 0, 0, canvas.width, canvas.height)
+  return canvas
+}
+
+const rotateCanvas = (source: HTMLCanvasElement, degrees: number): HTMLCanvasElement => {
+  if (degrees === 0) return source
+
   const canvas = document.createElement('canvas')
   const swapped = degrees === 90 || degrees === 270
-  canvas.width = swapped ? bitmap.height : bitmap.width
-  canvas.height = swapped ? bitmap.width : bitmap.height
+  canvas.width = swapped ? source.height : source.width
+  canvas.height = swapped ? source.width : source.height
 
   const ctx = canvas.getContext('2d')
   if (!ctx) throw new Error('No se pudo crear el contexto de canvas')
 
   ctx.translate(canvas.width / 2, canvas.height / 2)
   ctx.rotate((degrees * Math.PI) / 180)
-  ctx.drawImage(bitmap, -bitmap.width / 2, -bitmap.height / 2)
+  ctx.drawImage(source, -source.width / 2, -source.height / 2)
   return canvas
+}
+
+const normalizeRotation = (degrees: number): 0 | 90 | 180 | 270 => {
+  const normalized = (((Math.round(degrees / 90) * 90) % 360) + 360) % 360
+  return normalized as 0 | 90 | 180 | 270
 }
 
 // Escala de grises + umbral suave: mejora el contraste de escaneos borrosos
@@ -41,30 +86,39 @@ const enhanceForOcr = (canvas: HTMLCanvasElement): HTMLCanvasElement => {
   return canvas
 }
 
-export const createOcrWorker = (): Promise<Worker> => createWorker('spa+eng')
+// `legacyCore`/`legacyLang` habilitan worker.detect() (OSD), que usa el motor
+// legacy de Tesseract solo para detectar orientación — no afecta la precisión
+// del reconocimiento final, que sigue corriendo en LSTM (OEM.LSTM_ONLY).
+export const createOcrWorker = (): Promise<Worker> =>
+  createWorker('spa+eng', OEM.LSTM_ONLY, { legacyCore: true, legacyLang: true })
 
 /**
- * Prueba las 4 rotaciones (0/90/180/270) y se queda con la de mayor confianza.
- * Es una heurística, no un clasificador de orientación dedicado, pero permite
- * leer imágenes giradas sin depender del modelo OSD adicional de Tesseract.
+ * Detecta la orientación con OSD (rápido, modelo dedicado) y reconoce una
+ * sola vez en la rotación corregida. Antes se probaban las 4 rotaciones con
+ * reconocimiento completo cada una — esto es ~3-4x más rápido por imagen.
  */
 export const recognizeWithTesseract = async (
   worker: Worker,
   file: File,
 ): Promise<OcrResult> => {
   const bitmap = await loadBitmap(file)
-  let best: OcrResult = { text: '', confidence: -1 }
+  const scaled = drawScaled(bitmap)
 
-  for (const degrees of ROTATIONS) {
-    const canvas = enhanceForOcr(drawRotated(bitmap, degrees))
-    const { data } = await worker.recognize(canvas)
-    if (data.confidence > best.confidence) {
-      best = { text: data.text.trim(), confidence: data.confidence }
-    }
+  let rotation: 0 | 90 | 180 | 270 = 0
+  try {
+    const { data } = await worker.detect(scaled)
+    if (data.orientation_degrees) rotation = normalizeRotation(data.orientation_degrees)
+  } catch {
+    // Si el detect falla, seguimos sin rotar en vez de cortar la conversión.
   }
 
-  return best
+  const canvas = enhanceForOcr(rotateCanvas(scaled, rotation))
+  const { data } = await worker.recognize(canvas)
+  return { text: data.text.trim(), confidence: data.confidence }
 }
+
+const canvasToDataUrl = (canvas: HTMLCanvasElement): string =>
+  canvas.toDataURL('image/jpeg', 0.85)
 
 const fileToDataUrl = (file: File): Promise<string> =>
   new Promise((resolve, reject) => {
@@ -77,9 +131,17 @@ const fileToDataUrl = (file: File): Promise<string> =>
 /**
  * Llama al backend propio (`api/ocr-ai.ts`), que a su vez le pega a Mistral
  * Pixtral con la API key server-side. Nunca se expone la key al navegador.
+ * La imagen se achica/comprime antes de mandarla para que suba más rápido.
  */
 export const recognizeWithMistral = async (file: File): Promise<OcrResult> => {
-  const image = await fileToDataUrl(file)
+  let image: string
+  try {
+    const bitmap = await loadBitmap(file)
+    image = canvasToDataUrl(drawScaled(bitmap))
+  } catch {
+    image = await fileToDataUrl(file)
+  }
+
   const response = await fetch('/api/ocr-ai', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
