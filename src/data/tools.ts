@@ -1,6 +1,7 @@
 import type { TablerIcon } from '@tabler/icons-react'
 import {
   IconScan,
+  IconBinary,
   IconFileTypePdf,
   IconMicrophone,
   IconTable,
@@ -39,6 +40,20 @@ export const availableTools: Tool[] = [
     description: 'Con OCR e IA para conversiones',
     href: '/ocr',
     icon: IconScan,
+  },
+  {
+    title: 'Imagen a Base64',
+    description: 'Data URL o base64 puro',
+    href: '/base64',
+    category: 'Imagen',
+    icon: IconBinary,
+  },
+  {
+    title: 'Contraseñas seguras',
+    description: 'Fuertes y aleatorias',
+    href: '/contrasenas',
+    category: 'Otros',
+    icon: IconKey,
   },
 ]
 
@@ -168,12 +183,6 @@ export const upcomingTools: Tool[] = [
     description: 'Crea o lee al instante',
     category: 'Otros',
     icon: IconQrcode,
-  },
-  {
-    title: 'Contraseñas seguras',
-    description: 'Fuertes y aleatorias',
-    category: 'Otros',
-    icon: IconKey,
   },
   {
     title: 'Calculadora de fechas',
