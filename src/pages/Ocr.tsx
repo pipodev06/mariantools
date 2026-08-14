@@ -1,11 +1,4 @@
-import {
-  useEffect,
-  useRef,
-  useState,
-  type ChangeEvent,
-  type ClipboardEvent,
-  type DragEvent,
-} from 'react'
+import { useRef, useState, type ChangeEvent, type ClipboardEvent, type DragEvent } from 'react'
 import {
   IconBolt,
   IconCheck,
@@ -24,6 +17,7 @@ import {
   recognizeWithMistral,
   recognizeWithTesseract,
 } from '../lib/ocr'
+import PreviewModal, { type PreviewImage } from '../components/PreviewModal'
 
 const AI_CONCURRENCY = 3
 
@@ -45,10 +39,8 @@ type FileResult = {
   engine: Engine
 }
 
-type PreviewImage = {
-  url: string
-  name: string
-}
+const FOCUS_RING =
+  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900'
 
 const formatFileSize = (bytes: number) => {
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(0)} KB`
@@ -77,22 +69,9 @@ const Ocr = () => {
   const [previewImage, setPreviewImage] = useState<PreviewImage | null>(null)
   const [isConverting, setIsConverting] = useState(false)
   const [progress, setProgress] = useState({ done: 0, total: 0 })
+  const [isDragging, setIsDragging] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
-
-  useEffect(() => {
-    if (!previewImage) return
-
-    document.body.style.overflow = 'hidden'
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setPreviewImage(null)
-    }
-    window.addEventListener('keydown', handleKeyDown)
-
-    return () => {
-      document.body.style.overflow = ''
-      window.removeEventListener('keydown', handleKeyDown)
-    }
-  }, [previewImage])
+  const dragCounter = useRef(0)
 
   const addFiles = (incoming: FileList | File[]) => {
     const valid = Array.from(incoming)
@@ -103,7 +82,24 @@ const Ocr = () => {
 
   const handleDrop = (e: DragEvent<HTMLDivElement>) => {
     e.preventDefault()
+    dragCounter.current = 0
+    setIsDragging(false)
     addFiles(e.dataTransfer.files)
+  }
+
+  const handleDragEnter = (e: DragEvent<HTMLDivElement>) => {
+    e.preventDefault()
+    dragCounter.current += 1
+    setIsDragging(true)
+  }
+
+  const handleDragLeave = (e: DragEvent<HTMLDivElement>) => {
+    e.preventDefault()
+    dragCounter.current -= 1
+    if (dragCounter.current <= 0) {
+      dragCounter.current = 0
+      setIsDragging(false)
+    }
   }
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -267,9 +263,9 @@ const Ocr = () => {
                 <button
                   type="button"
                   onClick={() => setEngine('fast')}
-                  className={`flex cursor-pointer items-start gap-3 rounded-xl border p-4 text-left transition-colors ${
+                  className={`flex cursor-pointer items-start gap-3 rounded-xl border p-4 text-left transition-all ${FOCUS_RING} ${
                     engine === 'fast'
-                      ? 'border-emerald-600 bg-emerald-50 dark:border-emerald-400 dark:bg-emerald-500/10'
+                      ? 'border-emerald-600 bg-emerald-50 shadow-sm dark:border-emerald-400 dark:bg-emerald-500/10'
                       : 'border-slate-200 bg-white hover:border-slate-300 dark:border-slate-800 dark:bg-slate-900'
                   }`}
                 >
@@ -290,9 +286,9 @@ const Ocr = () => {
                 <button
                   type="button"
                   onClick={() => setEngine('ai')}
-                  className={`flex cursor-pointer items-start gap-3 rounded-xl border p-4 text-left transition-colors ${
+                  className={`flex cursor-pointer items-start gap-3 rounded-xl border p-4 text-left transition-all ${FOCUS_RING} ${
                     engine === 'ai'
-                      ? 'border-emerald-600 bg-emerald-50 dark:border-emerald-400 dark:bg-emerald-500/10'
+                      ? 'border-emerald-600 bg-emerald-50 shadow-sm dark:border-emerald-400 dark:bg-emerald-500/10'
                       : 'border-slate-200 bg-white hover:border-slate-300 dark:border-slate-800 dark:bg-slate-900'
                   }`}
                 >
@@ -313,20 +309,32 @@ const Ocr = () => {
 
               <div
                 onDragOver={(e) => e.preventDefault()}
+                onDragEnter={handleDragEnter}
+                onDragLeave={handleDragLeave}
                 onDrop={handleDrop}
                 onPaste={handlePaste}
                 onClick={() => inputRef.current?.click()}
                 role="button"
                 tabIndex={0}
-                className="flex flex-1 cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-slate-300 bg-white p-10 text-center transition-colors hover:border-emerald-600 dark:border-slate-700 dark:bg-slate-900 dark:hover:border-emerald-400"
+                className={`flex flex-1 cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed p-10 text-center transition-colors ${FOCUS_RING} ${
+                  isDragging
+                    ? 'border-emerald-600 bg-emerald-50/60 dark:border-emerald-400 dark:bg-emerald-500/10'
+                    : 'border-slate-300 bg-white hover:border-emerald-600 dark:border-slate-700 dark:bg-slate-900 dark:hover:border-emerald-400'
+                }`}
               >
                 <IconUpload
-                  className="text-slate-500 dark:text-slate-400"
+                  className={`transition-colors ${
+                    isDragging
+                      ? 'text-emerald-600 dark:text-emerald-400'
+                      : 'text-slate-500 dark:text-slate-400'
+                  }`}
                   size={32}
                   stroke={1.5}
                 />
                 <p className="font-semibold text-slate-800 dark:text-slate-100">
-                  Arrastra tus imágenes aquí o haz click para elegirlas
+                  {isDragging
+                    ? 'Suelta las imágenes aquí'
+                    : 'Arrastra tus imágenes aquí o haz click para elegirlas'}
                 </p>
                 <p className="text-sm text-slate-500 dark:text-slate-400">
                   También puedes pegarlas con Ctrl+V. Formatos: JPG, PNG, WebP.
@@ -353,7 +361,7 @@ const Ocr = () => {
                       <button
                         type="button"
                         onClick={() => setPreviewImage({ url: previewUrl, name: file.name })}
-                        className="shrink-0 cursor-pointer overflow-hidden rounded-md border border-slate-200 dark:border-slate-800"
+                        className={`shrink-0 cursor-pointer overflow-hidden rounded-md border border-slate-200 dark:border-slate-800 ${FOCUS_RING}`}
                       >
                         <img src={previewUrl} alt={file.name} className="h-10 w-10 object-cover" />
                       </button>
@@ -366,7 +374,7 @@ const Ocr = () => {
                       <button
                         type="button"
                         onClick={() => removeFile(i)}
-                        className="shrink-0 cursor-pointer text-slate-500 hover:text-emerald-600 dark:text-slate-400"
+                        className={`shrink-0 cursor-pointer rounded text-slate-500 hover:text-emerald-600 dark:text-slate-400 ${FOCUS_RING}`}
                       >
                         <IconX size={18} />
                       </button>
@@ -381,7 +389,7 @@ const Ocr = () => {
             type="button"
             disabled={files.length === 0 || isConverting}
             onClick={handleConvert}
-            className="mt-6 inline-flex cursor-pointer items-center gap-2 rounded-lg bg-emerald-600 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-emerald-700 disabled:cursor-not-allowed disabled:bg-slate-300 dark:disabled:bg-slate-700"
+            className={`mt-6 inline-flex cursor-pointer items-center gap-2 rounded-lg bg-emerald-600 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-emerald-700 disabled:cursor-not-allowed disabled:bg-slate-300 dark:disabled:bg-slate-700 ${FOCUS_RING}`}
           >
             {isConverting && <IconLoader2 size={18} className="animate-spin" />}
             {isConverting
@@ -397,7 +405,7 @@ const Ocr = () => {
             <button
               type="button"
               onClick={handleReset}
-              className="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-800 transition-colors hover:border-emerald-600 hover:text-emerald-600 dark:border-slate-800 dark:text-slate-100 dark:hover:border-emerald-400 dark:hover:text-emerald-400"
+              className={`inline-flex cursor-pointer items-center gap-2 rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-800 transition-colors hover:border-emerald-600 hover:text-emerald-600 dark:border-slate-800 dark:text-slate-100 dark:hover:border-emerald-400 dark:hover:text-emerald-400 ${FOCUS_RING}`}
             >
               <IconRefresh size={18} />
               Volver a empezar
@@ -405,7 +413,7 @@ const Ocr = () => {
             <button
               type="button"
               onClick={copyAllText}
-              className="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-800 transition-colors hover:border-emerald-600 hover:text-emerald-600 dark:border-slate-800 dark:text-slate-100 dark:hover:border-emerald-400 dark:hover:text-emerald-400"
+              className={`inline-flex cursor-pointer items-center gap-2 rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-800 transition-colors hover:border-emerald-600 hover:text-emerald-600 dark:border-slate-800 dark:text-slate-100 dark:hover:border-emerald-400 dark:hover:text-emerald-400 ${FOCUS_RING}`}
             >
               {copiedAll ? <IconCheck size={18} /> : <IconCopy size={18} />}
               Copiar todo
@@ -413,7 +421,7 @@ const Ocr = () => {
             <button
               type="button"
               onClick={downloadAllText}
-              className="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-800 transition-colors hover:border-emerald-600 hover:text-emerald-600 dark:border-slate-800 dark:text-slate-100 dark:hover:border-emerald-400 dark:hover:text-emerald-400"
+              className={`inline-flex cursor-pointer items-center gap-2 rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-800 transition-colors hover:border-emerald-600 hover:text-emerald-600 dark:border-slate-800 dark:text-slate-100 dark:hover:border-emerald-400 dark:hover:text-emerald-400 ${FOCUS_RING}`}
             >
               <IconDownload size={18} />
               Descargar todo
@@ -426,7 +434,8 @@ const Ocr = () => {
               return (
               <div
                 key={`${result.file.name}-${i}`}
-                className="rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900"
+                className="rounded-xl border border-slate-200 bg-white p-5 motion-safe:opacity-0 motion-safe:animate-[reveal-up_0.4s_ease-out_forwards] dark:border-slate-800 dark:bg-slate-900"
+                style={{ animationDelay: `${Math.min(i * 60, 300)}ms` }}
               >
                 <div className="flex items-center gap-3">
                   <button
@@ -434,7 +443,7 @@ const Ocr = () => {
                     onClick={() =>
                       setPreviewImage({ url: result.previewUrl, name: result.file.name })
                     }
-                    className="shrink-0 cursor-pointer overflow-hidden rounded-lg border border-slate-200 dark:border-slate-800"
+                    className={`shrink-0 cursor-pointer overflow-hidden rounded-lg border border-slate-200 dark:border-slate-800 ${FOCUS_RING}`}
                   >
                     <img
                       src={result.previewUrl}
@@ -462,7 +471,7 @@ const Ocr = () => {
                       title={
                         result.engine === 'fast' ? 'Reintentar con IA' : 'Reintentar con Rápido'
                       }
-                      className="cursor-pointer rounded-lg border border-slate-200 p-2 text-slate-500 hover:text-emerald-600 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-800 dark:text-slate-400"
+                      className={`cursor-pointer rounded-lg border border-slate-200 p-2 text-slate-500 hover:text-emerald-600 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-800 dark:text-slate-400 ${FOCUS_RING}`}
                     >
                       {retryingIndex === i ? (
                         <IconLoader2 size={18} className="animate-spin" />
@@ -473,14 +482,14 @@ const Ocr = () => {
                     <button
                       type="button"
                       onClick={() => copyText(result.text, i)}
-                      className="cursor-pointer rounded-lg border border-slate-200 p-2 text-slate-500 hover:text-emerald-600 dark:border-slate-800 dark:text-slate-400"
+                      className={`cursor-pointer rounded-lg border border-slate-200 p-2 text-slate-500 hover:text-emerald-600 dark:border-slate-800 dark:text-slate-400 ${FOCUS_RING}`}
                     >
                       {copiedIndex === i ? <IconCheck size={18} /> : <IconCopy size={18} />}
                     </button>
                     <button
                       type="button"
                       onClick={() => downloadText(result.file.name, result.text)}
-                      className="cursor-pointer rounded-lg border border-slate-200 p-2 text-slate-500 hover:text-emerald-600 dark:border-slate-800 dark:text-slate-400"
+                      className={`cursor-pointer rounded-lg border border-slate-200 p-2 text-slate-500 hover:text-emerald-600 dark:border-slate-800 dark:text-slate-400 ${FOCUS_RING}`}
                     >
                       <IconDownload size={18} />
                     </button>
@@ -491,7 +500,7 @@ const Ocr = () => {
                   onChange={(e) => updateResultText(i, e.target.value)}
                   placeholder="El texto reconocido va a aparecer aquí..."
                   rows={6}
-                  className="mt-3 w-full rounded-lg border border-slate-200 bg-slate-50 p-3 text-sm text-slate-800 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100"
+                  className={`mt-3 w-full rounded-lg border border-slate-200 bg-slate-50 p-3 text-sm text-slate-800 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100 ${FOCUS_RING}`}
                 />
               </div>
               )
@@ -500,36 +509,7 @@ const Ocr = () => {
         </div>
       )}
 
-      {previewImage && (
-        <div
-          onClick={() => setPreviewImage(null)}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/80 p-6"
-        >
-          <div
-            onClick={(e) => e.stopPropagation()}
-            role="dialog"
-            aria-modal="true"
-            aria-label={previewImage.name}
-            className="max-h-[85vh] w-full max-w-3xl overflow-hidden rounded-xl bg-white"
-          >
-            <div className="flex items-center justify-between border-b border-emerald-200 px-4 py-3">
-              <h3 className="truncate font-semibold text-slate-800">{previewImage.name}</h3>
-              <button
-                type="button"
-                onClick={() => setPreviewImage(null)}
-                className="ml-3 shrink-0 cursor-pointer text-emerald-700 hover:text-emerald-900"
-              >
-                <IconX size={20} />
-              </button>
-            </div>
-            <img
-              src={previewImage.url}
-              alt={previewImage.name}
-              className="max-h-[calc(85vh-53px)] w-full bg-white object-contain"
-            />
-          </div>
-        </div>
-      )}
+      <PreviewModal image={previewImage} onClose={() => setPreviewImage(null)} />
     </section>
   )
 }
