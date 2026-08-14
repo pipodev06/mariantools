@@ -55,6 +55,13 @@ export const availableTools: Tool[] = [
     category: 'Otros',
     icon: IconKey,
   },
+  {
+    title: 'Generador/lector QR',
+    description: 'Crea o lee al instante',
+    href: '/qr',
+    category: 'Otros',
+    icon: IconQrcode,
+  },
 ]
 
 export const upcomingTools: Tool[] = [
@@ -177,12 +184,6 @@ export const upcomingTools: Tool[] = [
     description: 'Con formato listo para usar',
     category: 'Texto',
     icon: IconMarkdown,
-  },
-  {
-    title: 'Generador/lector QR',
-    description: 'Crea o lee al instante',
-    category: 'Otros',
-    icon: IconQrcode,
   },
   {
     title: 'Calculadora de fechas',

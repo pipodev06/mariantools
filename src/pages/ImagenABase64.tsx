@@ -52,6 +52,9 @@ type Results = { mode: 'encode'; items: EncodeResult[] } | { mode: 'decode'; ite
 const FOCUS_RING =
   'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900'
 
+const CARD =
+  'rounded-xl border border-white/40 bg-white/60 shadow-sm backdrop-blur-md dark:border-slate-700/40 dark:bg-slate-800/40'
+
 const formatFileSize = (bytes: number) => {
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(0)} KB`
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
@@ -234,15 +237,17 @@ const ImagenABase64 = () => {
       </p>
 
       {!results && (
-        <>
-          <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div className="relative mt-8">
+          <div className="pointer-events-none absolute inset-0 -z-10 rounded-2xl bg-linear-to-br from-emerald-200/40 via-transparent to-slate-200/40 dark:from-emerald-500/10 dark:via-transparent dark:to-slate-800/20" />
+
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <button
               type="button"
               onClick={() => switchMode('encode')}
-              className={`flex cursor-pointer items-start gap-3 rounded-xl border p-4 text-left transition-all ${FOCUS_RING} ${
+              className={`flex cursor-pointer items-start gap-3 p-4 text-left transition-all ${FOCUS_RING} ${
                 mode === 'encode'
-                  ? 'border-emerald-600 bg-emerald-50 shadow-sm dark:border-emerald-400 dark:bg-emerald-500/10'
-                  : 'border-slate-200 bg-white hover:border-slate-300 dark:border-slate-800 dark:bg-slate-900'
+                  ? 'rounded-xl border border-emerald-600 bg-emerald-50 shadow-sm dark:border-emerald-400 dark:bg-emerald-500/10'
+                  : `${CARD} hover:border-white/60 dark:hover:border-slate-700/60`
               }`}
             >
               <IconPhotoCode
@@ -262,10 +267,10 @@ const ImagenABase64 = () => {
             <button
               type="button"
               onClick={() => switchMode('decode')}
-              className={`flex cursor-pointer items-start gap-3 rounded-xl border p-4 text-left transition-all ${FOCUS_RING} ${
+              className={`flex cursor-pointer items-start gap-3 p-4 text-left transition-all ${FOCUS_RING} ${
                 mode === 'decode'
-                  ? 'border-emerald-600 bg-emerald-50 shadow-sm dark:border-emerald-400 dark:bg-emerald-500/10'
-                  : 'border-slate-200 bg-white hover:border-slate-300 dark:border-slate-800 dark:bg-slate-900'
+                  ? 'rounded-xl border border-emerald-600 bg-emerald-50 shadow-sm dark:border-emerald-400 dark:bg-emerald-500/10'
+                  : `${CARD} hover:border-white/60 dark:hover:border-slate-700/60`
               }`}
             >
               <IconPhotoDown
@@ -296,12 +301,12 @@ const ImagenABase64 = () => {
                 onClick={() => inputRef.current?.click()}
                 role="button"
                 tabIndex={0}
-                className={`flex cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed p-10 text-center transition-colors ${FOCUS_RING} ${
+                className={`flex cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed p-10 text-center backdrop-blur-md transition-colors ${FOCUS_RING} ${
                   files.length > 0 ? 'lg:h-104' : ''
                 } ${
                   isDragging
                     ? 'border-emerald-600 bg-emerald-50/60 dark:border-emerald-400 dark:bg-emerald-500/10'
-                    : 'border-slate-300 bg-white hover:border-emerald-600 dark:border-slate-700 dark:bg-slate-900 dark:hover:border-emerald-400'
+                    : 'border-slate-300 bg-white/60 hover:border-emerald-600 dark:border-slate-700 dark:bg-slate-800/40 dark:hover:border-emerald-400'
                 }`}
               >
                 <IconUpload
@@ -332,12 +337,12 @@ const ImagenABase64 = () => {
               </div>
 
               {files.length > 0 && (
-                <div className="flex flex-col overflow-hidden rounded-xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900 lg:h-104">
+                <div className={`flex flex-col overflow-hidden ${CARD} lg:h-104`}>
                   <ul className="max-h-80 flex-1 space-y-2 overflow-y-auto p-3 lg:max-h-none">
                     {files.map(({ file, previewUrl }, i) => (
                       <li
                         key={`${file.name}-${i}`}
-                        className="flex items-center gap-3 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm dark:border-slate-800 dark:bg-slate-900"
+                        className="flex items-center gap-3 rounded-lg border border-white/40 bg-white/50 px-3 py-2 text-sm dark:border-slate-700/40 dark:bg-slate-900/40"
                       >
                         <button
                           type="button"
@@ -377,7 +382,7 @@ const ImagenABase64 = () => {
               onChange={(e) => setDecodeInput(e.target.value)}
               placeholder="Pega uno o más base64 o data URLs — uno por línea"
               rows={10}
-              className={`mt-6 w-full rounded-xl border border-slate-300 bg-white p-4 text-sm break-all text-slate-800 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 ${FOCUS_RING}`}
+              className={`mt-6 w-full p-4 text-sm break-all text-slate-800 dark:text-slate-100 ${CARD} ${FOCUS_RING}`}
             />
           )}
 
@@ -390,11 +395,13 @@ const ImagenABase64 = () => {
             {isConverting && <IconLoader2 size={18} className="animate-spin" />}
             {isConverting ? 'Convirtiendo...' : 'Convertir'}
           </button>
-        </>
+        </div>
       )}
 
       {results && (
-        <div className="mt-8">
+        <div className="relative mt-8">
+          <div className="pointer-events-none absolute inset-0 -z-10 rounded-2xl bg-linear-to-br from-emerald-200/40 via-transparent to-slate-200/40 dark:from-emerald-500/10 dark:via-transparent dark:to-slate-800/20" />
+
           <div className="mb-6 flex flex-wrap items-center gap-2">
             <button
               type="button"
@@ -448,7 +455,7 @@ const ImagenABase64 = () => {
               {results.items.map((item, i) => (
                 <div
                   key={`${item.file.name}-${i}`}
-                  className="rounded-xl border border-slate-200 bg-white p-5 motion-safe:opacity-0 motion-safe:animate-[reveal-up_0.4s_ease-out_forwards] dark:border-slate-800 dark:bg-slate-900"
+                  className={`p-5 motion-safe:opacity-0 motion-safe:animate-[reveal-up_0.4s_ease-out_forwards] ${CARD}`}
                   style={{ animationDelay: `${Math.min(i * 60, 300)}ms` }}
                 >
                   <div className="flex items-center gap-3">
@@ -457,7 +464,7 @@ const ImagenABase64 = () => {
                       onClick={() =>
                         setPreviewImage({ url: item.previewUrl, name: item.file.name })
                       }
-                      className={`shrink-0 cursor-pointer overflow-hidden rounded-lg border border-slate-200 dark:border-slate-800 ${FOCUS_RING}`}
+                      className={`shrink-0 cursor-pointer overflow-hidden rounded-lg border border-white/40 dark:border-slate-700/40 ${FOCUS_RING}`}
                     >
                       <img
                         src={item.previewUrl}
@@ -509,7 +516,7 @@ const ImagenABase64 = () => {
               {results.items.map((item, i) => (
                 <div
                   key={`${i}-${item.raw.slice(0, 12)}`}
-                  className="rounded-xl border border-slate-200 bg-white p-3 motion-safe:opacity-0 motion-safe:animate-[reveal-up_0.4s_ease-out_forwards] dark:border-slate-800 dark:bg-slate-900"
+                  className={`p-3 motion-safe:opacity-0 motion-safe:animate-[reveal-up_0.4s_ease-out_forwards] ${CARD}`}
                   style={{ animationDelay: `${Math.min(i * 60, 300)}ms` }}
                 >
                   {item.error ? (
@@ -527,7 +534,7 @@ const ImagenABase64 = () => {
                             name: `imagen-${i + 1}.${mimeToExtension(item.mime)}`,
                           })
                         }
-                        className={`block aspect-square w-full cursor-pointer overflow-hidden rounded-lg border border-slate-200 dark:border-slate-800 ${FOCUS_RING}`}
+                        className={`block aspect-square w-full cursor-pointer overflow-hidden rounded-lg border border-white/40 dark:border-slate-700/40 ${FOCUS_RING}`}
                       >
                         <img
                           src={item.dataUrl}
