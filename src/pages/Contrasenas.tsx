@@ -228,12 +228,14 @@ const Contrasenas = () => {
 
   return (
     <section className="mx-auto max-w-[100rem] px-6 py-10">
-      <h1 className="text-2xl font-bold text-slate-800 sm:text-3xl dark:text-slate-100">
-        Contraseñas seguras
-      </h1>
-      <p className="mt-2 max-w-2xl text-base text-slate-500 dark:text-slate-400">
-        Genera contraseñas aleatorias, directo en tu navegador.
-      </p>
+      <div className="mx-auto w-100 max-lg:w-full">
+        <h1 className="text-2xl font-bold text-slate-800 sm:text-3xl dark:text-slate-100">
+          Contraseñas seguras
+        </h1>
+        <p className="mt-2 text-base text-slate-500 dark:text-slate-400">
+          Genera contraseñas aleatorias, directo en tu navegador.
+        </p>
+      </div>
 
       <div className="relative mt-6">
         <div className="pointer-events-none absolute inset-0 -z-10 rounded-2xl bg-linear-to-br from-emerald-200/40 via-transparent to-slate-200/40 dark:from-emerald-500/10 dark:via-transparent dark:to-slate-800/20" />
