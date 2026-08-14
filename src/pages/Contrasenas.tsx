@@ -28,17 +28,9 @@ type SeparatorKey = (typeof SEPARATOR_OPTIONS)[number]['key']
 type Mode = 'random' | 'memorable'
 
 const STRENGTH_LEVELS = {
-  weak: { label: 'Débil', badge: 'bg-red-100 text-red-700', stroke: 'text-red-500 dark:text-red-400' },
-  medium: {
-    label: 'Media',
-    badge: 'bg-amber-100 text-amber-700',
-    stroke: 'text-amber-500 dark:text-amber-400',
-  },
-  strong: {
-    label: 'Fuerte',
-    badge: 'bg-emerald-100 text-emerald-700',
-    stroke: 'text-emerald-500 dark:text-emerald-400',
-  },
+  weak: { label: 'Débil', badge: 'bg-red-100 text-red-700', bar: 'bg-red-500' },
+  medium: { label: 'Media', badge: 'bg-amber-100 text-amber-700', bar: 'bg-amber-500' },
+  strong: { label: 'Fuerte', badge: 'bg-emerald-100 text-emerald-700', bar: 'bg-emerald-500' },
 } as const
 
 const MAX_ENTROPY_BITS = 100
@@ -134,7 +126,7 @@ const FOCUS_RING =
   'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900'
 
 const CARD =
-  'rounded-xl border border-white/40 bg-white/60 p-6 shadow-sm backdrop-blur-md dark:border-slate-700/40 dark:bg-slate-800/40'
+  'rounded-xl border border-white/40 bg-white/60 p-4 shadow-sm backdrop-blur-md dark:border-slate-700/40 dark:bg-slate-800/40'
 
 const OPTION_ROW =
   'flex w-full cursor-pointer items-center justify-between rounded-lg border px-3 py-2.5 text-left transition-colors'
@@ -204,7 +196,7 @@ const Contrasenas = () => {
       ? getEntropyBits(length, charset.length)
       : getPassphraseBits(wordCount, memorableNumbers, separator)
   const strength = getStrength(bits)
-  const gaugeProgress = Math.min(bits / MAX_ENTROPY_BITS, 1)
+  const filledBars = Math.max(1, Math.min(5, Math.ceil((bits / MAX_ENTROPY_BITS) * 5)))
   const crackTime = estimateCrackTime(bits)
 
   const passwords = useMemo(() => {
@@ -235,19 +227,19 @@ const Contrasenas = () => {
   const [featured, ...alternates] = passwords
 
   return (
-    <section className="mx-auto max-w-[100rem] px-6 py-16">
-      <h1 className="text-3xl font-bold text-slate-800 sm:text-4xl dark:text-slate-100">
+    <section className="mx-auto max-w-[100rem] px-6 py-10">
+      <h1 className="text-2xl font-bold text-slate-800 sm:text-3xl dark:text-slate-100">
         Contraseñas seguras
       </h1>
-      <p className="mt-2 max-w-2xl text-lg text-slate-500 dark:text-slate-400">
+      <p className="mt-2 max-w-2xl text-base text-slate-500 dark:text-slate-400">
         Genera contraseñas aleatorias, directo en tu navegador.
       </p>
 
-      <div className="relative mt-8">
+      <div className="relative mt-6">
         <div className="pointer-events-none absolute inset-0 -z-10 rounded-2xl bg-linear-to-br from-emerald-200/40 via-transparent to-slate-200/40 dark:from-emerald-500/10 dark:via-transparent dark:to-slate-800/20" />
 
-        <div className="grid grid-cols-1 items-start gap-1.5 lg:grid-cols-[auto_auto_auto] lg:justify-center">
-          <div className={`${CARD} h-138 w-100 max-lg:h-auto max-lg:w-full`}>
+        <div className="grid grid-cols-1 items-start gap-1.5 lg:grid-cols-[auto_auto] lg:justify-center">
+          <div className={`${CARD} relative z-20 h-155 w-100 max-lg:h-auto max-lg:w-full`}>
             <div className="flex justify-center">
               <div className="inline-flex rounded-lg border border-slate-200 p-0.5 dark:border-slate-800">
                 {(['random', 'memorable'] as const).map((m) => (
@@ -255,7 +247,7 @@ const Contrasenas = () => {
                     key={m}
                     type="button"
                     onClick={() => setMode(m)}
-                    className={`cursor-pointer rounded-md px-3 py-1.5 text-base font-medium transition-colors ${FOCUS_RING} ${
+                    className={`cursor-pointer rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${FOCUS_RING} ${
                       mode === m
                         ? 'bg-emerald-600 text-white'
                         : 'text-slate-500 hover:text-emerald-600 dark:text-slate-400'
@@ -273,11 +265,11 @@ const Contrasenas = () => {
                   <div className="flex items-center justify-between">
                     <label
                       htmlFor="length"
-                      className="text-base font-semibold text-slate-800 dark:text-slate-100"
+                      className="text-sm font-semibold text-slate-800 dark:text-slate-100"
                     >
                       Longitud
                     </label>
-                    <span className="text-base text-slate-500 dark:text-slate-400">
+                    <span className="text-sm text-slate-500 dark:text-slate-400">
                       {length} caracteres
                     </span>
                   </div>
@@ -314,11 +306,11 @@ const Contrasenas = () => {
                         >
                           {active[opt.key] && <IconCheck size={14} />}
                         </span>
-                        <span className="text-base font-medium text-slate-800 dark:text-slate-100">
+                        <span className="text-sm font-medium text-slate-800 dark:text-slate-100">
                           {opt.name}
                         </span>
                       </span>
-                      <span className="text-base text-slate-500 dark:text-slate-400">
+                      <span className="text-sm text-slate-500 dark:text-slate-400">
                         {opt.sample}
                       </span>
                     </button>
@@ -331,11 +323,11 @@ const Contrasenas = () => {
                   <div className="flex items-center justify-between">
                     <label
                       htmlFor="wordCount"
-                      className="text-base font-semibold text-slate-800 dark:text-slate-100"
+                      className="text-sm font-semibold text-slate-800 dark:text-slate-100"
                     >
                       Palabras
                     </label>
-                    <span className="text-base text-slate-500 dark:text-slate-400">
+                    <span className="text-sm text-slate-500 dark:text-slate-400">
                       {wordCount}
                     </span>
                   </div>
@@ -370,11 +362,11 @@ const Contrasenas = () => {
                       >
                         {memorableUpper && <IconCheck size={14} />}
                       </span>
-                      <span className="text-base font-medium text-slate-800 dark:text-slate-100">
+                      <span className="text-sm font-medium text-slate-800 dark:text-slate-100">
                         Letras mayúsculas
                       </span>
                     </span>
-                    <span className="text-base text-slate-500 dark:text-slate-400">ABC</span>
+                    <span className="text-sm text-slate-500 dark:text-slate-400">ABC</span>
                   </button>
 
                   <button
@@ -396,16 +388,16 @@ const Contrasenas = () => {
                       >
                         {memorableNumbers && <IconCheck size={14} />}
                       </span>
-                      <span className="text-base font-medium text-slate-800 dark:text-slate-100">
+                      <span className="text-sm font-medium text-slate-800 dark:text-slate-100">
                         Números
                       </span>
                     </span>
-                    <span className="text-base text-slate-500 dark:text-slate-400">123</span>
+                    <span className="text-sm text-slate-500 dark:text-slate-400">123</span>
                   </button>
                 </div>
 
                 <div className="relative mt-6" ref={separatorRef}>
-                  <label className="text-base font-semibold text-slate-800 dark:text-slate-100">
+                  <label className="text-sm font-semibold text-slate-800 dark:text-slate-100">
                     Separadores
                   </label>
                   <button
@@ -413,7 +405,7 @@ const Contrasenas = () => {
                     onClick={() => setSeparatorOpen((prev) => !prev)}
                     aria-haspopup="listbox"
                     aria-expanded={separatorOpen}
-                    className={`mt-2 flex w-full cursor-pointer items-center justify-between rounded-lg border border-slate-200 bg-white/50 px-3 py-2.5 text-left text-base text-slate-800 transition-colors dark:border-slate-800 dark:bg-slate-900/40 dark:text-slate-100 ${FOCUS_RING}`}
+                    className={`mt-2 flex w-full cursor-pointer items-center justify-between rounded-lg border border-slate-200 bg-white/50 px-3 py-2.5 text-left text-sm text-slate-800 transition-colors dark:border-slate-800 dark:bg-slate-900/40 dark:text-slate-100 ${FOCUS_RING}`}
                   >
                     {SEPARATOR_OPTIONS.find((opt) => opt.key === separator)?.label}
                     <IconChevronDown
@@ -437,7 +429,7 @@ const Contrasenas = () => {
                               setSeparator(opt.key)
                               setSeparatorOpen(false)
                             }}
-                            className={`flex w-full cursor-pointer items-center px-3 py-2 text-left text-base transition-colors ${FOCUS_RING} ${
+                            className={`flex w-full cursor-pointer items-center px-3 py-2 text-left text-sm transition-colors ${FOCUS_RING} ${
                               separator === opt.key
                                 ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400'
                                 : 'text-slate-800 hover:bg-emerald-50 hover:text-emerald-700 dark:text-slate-100 dark:hover:bg-emerald-500/10 dark:hover:text-emerald-400'
@@ -456,14 +448,14 @@ const Contrasenas = () => {
 
           <div className="flex min-w-0 flex-col gap-1.5">
             <div
-              className={`${CARD} flex h-68 w-163 max-lg:h-auto max-lg:w-full flex-col items-center justify-center overflow-y-auto text-center`}
+              className={`${CARD} flex h-44 w-210 max-lg:h-auto max-lg:w-full flex-col items-center justify-center overflow-y-auto text-center`}
             >
               {featured ? (
                 <>
                   <div className="flex w-full items-center justify-center gap-3">
                     <span
                       title={featured}
-                      className="line-clamp-2 min-w-0 flex-1 break-all text-xl font-semibold text-slate-800 dark:text-slate-100"
+                      className="line-clamp-2 min-w-0 flex-1 break-all text-lg font-semibold text-slate-800 dark:text-slate-100"
                     >
                       {featured}
                     </span>
@@ -478,22 +470,57 @@ const Contrasenas = () => {
                   <button
                     type="button"
                     onClick={regenerate}
-                    className={`mt-6 inline-flex cursor-pointer items-center gap-2 rounded-lg bg-emerald-600 px-6 py-3 text-base font-semibold text-white transition-colors hover:bg-emerald-700 ${FOCUS_RING}`}
+                    className={`mt-4 inline-flex cursor-pointer items-center gap-2 rounded-lg bg-emerald-600 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-emerald-700 ${FOCUS_RING}`}
                   >
                     <IconRefresh size={18} />
                     Regenerar
                   </button>
                 </>
               ) : (
-                <p className="text-base text-slate-500 dark:text-slate-400">
-                  Elegí al menos un tipo de carácter.
+                <p className="text-sm text-slate-500 dark:text-slate-400">
+                  Elige al menos un tipo de carácter.
                 </p>
               )}
             </div>
 
+            <div
+              className={`${CARD} flex h-54 w-210 max-lg:h-auto max-lg:w-full flex-col items-center justify-center overflow-y-auto text-center`}
+            >
+              <h2 className="text-sm font-semibold text-slate-800 dark:text-slate-100">
+                Puntuación de seguridad
+              </h2>
+              <div className="mt-3 flex items-center justify-center gap-3">
+                <div className="flex gap-1">
+                  {Array.from({ length: 5 }, (_, i) => (
+                    <div
+                      key={i}
+                      className={`h-5 w-10 rounded transition-colors sm:w-20 ${
+                        i < filledBars ? strength.bar : 'bg-slate-200 dark:bg-slate-800'
+                      }`}
+                    />
+                  ))}
+                </div>
+                <span
+                  className={`inline-block rounded-full px-3 py-1 text-sm font-semibold ${strength.badge}`}
+                >
+                  {strength.label}
+                </span>
+              </div>
+              <p className="mt-4 min-h-6 line-clamp-2 text-sm text-slate-500 dark:text-slate-400">
+                {crackTime} para descifrar esta contraseña
+              </p>
+              <button
+                type="button"
+                onClick={() => setInfoOpen(true)}
+                className={`mt-1 cursor-pointer text-sm font-medium text-emerald-600 hover:underline dark:text-emerald-400 ${FOCUS_RING}`}
+              >
+                ¿Cómo saber si mi contraseña es vulnerable?
+              </button>
+            </div>
+
             {alternates.length > 0 && (
-              <div className={`${CARD} h-68 w-163 max-lg:h-auto max-lg:w-full overflow-y-auto`}>
-                <h3 className="text-base font-semibold text-slate-800 dark:text-slate-100">
+              <div className={`${CARD} h-54 w-210 max-lg:h-auto max-lg:w-full overflow-y-auto`}>
+                <h3 className="text-sm font-semibold text-slate-800 dark:text-slate-100">
                   Más contraseñas
                 </h3>
                 <ul className="mt-4 space-y-1">
@@ -504,7 +531,7 @@ const Contrasenas = () => {
                     >
                       <span
                         title={pwd}
-                        className="min-w-0 flex-1 truncate text-base text-slate-800 dark:text-slate-100"
+                        className="min-w-0 flex-1 truncate text-sm text-slate-800 dark:text-slate-100"
                       >
                         {pwd}
                       </span>
@@ -520,49 +547,6 @@ const Contrasenas = () => {
                 </ul>
               </div>
             )}
-          </div>
-
-          <div
-            className={`${CARD} flex h-138 w-100 max-lg:h-auto max-lg:w-full flex-col items-center justify-center overflow-y-auto text-center`}
-          >
-            <h2 className="text-base font-semibold text-slate-800 dark:text-slate-100">
-              Puntuación de seguridad
-            </h2>
-            <svg viewBox="0 0 200 110" className="mx-auto mt-2 w-40">
-              <path
-                d="M10,100 A90,90 0 0 1 190,100"
-                fill="none"
-                strokeWidth="16"
-                strokeLinecap="round"
-                pathLength={100}
-                className="stroke-slate-200 dark:stroke-slate-800"
-              />
-              <path
-                d="M10,100 A90,90 0 0 1 190,100"
-                fill="none"
-                strokeWidth="16"
-                strokeLinecap="round"
-                pathLength={100}
-                strokeDasharray={100}
-                strokeDashoffset={100 - gaugeProgress * 100}
-                className={`stroke-current transition-all ${strength.stroke}`}
-              />
-            </svg>
-            <span
-              className={`-mt-6 inline-block rounded-full px-3 py-1 text-base font-semibold ${strength.badge}`}
-            >
-              {strength.label}
-            </span>
-            <p className="mt-4 min-h-18 line-clamp-3 text-base text-slate-500 dark:text-slate-400">
-              {crackTime} para descifrar esta contraseña
-            </p>
-            <button
-              type="button"
-              onClick={() => setInfoOpen(true)}
-              className={`mt-3 cursor-pointer text-sm font-medium text-emerald-600 hover:underline dark:text-emerald-400 ${FOCUS_RING}`}
-            >
-              ¿Cómo saber si mi contraseña es vulnerable?
-            </button>
           </div>
         </div>
       </div>
@@ -580,7 +564,7 @@ const Contrasenas = () => {
             className="max-h-[85vh] w-full max-w-2xl overflow-y-auto rounded-xl border-2 border-[#10b981] bg-white motion-safe:animate-[modal-pop_0.18s_ease-out] dark:border-[#34d399] dark:bg-slate-900"
           >
             <div className="sticky top-0 flex items-center justify-between border-b border-emerald-200 bg-white px-6 py-5 dark:border-emerald-900 dark:bg-slate-900">
-              <h2 className="text-xl font-semibold text-slate-800 dark:text-slate-100">
+              <h2 className="text-lg font-semibold text-slate-800 dark:text-slate-100">
                 ¿Cómo saber si mi contraseña es vulnerable?
               </h2>
               <button
@@ -591,7 +575,7 @@ const Contrasenas = () => {
                 <IconX size={20} />
               </button>
             </div>
-            <div className="space-y-4 px-6 py-6 text-base text-slate-800 dark:text-slate-100">
+            <div className="space-y-4 px-6 py-6 text-sm text-slate-800 dark:text-slate-100">
               <p>
                 Piensa en tu contraseña como la llave de tu casa: si es simple y la repites en
                 todas las puertas, cualquiera que la copie una sola vez puede entrar a todos
