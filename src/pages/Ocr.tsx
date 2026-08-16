@@ -18,6 +18,7 @@ import {
   recognizeWithTesseract,
 } from '../lib/ocr'
 import PreviewModal, { type PreviewImage } from '../components/PreviewModal'
+import OtherTools from '../components/OtherTools'
 
 const AI_CONCURRENCY = 3
 
@@ -241,6 +242,7 @@ const Ocr = () => {
   }
 
   return (
+    <>
     <section
       className={`mx-auto px-6 py-16 ${files.length > 0 ? 'max-w-4/5' : 'max-w-5xl'}`}
     >
@@ -511,6 +513,8 @@ const Ocr = () => {
 
       <PreviewModal image={previewImage} onClose={() => setPreviewImage(null)} />
     </section>
+    <OtherTools currentHref="/ocr" />
+    </>
   )
 }
 
