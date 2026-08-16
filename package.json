@@ -13,6 +13,7 @@
   "dependencies": {
     "@tabler/icons-react": "^3.44.0",
     "@tailwindcss/vite": "^4.3.2",
+    "diff": "^9.0.0",
     "jsqr": "^1.4.0",
     "qrcode": "^1.5.4",
     "react": "^19.2.7",

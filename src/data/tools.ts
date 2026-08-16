@@ -62,6 +62,27 @@ export const availableTools: Tool[] = [
     category: 'Otros',
     icon: IconQrcode,
   },
+  {
+    title: 'Comparador de textos',
+    description: 'Diferencias entre dos versiones',
+    href: '/comparador',
+    category: 'Texto',
+    icon: IconGitCompare,
+  },
+  {
+    title: 'Paleta de colores',
+    description: 'Colores dominantes de una foto',
+    href: '/paleta',
+    category: 'Imagen',
+    icon: IconPalette,
+  },
+  {
+    title: 'Facturas y recibos',
+    description: 'Fecha, monto y RUC con IA',
+    href: '/facturas',
+    category: 'Extracción / conversión',
+    icon: IconReceipt2,
+  },
 ]
 
 export const upcomingTools: Tool[] = [
@@ -82,12 +103,6 @@ export const upcomingTools: Tool[] = [
     description: 'De imagen o PDF a Excel/CSV',
     category: 'Extracción / conversión',
     icon: IconTable,
-  },
-  {
-    title: 'Facturas y recibos',
-    description: 'Fecha, monto y RUC con IA',
-    category: 'Extracción / conversión',
-    icon: IconReceipt2,
   },
   {
     title: 'Manuscrito a texto',
@@ -124,12 +139,6 @@ export const upcomingTools: Tool[] = [
     description: 'Presets para cada red social',
     category: 'Imagen',
     icon: IconResize,
-  },
-  {
-    title: 'Paleta de colores',
-    description: 'Colores dominantes de una foto',
-    category: 'Imagen',
-    icon: IconPalette,
   },
   {
     title: 'Marca de agua',
@@ -172,12 +181,6 @@ export const upcomingTools: Tool[] = [
     description: 'Documentos largos, en segundos',
     category: 'Texto',
     icon: IconFileDescription,
-  },
-  {
-    title: 'Comparador de textos',
-    description: 'Diferencias entre dos versiones',
-    category: 'Texto',
-    icon: IconGitCompare,
   },
   {
     title: 'Markdown a PDF/Word',

@@ -18,6 +18,7 @@ import {
   parseBase64Entry,
 } from '../lib/base64'
 import PreviewModal, { type PreviewImage } from '../components/PreviewModal'
+import OtherTools from '../components/OtherTools'
 
 const ACCEPTED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/svg+xml']
 const ACCEPTED_EXT = '.jpg,.jpeg,.png,.webp,.gif,.svg'
@@ -228,6 +229,7 @@ const ImagenABase64 = () => {
     mode === 'encode' ? files.length > 0 : decodeInput.trim().length > 0
 
   return (
+    <>
     <section className={`mx-auto px-6 py-16 ${isWide ? 'max-w-4/5' : 'max-w-5xl'}`}>
       <h1 className="text-3xl font-bold text-slate-800 sm:text-4xl dark:text-slate-100">
         Imagen a Base64
@@ -580,6 +582,8 @@ const ImagenABase64 = () => {
 
       <PreviewModal image={previewImage} onClose={() => setPreviewImage(null)} />
     </section>
+    <OtherTools currentHref="/base64" />
+    </>
   )
 }
 

@@ -8,6 +8,7 @@ import {
 } from 'react'
 import QRCode from 'qrcode'
 import jsQR from 'jsqr'
+import OtherTools from '../components/OtherTools'
 import {
   IconCheck,
   IconCopy,
@@ -196,6 +197,7 @@ const Qr = () => {
   const isUrl = readResult ? /^https?:\/\//i.test(readResult) : false
 
   return (
+    <>
     <section className="mx-auto max-w-7xl px-6 py-16">
       <h1 className="text-3xl font-bold text-slate-800 sm:text-4xl dark:text-slate-100">
         Generador y lector de QR
@@ -525,6 +527,8 @@ const Qr = () => {
         </div>
       )}
     </section>
+    <OtherTools currentHref="/qr" />
+    </>
   )
 }
 

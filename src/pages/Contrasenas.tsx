@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { IconCheck, IconChevronDown, IconCopy, IconRefresh, IconX } from '@tabler/icons-react'
 import { WORDLIST } from '../lib/wordlist'
+import OtherTools from '../components/OtherTools'
 
 const SYMBOLS = '!@#$%^&*()-_=+[]{}|;:,.<>?'
 
@@ -227,6 +228,7 @@ const Contrasenas = () => {
   const [featured, ...alternates] = passwords
 
   return (
+    <>
     <section className="mx-auto max-w-[100rem] px-6 py-10">
       <div className="mx-auto w-100 max-lg:w-full">
         <h1 className="text-2xl font-bold text-slate-800 sm:text-3xl dark:text-slate-100">
@@ -621,6 +623,8 @@ const Contrasenas = () => {
         </div>
       )}
     </section>
+    <OtherTools currentHref="/contrasenas" />
+    </>
   )
 }
 
