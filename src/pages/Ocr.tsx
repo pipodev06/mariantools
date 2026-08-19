@@ -244,12 +244,12 @@ const Ocr = () => {
   return (
     <>
     <section
-      className={`mx-auto px-6 py-16 ${files.length > 0 ? 'max-w-4/5' : 'max-w-5xl'}`}
+      className={`mx-auto px-6 py-16 ${files.length > 0 ? 'max-w-[90rem]' : 'max-w-7xl'}`}
     >
       <h1 className="text-3xl font-bold text-slate-800 sm:text-4xl dark:text-slate-100">
         Imagen a texto
       </h1>
-      <p className="mt-2 max-w-2xl text-base text-slate-500 dark:text-slate-400">
+      <p className="mt-2 text-base text-slate-500 dark:text-slate-400">
         Extrae el texto de tus imágenes con OCR rápido o con IA. Soporta varios archivos a la vez.
       </p>
 

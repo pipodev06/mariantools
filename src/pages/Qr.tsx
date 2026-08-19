@@ -202,11 +202,11 @@ const Qr = () => {
       <h1 className="text-3xl font-bold text-slate-800 sm:text-4xl dark:text-slate-100">
         Generador y lector de QR
       </h1>
-      <p className="mt-2 max-w-2xl text-base text-slate-500 dark:text-slate-400">
+      <p className="mt-2 text-base text-slate-500 dark:text-slate-400">
         Crea códigos QR o lee uno desde una imagen, directo en tu navegador.
       </p>
 
-      <div className="mt-8 flex justify-center">
+      <div className="mt-8 flex justify-start">
         <div className="inline-flex rounded-lg border border-slate-200 p-0.5 dark:border-slate-800">
           {(['generate', 'read'] as const).map((m) => (
             <button
@@ -227,7 +227,7 @@ const Qr = () => {
 
       {mode === 'generate' ? (
         <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
-          <div className={`${CARD} p-6`}>
+          <div className={`${CARD} overflow-y-auto p-6 lg:h-104`}>
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
               {QR_TYPES.map((t) => (
                 <button
@@ -384,7 +384,7 @@ const Qr = () => {
             </div>
           </div>
 
-          <div className={`${CARD} flex flex-col items-center justify-center p-6 text-center`}>
+          <div className={`${CARD} flex flex-col items-center justify-center p-6 text-center lg:h-104`}>
             {qrValue ? (
               <>
                 <canvas ref={canvasRef} className="rounded-lg" />
@@ -429,7 +429,7 @@ const Qr = () => {
             onClick={() => inputRef.current?.click()}
             role="button"
             tabIndex={0}
-            className={`flex min-h-72 cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed p-10 text-center transition-colors ${FOCUS_RING} ${
+            className={`flex min-h-72 cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed p-10 text-center transition-colors lg:h-104 ${FOCUS_RING} ${
               isDragging
                 ? 'border-emerald-600 bg-emerald-50/60 dark:border-emerald-400 dark:bg-emerald-500/10'
                 : 'border-slate-300 bg-white hover:border-emerald-600 dark:border-slate-700 dark:bg-slate-900 dark:hover:border-emerald-400'
@@ -483,7 +483,7 @@ const Qr = () => {
             />
           </div>
 
-          <div className={`${CARD} flex min-h-72 flex-col justify-center p-6`}>
+          <div className={`${CARD} flex min-h-72 flex-col justify-center overflow-y-auto p-6 lg:h-104`}>
             {readResult ? (
               <div className="motion-safe:animate-[reveal-up_0.4s_ease-out_forwards]">
                 <h3 className="text-sm font-semibold text-slate-800 dark:text-slate-100">

@@ -51,11 +51,11 @@ const Comparador = () => {
 
   return (
     <>
-      <section className="mx-auto max-w-5xl px-6 py-16">
+      <section className="mx-auto max-w-7xl px-6 py-16">
         <h1 className="text-3xl font-bold text-slate-800 sm:text-4xl dark:text-slate-100">
           Comparador de textos
         </h1>
-        <p className="mt-2 max-w-2xl text-base text-slate-500 dark:text-slate-400">
+        <p className="mt-2 text-base text-slate-500 dark:text-slate-400">
           Mira las diferencias entre dos textos o versiones, directo en tu navegador.
         </p>
 
