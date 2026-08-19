@@ -230,19 +230,18 @@ const Contrasenas = () => {
   return (
     <>
     <section className="mx-auto max-w-[100rem] px-6 py-10">
-      <div className="mx-auto w-100 max-lg:w-full">
-        <h1 className="text-2xl font-bold text-slate-800 sm:text-3xl dark:text-slate-100">
-          Contraseñas seguras
-        </h1>
-        <p className="mt-2 text-base text-slate-500 dark:text-slate-400">
-          Genera contraseñas aleatorias, directo en tu navegador.
-        </p>
-      </div>
+      <div className="mx-auto w-fit max-lg:w-full">
+      <h1 className="text-2xl font-bold text-slate-800 sm:text-3xl dark:text-slate-100">
+        Contraseñas seguras
+      </h1>
+      <p className="mt-2 text-base text-slate-500 dark:text-slate-400">
+        Genera contraseñas aleatorias, directo en tu navegador.
+      </p>
 
       <div className="relative mt-6">
         <div className="pointer-events-none absolute inset-0 -z-10 rounded-2xl bg-linear-to-br from-emerald-200/40 via-transparent to-slate-200/40 dark:from-emerald-500/10 dark:via-transparent dark:to-slate-800/20" />
 
-        <div className="grid grid-cols-1 items-start gap-1.5 lg:grid-cols-[auto_auto] lg:justify-center">
+        <div className="grid grid-cols-1 items-start gap-1.5 lg:grid-cols-[auto_auto]">
           <div className={`${CARD} relative z-20 h-155 w-100 max-lg:h-auto max-lg:w-full`}>
             <div className="flex justify-center">
               <div className="inline-flex rounded-lg border border-slate-200 p-0.5 dark:border-slate-800">
@@ -553,6 +552,7 @@ const Contrasenas = () => {
             )}
           </div>
         </div>
+      </div>
       </div>
 
       {infoOpen && (
