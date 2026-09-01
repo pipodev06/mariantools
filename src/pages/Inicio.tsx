@@ -1,4 +1,3 @@
-import { Link } from 'react-router-dom'
 import ToolCard from '../components/ToolCard'
 import { availableTools, upcomingTools } from '../data/tools'
 
@@ -16,12 +15,12 @@ const Inicio = () => {
               OCR, conversión de archivos, edición de imágenes y más — gratis, directo
               desde el navegador.
             </p>
-            <Link
-              to="/tools"
+            <a
+              href="#herramientas-disponibles"
               className="mt-8 inline-block rounded-lg bg-emerald-600 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-emerald-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-800"
             >
               Ver herramientas
-            </Link>
+            </a>
           </div>
 
           <div
@@ -43,7 +42,7 @@ const Inicio = () => {
         </div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-6 pb-16">
+      <section id="herramientas-disponibles" className="mx-auto max-w-7xl px-6 pb-16">
         <h2 className="text-2xl font-bold text-emerald-600 sm:text-3xl dark:text-emerald-400">
           Herramientas disponibles
         </h2>
