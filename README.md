@@ -15,8 +15,20 @@ La idea original del proyecto fue construir un "OCR para contadores": extraer da
 | Comparador de textos | `/comparador` | Diferencias entre dos textos, por palabra o por línea, resaltadas. |
 | Paleta de colores | `/paleta` | Extrae los colores dominantes de una imagen (cuantización manual con Canvas API, sin dependencias). |
 | Facturas y recibos | `/facturas` | Extrae fecha, monto, RUC, proveedor y N° de comprobante de facturas/recibos con IA (Mistral), en lote, exportable a CSV. |
+| Comprimir/convertir imagen | `/comprimir` | Convierte entre JPG, PNG y WebP con calidad ajustable, en lote. |
+| Imagen a PDF | `/imagen-a-pdf` | Junta varias imágenes en un solo PDF, con reordenamiento. |
+| Redimensionar para redes | `/redimensionar` | Presets para Instagram, Facebook, LinkedIn, X e YouTube, con recorte o ajuste. |
+| Marca de agua | `/marca-de-agua` | Marca de agua de texto sobre imágenes o todas las páginas de un PDF. |
+| Metadatos EXIF | `/exif` | Cámara, fecha y ubicación GPS (si existe) de una foto, exportable a JSON. |
+| Editor de PDF | `/editor-pdf` | Une varios PDF, reordena o elimina páginas, extrae una página como PDF aparte. |
+| Firma digital en PDF | `/firma-pdf` | Dibuja tu firma y colócala en cualquier página del PDF. |
+| Texto a voz | `/texto-a-voz` | Lee un texto en voz alta con las voces del navegador (Web Speech API). |
+| Markdown a PDF/Word | `/markdown` | Convierte Markdown a un PDF o `.docx` con formato. |
+| Calculadora de fechas | `/calculadora-fechas` | Diferencia entre dos fechas (con días hábiles) o sumar/restar días a una fecha. |
 
-Ver `tools.md` para el catálogo completo, incluidas las herramientas planeadas ("Próximamente" en la página de inicio).
+Todas las de esta lista corren 100% en el navegador — ninguna depende de `MISTRAL_API_KEY` salvo Imagen a texto (motor IA opcional) y Facturas y recibos.
+
+Ver `tools.md` para el catálogo completo, incluidas las herramientas planeadas que sí necesitan IA ("Próximamente" en la página de inicio: Extractor de tablas, Manuscrito a texto, Traductor de imagen, Resumen de texto, etc.).
 
 ## Stack
 
@@ -26,6 +38,7 @@ Ver `tools.md` para el catálogo completo, incluidas las herramientas planeadas 
 - [@tabler/icons-react](https://tabler.io/icons) para íconos
 - [Tesseract.js](https://github.com/naptha/tesseract.js) para OCR local
 - [Mistral AI](https://mistral.ai/) (modelo Pixtral) para OCR/extracción con IA, vía funciones serverless propias
+- [pdf-lib](https://pdf-lib.js.org/) (editar/unir/firmar/marca de agua en PDF), [jsPDF](https://github.com/parallax/jsPDF) (generar PDF desde imágenes o Markdown), [docx](https://docx.js.org/) (generar `.docx`), [marked](https://marked.js.org/) (parseo de Markdown), [exifr](https://github.com/MikeKovarik/exifr) (metadatos EXIF)
 - Fuente self-hosted: [Comfortaa](https://fonts.google.com/specimen/Comfortaa)
 - Despliegue en [Vercel](https://vercel.com/)
 
@@ -38,7 +51,7 @@ api/                    Funciones serverless (Vercel) que hablan con Mistral
 src/
   pages/                Una página por herramienta (Ocr.tsx, Contrasenas.tsx, ...)
   components/           Componentes compartidos (Header, Footer, ToolCard, OtherTools, PreviewModal)
-  lib/                  Lógica de negocio client-side (ocr.ts, base64.ts, palette.ts, factura.ts, wordlist.ts)
+  lib/                  Lógica de negocio client-side (ocr.ts, base64.ts, palette.ts, factura.ts, pdfEditor.ts, watermark.ts, signature.ts, markdownExport.ts, resize.ts, imageConvert.ts, imageToPdf.ts, wordlist.ts)
   data/tools.ts          Catálogo centralizado de herramientas (disponibles / próximamente)
   layout/               MainLayout con Header/Footer
 tools.md                Documento de planificación del catálogo de herramientas
