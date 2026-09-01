@@ -1,75 +1,87 @@
-# React + TypeScript + Vite
+# MarianTools
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Suite de herramientas web gratuitas para trabajar con archivos — OCR, imágenes, texto y más — corriendo 100% en el navegador cuando es posible, y con IA (Mistral) para lo que necesita más que reconocimiento básico.
 
-Currently, two official plugins are available:
+La idea original del proyecto fue construir un "OCR para contadores": extraer datos de facturas y recibos automáticamente. Esa sigue siendo la herramienta fundacional (**Facturas y recibos**), y el resto de la suite creció alrededor de esa misma idea — utilidades chicas, rápidas y sin fricción para tareas del día a día con archivos.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Herramientas disponibles
 
-## React Compiler
+| Herramienta | Ruta | Qué hace |
+|---|---|---|
+| Imagen a texto | `/ocr` | OCR de imágenes con dos motores a elección: Tesseract.js (rápido, 100% en el navegador) o Mistral Pixtral (IA, entiende columnas/gráficos). Soporta varios archivos a la vez. |
+| Imagen a Base64 | `/base64` | Codifica imágenes a Base64 (Data URL o base64 puro) o decodifica de vuelta a imagen. Bidireccional, 100% client-side. |
+| Contraseñas seguras | `/contrasenas` | Generador de contraseñas con modo Random (charset configurable) o Memorable (passphrase estilo diceware, wordlist BIP39). `crypto.getRandomValues`, nunca `Math.random`. |
+| Generador/lector QR | `/qr` | Genera códigos QR (texto, URL, WiFi, contacto vCard) con color personalizable, o lee uno desde una imagen. |
+| Comparador de textos | `/comparador` | Diferencias entre dos textos, por palabra o por línea, resaltadas. |
+| Paleta de colores | `/paleta` | Extrae los colores dominantes de una imagen (cuantización manual con Canvas API, sin dependencias). |
+| Facturas y recibos | `/facturas` | Extrae fecha, monto, RUC, proveedor y N° de comprobante de facturas/recibos con IA (Mistral), en lote, exportable a CSV. |
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Ver `tools.md` para el catálogo completo, incluidas las herramientas planeadas ("Próximamente" en la página de inicio).
 
-## Expanding the ESLint configuration
+## Stack
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- [Vite](https://vite.dev/) + [React 19](https://react.dev/) + TypeScript
+- [Tailwind CSS v4](https://tailwindcss.com/) (CSS-first, sin `tailwind.config`)
+- [react-router-dom](https://reactrouter.com/) v7
+- [@tabler/icons-react](https://tabler.io/icons) para íconos
+- [Tesseract.js](https://github.com/naptha/tesseract.js) para OCR local
+- [Mistral AI](https://mistral.ai/) (modelo Pixtral) para OCR/extracción con IA, vía funciones serverless propias
+- Fuente self-hosted: [Comfortaa](https://fonts.google.com/specimen/Comfortaa)
+- Despliegue en [Vercel](https://vercel.com/)
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Estructura del proyecto
 
 ```
+api/                    Funciones serverless (Vercel) que hablan con Mistral
+  ocr-ai.ts             OCR con IA para /ocr
+  factura-ai.ts         Extracción estructurada (JSON) para /facturas
+src/
+  pages/                Una página por herramienta (Ocr.tsx, Contrasenas.tsx, ...)
+  components/           Componentes compartidos (Header, Footer, ToolCard, OtherTools, PreviewModal)
+  lib/                  Lógica de negocio client-side (ocr.ts, base64.ts, palette.ts, factura.ts, wordlist.ts)
+  data/tools.ts          Catálogo centralizado de herramientas (disponibles / próximamente)
+  layout/               MainLayout con Header/Footer
+tools.md                Documento de planificación del catálogo de herramientas
+CLAUDE.md               Convenciones de diseño/código congeladas del proyecto (fuente de verdad para estilo)
+```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Empezar
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+```bash
+pnpm install
+pnpm dev          # http://localhost:5173 — no sirve /api/*
+```
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+Las herramientas 100% client-side (Ocr en modo Rápido, Base64, Contraseñas, Qr, Comparador, Paleta) funcionan con `pnpm dev` normal. Las que dependen de un motor de IA (Ocr en modo IA, Facturas) necesitan las funciones serverless de `api/`:
+
+```bash
+pnpm dev:vercel   # vercel dev — sirve también /api/*, requiere `vercel` CLI
+```
+
+### Variables de entorno
+
+Crear `.env.local` en la raíz con:
 
 ```
+MISTRAL_API_KEY=tu_api_key_de_mistral
+```
+
+Nunca se expone al cliente — solo la leen las funciones serverless en `api/`.
+
+## Scripts
+
+| Comando | Qué hace |
+|---|---|
+| `pnpm dev` | Servidor de desarrollo (Vite) |
+| `pnpm dev:vercel` | Servidor de desarrollo con funciones `/api/*` (Vercel CLI) |
+| `pnpm build` | Type-check (`tsc -b`) + build de producción |
+| `pnpm lint` | ESLint sobre todo el proyecto |
+| `pnpm preview` | Sirve el build de producción localmente |
+
+## Despliegue
+
+El proyecto está desplegado en Vercel, con `vercel.json` reescribiendo todas las rutas a `index.html` para que las rutas hijas de React Router (ej. `/ocr`) no den 404 al refrescar — sin afectar `/api/*`, que Vercel prioriza sobre los rewrites.
+
+## Convenciones de diseño y código
+
+Todas las decisiones de estilo (paleta de colores, tipografía, patrones de componentes, anchos de contenedor, motion/accesibilidad) están documentadas y congeladas en [`CLAUDE.md`](./CLAUDE.md). Es la referencia obligatoria antes de tocar cualquier página o componente nuevo — evita reinventar patrones que ya existen en el proyecto.
