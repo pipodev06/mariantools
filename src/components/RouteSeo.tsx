@@ -25,7 +25,11 @@ const RouteSeo = () => {
 
     // Rutas desconocidas (404): sin indexar y con el título genérico.
     setMeta('meta[name="robots"]', { name: 'robots', content: entry ? 'index,follow' : 'noindex' })
-    if (!entry) return
+    if (!entry) {
+      // /cuenta y rutas desconocidas: título de marca y sin indexar.
+      document.title = SITE_NAME
+      return
+    }
 
     const title = path === '/' ? `${SITE_NAME}: ${entry.title}` : toTitle(entry)
     const url = `${SITE_URL}${path === '/' ? '/' : path}`

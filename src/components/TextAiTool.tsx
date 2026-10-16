@@ -1,6 +1,8 @@
 import { useState, type ReactNode } from 'react'
 import { IconCheck, IconCopy, IconLoader2, IconTrash } from '@tabler/icons-react'
 import { MAX_AI_TEXT_LENGTH } from '../lib/ai'
+import { AiError } from '../lib/aiClient'
+import AiErrorNotice from './AiErrorNotice'
 import OtherTools from './OtherTools'
 
 const FOCUS_RING =
@@ -36,6 +38,7 @@ const TextAiTool = ({
   const [input, setInput] = useState('')
   const [output, setOutput] = useState('')
   const [error, setError] = useState('')
+  const [errorCode, setErrorCode] = useState<string>()
   const [isRunning, setIsRunning] = useState(false)
   const [copied, setCopied] = useState(false)
 
@@ -46,6 +49,7 @@ const TextAiTool = ({
       setOutput(await run(input))
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error desconocido')
+      setErrorCode(err instanceof AiError ? err.code : undefined)
     } finally {
       setIsRunning(false)
     }
@@ -141,14 +145,7 @@ const TextAiTool = ({
           </button>
         </div>
 
-        {error && (
-          <p
-            role="alert"
-            className="mt-4 inline-block rounded-full bg-red-100 px-3 py-1 text-sm font-medium text-red-700 dark:bg-red-500/15 dark:text-red-300"
-          >
-            {error}
-          </p>
-        )}
+        {error && <AiErrorNotice message={error} code={errorCode} className="mt-4" />}
       </section>
       <OtherTools currentHref={currentHref} />
     </>

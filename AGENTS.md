@@ -128,3 +128,4 @@ Español neutro tipo Perú (PE) — **nunca voseo argentino**. "transcribe" no "
 - [Tools con IA — tanda 1 (2026-10-16)](docs/herramientas/tools-ia-tanda-1.md)
 - [Tanda 2 — PDF a texto, Audio a texto, Quitar fondo (2026-10-16)](docs/herramientas/tools-ia-tanda-2.md)
 - [Tanda 3 — herramientas PDF y calculadoras de Perú (2026-10-16)](docs/herramientas/tools-pdf-y-calculadoras-peru.md)
+- [Créditos y medición de IA (2026-10-16)](docs/decisiones-creditos.md) — toda tool con IA nueva pasa por `reserve`/`refund` de `api/_billing.ts`

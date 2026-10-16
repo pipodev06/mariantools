@@ -8,7 +8,9 @@ import {
   IconUpload,
   IconX,
 } from '@tabler/icons-react'
+import { AiError } from '../lib/aiClient'
 import { mapWithConcurrency } from '../lib/ocr'
+import AiErrorNotice from '../components/AiErrorNotice'
 import { extractFacturaData, EMPTY_FACTURA_DATA, type FacturaData } from '../lib/factura'
 import PreviewModal, { type PreviewImage } from '../components/PreviewModal'
 import OtherTools from '../components/OtherTools'
@@ -27,6 +29,7 @@ type FacturaResult = {
   previewUrl: string
   data: FacturaData
   error?: string
+  errorCode?: string
 }
 
 const FIELDS: { key: keyof FacturaData; label: string }[] = [
@@ -119,13 +122,15 @@ const Facturas = () => {
         async ({ file, previewUrl }) => {
           let data = EMPTY_FACTURA_DATA
           let error: string | undefined
+          let errorCode: string | undefined
           try {
             data = await extractFacturaData(file)
           } catch (err) {
             error = err instanceof Error ? err.message : 'Error desconocido'
+            errorCode = err instanceof AiError ? err.code : undefined
           }
           setProgress((prev) => ({ ...prev, done: prev.done + 1 }))
-          return { file, previewUrl, data, error }
+          return { file, previewUrl, data, error, errorCode }
         },
       )
       setResults(newResults)
@@ -327,9 +332,7 @@ const Facturas = () => {
                         {result.file.name}
                       </h3>
                       {result.error && (
-                        <span className="mt-1 inline-block rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-700">
-                          {result.error}
-                        </span>
+                        <AiErrorNotice message={result.error} code={result.errorCode} className="mt-1" />
                       )}
                     </div>
                     <button

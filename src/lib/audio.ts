@@ -1,3 +1,5 @@
+import { authHeaders, toAiError } from './aiClient'
+
 const TARGET_SAMPLE_RATE = 16000
 // 100 s a 16 kHz mono de 16 bits ≈ 3.2 MB: cabe bajo el límite de 4.5 MB de Vercel.
 const CHUNK_SECONDS = 100
@@ -54,14 +56,11 @@ const encodeWav = (samples: Float32Array): Blob => {
 const transcribeChunk = async (wav: Blob): Promise<string> => {
   const response = await fetch('/api/transcribe', {
     method: 'POST',
-    headers: { 'Content-Type': 'audio/wav' },
+    headers: { 'Content-Type': 'audio/wav', ...(await authHeaders()) },
     body: wav,
   })
 
-  if (!response.ok) {
-    const error = await response.json().catch(() => null)
-    throw new Error(error?.error ?? 'No se pudo transcribir el audio')
-  }
+  if (!response.ok) throw await toAiError(response, 'No se pudo transcribir el audio')
 
   const { text } = (await response.json()) as { text: string }
   return text.trim()

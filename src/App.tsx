@@ -42,6 +42,7 @@ const CalculadoraLiquidacion = lazy(() => import('./pages/CalculadoraLiquidacion
 const CalculadoraHorasExtras = lazy(() => import('./pages/CalculadoraHorasExtras'))
 const CalculadoraIgv = lazy(() => import('./pages/CalculadoraIgv'))
 const ValidadorRuc = lazy(() => import('./pages/ValidadorRuc'))
+const Cuenta = lazy(() => import('./pages/Cuenta'))
 const NoEncontrada = lazy(() => import('./pages/NoEncontrada'))
 
 const App = () => {
@@ -86,6 +87,7 @@ const App = () => {
         <Route path="calculadora-horas-extras" element={<CalculadoraHorasExtras />} />
         <Route path="calculadora-igv" element={<CalculadoraIgv />} />
         <Route path="validador-ruc" element={<ValidadorRuc />} />
+        <Route path="cuenta" element={<Cuenta />} />
         <Route path="*" element={<NoEncontrada />} />
       </Route>
     </Routes>

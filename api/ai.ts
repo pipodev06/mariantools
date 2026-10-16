@@ -1,6 +1,25 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
 
+import { isDenied, refund, reserve } from './_billing.js'
+
 const AI_TIMEOUT_MS = 25_000
+// Reintento ante 503: dentro de los 30 s de `maxDuration` de la función (vercel.json).
+const AI_TOTAL_BUDGET_MS = 28_000
+const RETRY_DELAY_MS = 1_000
+const MIN_RETRY_BUDGET_MS = 5_000
+// Tope de salida por llamada: acota el costo de una respuesta (la salida es lo más caro de los tokens).
+const MAX_OUTPUT_TOKENS = 4096
+
+// Créditos que cuesta cada tarea (1 crédito ≈ el costo de una llamada de IA con margen).
+const TASK_COST: Record<string, number> = {
+  ocr: 1,
+  factura: 1,
+  manuscrito: 1,
+  tabla: 2,
+  'traducir-imagen': 1,
+  corregir: 1,
+  resumir: 1,
+}
 
 // Proveedor intercambiable: cualquier API compatible con OpenAI (/chat/completions) con visión.
 // Se configura solo por variables de entorno, sin nombres de modelo ni URLs en el código.
@@ -157,29 +176,60 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         { role: 'user', content: text },
       ]
 
-  try {
-    const aiResponse = await fetch(config.url, {
+  // Se reserva el uso (cupo gratis o créditos) solo con la petición ya validada.
+  const task = body.task as string
+  const reservation = await reserve(req, task, TASK_COST[task])
+  if (isDenied(reservation)) {
+    res.status(reservation.status).json({ error: reservation.error, code: reservation.code })
+    return
+  }
+
+  // Si la IA falla, se devuelve el uso reservado antes de responder el error.
+  const fail = async (status: number, error: string) => {
+    await refund(reservation, task)
+    res.status(status).json({ error })
+  }
+
+  const payload = JSON.stringify({
+    model: config.model,
+    temperature: 0.2,
+    max_tokens: MAX_OUTPUT_TOKENS,
+    ...(job.json ? { response_format: { type: 'json_object' } } : {}),
+    messages,
+  })
+  const callProvider = (timeoutMs: number) =>
+    fetch(config.url, {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${config.apiKey}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        model: config.model,
-        temperature: 0.2,
-        ...(job.json ? { response_format: { type: 'json_object' } } : {}),
-        messages,
-      }),
-      signal: AbortSignal.timeout(AI_TIMEOUT_MS),
+      body: payload,
+      signal: AbortSignal.timeout(timeoutMs),
     })
+
+  try {
+    const startedAt = Date.now()
+    let aiResponse = await callProvider(AI_TIMEOUT_MS)
+
+    // 503 = proveedor saturado (suele ser momentáneo): un solo reintento dentro del tiempo total.
+    if (aiResponse.status === 503) {
+      await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY_MS))
+      const remaining = AI_TOTAL_BUDGET_MS - (Date.now() - startedAt)
+      if (remaining >= MIN_RETRY_BUDGET_MS) {
+        await aiResponse.body?.cancel()
+        aiResponse = await callProvider(remaining)
+      }
+    }
 
     if (!aiResponse.ok) {
       console.error('Proveedor de IA error', aiResponse.status, await aiResponse.text())
       // Solo se expone 429 (límite); el resto (401/402/5xx) no debe filtrar el estado del proveedor.
-      const busy = aiResponse.status === 429
-      res
-        .status(busy ? 429 : 502)
-        .json({ error: busy ? 'Demasiadas solicitudes, intenta en un momento' : 'La IA no pudo procesar la solicitud' })
+      if (aiResponse.status === 429) {
+        await fail(429, 'Demasiadas solicitudes, intenta en un momento')
+      } else {
+        await fail(502, 'La IA no pudo procesar la solicitud')
+      }
       return
     }
 
@@ -190,8 +240,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   } catch (err) {
     const timedOut = err instanceof Error && err.name === 'TimeoutError'
     console.error('Proveedor de IA fetch falló', err)
-    res
-      .status(timedOut ? 504 : 502)
-      .json({ error: timedOut ? 'La IA tardó demasiado, intenta de nuevo' : 'No se pudo contactar a la IA' })
+    if (timedOut) {
+      await fail(504, 'La IA tardó demasiado, intenta de nuevo')
+    } else {
+      await fail(502, 'No se pudo contactar a la IA')
+    }
   }
 }

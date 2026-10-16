@@ -8,7 +8,9 @@ import {
   IconUpload,
   IconX,
 } from '@tabler/icons-react'
+import { AiError } from '../lib/aiClient'
 import { mapWithConcurrency } from '../lib/ocr'
+import AiErrorNotice from './AiErrorNotice'
 import PreviewModal, { type PreviewImage } from './PreviewModal'
 import OtherTools from './OtherTools'
 
@@ -28,6 +30,7 @@ type FileResult<T> = {
   previewUrl: string
   value?: T
   error?: string
+  errorCode?: string
 }
 
 type Props<T> = {
@@ -129,13 +132,15 @@ const ImageAiTool = <T,>({
         async ({ file, previewUrl }): Promise<FileResult<T>> => {
           let value: T | undefined
           let error: string | undefined
+          let errorCode: string | undefined
           try {
             value = await run(file)
           } catch (err) {
             error = err instanceof Error ? err.message : 'Error desconocido'
+            errorCode = err instanceof AiError ? err.code : undefined
           }
           setProgress((prev) => ({ ...prev, done: prev.done + 1 }))
-          return { file, previewUrl, value, error }
+          return { file, previewUrl, value, error, errorCode }
         },
       )
       setResults(newResults)
@@ -320,12 +325,7 @@ const ImageAiTool = <T,>({
                         {result.file.name}
                       </h3>
                       {result.error && (
-                        <span
-                          role="alert"
-                          className="mt-1 inline-block rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-700 dark:bg-red-500/15 dark:text-red-300"
-                        >
-                          {result.error}
-                        </span>
+                        <AiErrorNotice message={result.error} code={result.errorCode} className="mt-1" />
                       )}
                     </div>
                     {result.value !== undefined && (
