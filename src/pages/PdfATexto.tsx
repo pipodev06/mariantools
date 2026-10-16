@@ -3,7 +3,6 @@ import { extractPdfText } from '../lib/pdfText'
 
 const PdfATexto = () => (
   <SingleFileTextTool
-    currentHref="/pdf-a-texto"
     title="PDF a texto"
     subtitle="Extrae el texto de un PDF, incluso si está escaneado."
     accept=".pdf,application/pdf"

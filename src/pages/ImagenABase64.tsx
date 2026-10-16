@@ -1,4 +1,4 @@
-import { useRef, useState, type ChangeEvent, type ClipboardEvent, type DragEvent } from 'react'
+import { useEffect, useRef, useState, type ChangeEvent, type ClipboardEvent, type DragEvent } from 'react'
 import {
   IconCheck,
   IconCopy,
@@ -18,7 +18,7 @@ import {
   parseBase64Entry,
 } from '../lib/base64'
 import PreviewModal, { type PreviewImage } from '../components/PreviewModal'
-import OtherTools from '../components/OtherTools'
+import { FOCUS_RING, BUTTON_PRIMARY, BUTTON_SECONDARY, CHIP_ACTIVE, CHIP_INACTIVE } from '../lib/ui'
 
 const ACCEPTED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/svg+xml']
 const ACCEPTED_EXT = '.jpg,.jpeg,.png,.webp,.gif,.svg'
@@ -41,6 +41,7 @@ type EncodeResult = {
 }
 
 type DecodeResult = {
+  id: number
   raw: string
   dataUrl: string
   mime: string
@@ -50,11 +51,14 @@ type DecodeResult = {
 
 type Results = { mode: 'encode'; items: EncodeResult[] } | { mode: 'decode'; items: DecodeResult[] }
 
-const FOCUS_RING =
-  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900'
-
-const CARD =
+const GLASS_CARD =
   'rounded-xl border border-white/40 bg-white/60 shadow-sm backdrop-blur-md dark:border-slate-700/40 dark:bg-slate-800/40'
+
+const dataUrlToBlob = async (dataUrl: string) => {
+  const response = await fetch(dataUrl)
+  if (!response.ok) throw new Error('No se pudo leer la imagen')
+  return response.blob()
+}
 
 const formatFileSize = (bytes: number) => {
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(0)} KB`
@@ -77,6 +81,13 @@ const ImagenABase64 = () => {
   const [isDragging, setIsDragging] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
   const dragCounter = useRef(0)
+  // Todas las URLs de vista previa creadas; se revocan al desmontar (revocar dos veces es inofensivo).
+  const urlsRef = useRef<string[]>([])
+
+  useEffect(() => {
+    const urls = urlsRef.current
+    return () => urls.forEach((url) => URL.revokeObjectURL(url))
+  }, [])
 
   const switchMode = (next: Mode) => {
     if (next === mode) return
@@ -90,7 +101,11 @@ const ImagenABase64 = () => {
   const addFiles = (incoming: FileList | File[]) => {
     const valid = Array.from(incoming)
       .filter((file) => ACCEPTED_TYPES.includes(file.type))
-      .map((file) => ({ file, previewUrl: URL.createObjectURL(file) }))
+      .map((file) => {
+        const previewUrl = URL.createObjectURL(file)
+        urlsRef.current.push(previewUrl)
+        return { file, previewUrl }
+      })
     setFiles((prev) => [...prev, ...valid])
   }
 
@@ -154,12 +169,12 @@ const ImagenABase64 = () => {
           .map((line) => line.trim())
           .filter((line) => line.length > 0 && !/^-{2,}.*-{2,}$/.test(line))
 
-        const items: DecodeResult[] = lines.map((raw) => {
+        const items: DecodeResult[] = lines.map((raw, id) => {
           try {
             const { dataUrl, mime, base64 } = parseBase64Entry(raw)
-            return { raw, dataUrl, mime, bytes: estimateBytesFromBase64(base64) }
+            return { id, raw, dataUrl, mime, bytes: estimateBytesFromBase64(base64) }
           } catch {
-            return { raw, dataUrl: '', mime: '', bytes: 0, error: 'Base64 inválido' }
+            return { id, raw, dataUrl: '', mime: '', bytes: 0, error: 'Base64 inválido' }
           }
         })
         setResults({ mode: 'decode', items })
@@ -208,7 +223,7 @@ const ImagenABase64 = () => {
   }
 
   const downloadImage = async (item: DecodeResult, index: number) => {
-    const blob = await (await fetch(item.dataUrl)).blob()
+    const blob = await dataUrlToBlob(item.dataUrl)
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
@@ -218,7 +233,7 @@ const ImagenABase64 = () => {
   }
 
   const copyImage = async (item: DecodeResult, index: number) => {
-    const blob = await (await fetch(item.dataUrl)).blob()
+    const blob = await dataUrlToBlob(item.dataUrl)
     await navigator.clipboard.write([new ClipboardItem({ [blob.type]: blob })])
     setCopiedIndex(index)
     setTimeout(() => setCopiedIndex((current) => (current === index ? null : current)), 1500)
@@ -249,7 +264,7 @@ const ImagenABase64 = () => {
               className={`flex cursor-pointer items-start gap-3 p-4 text-left transition-all ${FOCUS_RING} ${
                 mode === 'encode'
                   ? 'rounded-xl border border-emerald-600 bg-emerald-50 shadow-sm dark:border-emerald-400 dark:bg-emerald-500/10'
-                  : `${CARD} hover:border-white/60 dark:hover:border-slate-700/60`
+                  : `${GLASS_CARD} hover:border-white/60 dark:hover:border-slate-700/60`
               }`}
             >
               <IconPhotoCode
@@ -272,7 +287,7 @@ const ImagenABase64 = () => {
               className={`flex cursor-pointer items-start gap-3 p-4 text-left transition-all ${FOCUS_RING} ${
                 mode === 'decode'
                   ? 'rounded-xl border border-emerald-600 bg-emerald-50 shadow-sm dark:border-emerald-400 dark:bg-emerald-500/10'
-                  : `${CARD} hover:border-white/60 dark:hover:border-slate-700/60`
+                  : `${GLASS_CARD} hover:border-white/60 dark:hover:border-slate-700/60`
               }`}
             >
               <IconPhotoDown
@@ -308,7 +323,7 @@ const ImagenABase64 = () => {
                 } ${
                   isDragging
                     ? 'border-emerald-600 bg-emerald-50/60 dark:border-emerald-400 dark:bg-emerald-500/10'
-                    : 'border-slate-300 bg-white/60 hover:border-emerald-600 dark:border-slate-700 dark:bg-slate-800/40 dark:hover:border-emerald-400'
+                    : 'border-slate-500 bg-white/60 hover:border-emerald-600 dark:border-slate-500 dark:bg-slate-800/40 dark:hover:border-emerald-400'
                 }`}
               >
                 <IconUpload
@@ -331,6 +346,7 @@ const ImagenABase64 = () => {
                 <input
                   ref={inputRef}
                   type="file"
+                  aria-label="Elegir imágenes"
                   accept={ACCEPTED_EXT}
                   multiple
                   onChange={handleChange}
@@ -339,11 +355,11 @@ const ImagenABase64 = () => {
               </div>
 
               {files.length > 0 && (
-                <div className={`flex flex-col overflow-hidden ${CARD} lg:h-104`}>
+                <div className={`flex flex-col overflow-hidden ${GLASS_CARD} lg:h-104`}>
                   <ul className="max-h-80 flex-1 space-y-2 overflow-y-auto p-3 lg:max-h-none">
                     {files.map(({ file, previewUrl }, i) => (
                       <li
-                        key={`${file.name}-${i}`}
+                        key={previewUrl}
                         className="flex items-center gap-3 rounded-lg border border-white/40 bg-white/50 px-3 py-2 text-sm dark:border-slate-700/40 dark:bg-slate-900/40"
                       >
                         <button
@@ -368,6 +384,7 @@ const ImagenABase64 = () => {
                         <button
                           type="button"
                           onClick={() => removeFile(i)}
+                          aria-label={`Quitar ${file.name}`}
                           className={`shrink-0 cursor-pointer rounded text-slate-500 hover:text-emerald-600 dark:text-slate-400 ${FOCUS_RING}`}
                         >
                           <IconX size={18} />
@@ -383,8 +400,9 @@ const ImagenABase64 = () => {
               value={decodeInput}
               onChange={(e) => setDecodeInput(e.target.value)}
               placeholder="Pega uno o más base64 o data URLs — uno por línea"
+              aria-label="Base64 o data URLs a decodificar"
               rows={10}
-              className={`mt-6 w-full p-4 text-sm break-all text-slate-800 dark:text-slate-100 ${CARD} ${FOCUS_RING}`}
+              className={`mt-6 w-full p-4 text-sm break-all text-slate-800 dark:text-slate-100 ${GLASS_CARD} ${FOCUS_RING}`}
             />
           )}
 
@@ -392,7 +410,7 @@ const ImagenABase64 = () => {
             type="button"
             disabled={!canConvert || isConverting}
             onClick={handleConvert}
-            className={`mt-6 inline-flex cursor-pointer items-center gap-2 rounded-lg bg-emerald-600 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-emerald-700 disabled:cursor-not-allowed disabled:bg-slate-300 dark:disabled:bg-slate-700 ${FOCUS_RING}`}
+            className={`mt-6 ${BUTTON_PRIMARY}`}
           >
             {isConverting && <IconLoader2 size={18} className="animate-spin" />}
             {isConverting ? 'Convirtiendo...' : 'Convertir'}
@@ -408,7 +426,7 @@ const ImagenABase64 = () => {
             <button
               type="button"
               onClick={handleReset}
-              className={`inline-flex cursor-pointer items-center gap-2 rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-800 transition-colors hover:border-emerald-600 hover:text-emerald-600 dark:border-slate-800 dark:text-slate-100 dark:hover:border-emerald-400 dark:hover:text-emerald-400 ${FOCUS_RING}`}
+              className={BUTTON_SECONDARY}
             >
               <IconRefresh size={18} />
               Volver a empezar
@@ -424,8 +442,8 @@ const ImagenABase64 = () => {
                       onClick={() => setOutputFormat(format)}
                       className={`cursor-pointer rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${FOCUS_RING} ${
                         outputFormat === format
-                          ? 'bg-emerald-600 text-white'
-                          : 'text-slate-500 hover:text-emerald-600 dark:text-slate-400'
+                          ? CHIP_ACTIVE
+                          : CHIP_INACTIVE
                       }`}
                     >
                       {format === 'dataurl' ? 'Data URL' : 'Base64 puro'}
@@ -435,7 +453,7 @@ const ImagenABase64 = () => {
                 <button
                   type="button"
                   onClick={copyAllText}
-                  className={`inline-flex cursor-pointer items-center gap-2 rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-800 transition-colors hover:border-emerald-600 hover:text-emerald-600 dark:border-slate-800 dark:text-slate-100 dark:hover:border-emerald-400 dark:hover:text-emerald-400 ${FOCUS_RING}`}
+                  className={BUTTON_SECONDARY}
                 >
                   {copiedAll ? <IconCheck size={18} /> : <IconCopy size={18} />}
                   Copiar todo
@@ -443,7 +461,7 @@ const ImagenABase64 = () => {
                 <button
                   type="button"
                   onClick={downloadAllText}
-                  className={`inline-flex cursor-pointer items-center gap-2 rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-800 transition-colors hover:border-emerald-600 hover:text-emerald-600 dark:border-slate-800 dark:text-slate-100 dark:hover:border-emerald-400 dark:hover:text-emerald-400 ${FOCUS_RING}`}
+                  className={BUTTON_SECONDARY}
                 >
                   <IconDownload size={18} />
                   Descargar todo
@@ -456,8 +474,8 @@ const ImagenABase64 = () => {
             <div className="space-y-6">
               {results.items.map((item, i) => (
                 <div
-                  key={`${item.file.name}-${i}`}
-                  className={`p-5 motion-safe:opacity-0 motion-safe:animate-[reveal-up_0.4s_ease-out_forwards] ${CARD}`}
+                  key={item.previewUrl}
+                  className={`p-5 motion-safe:opacity-0 motion-safe:animate-[reveal-up_0.4s_ease-out_forwards] ${GLASS_CARD}`}
                   style={{ animationDelay: `${Math.min(i * 60, 300)}ms` }}
                 >
                   <div className="flex items-center gap-3">
@@ -486,6 +504,7 @@ const ImagenABase64 = () => {
                       <button
                         type="button"
                         onClick={() => copyText(getEncodedText(item, outputFormat), i)}
+                        aria-label={`Copiar base64 de ${item.file.name}`}
                         className={`cursor-pointer rounded-lg border border-slate-200 p-2 text-slate-500 hover:text-emerald-600 dark:border-slate-800 dark:text-slate-400 ${FOCUS_RING}`}
                       >
                         {copiedIndex === i ? <IconCheck size={18} /> : <IconCopy size={18} />}
@@ -498,6 +517,7 @@ const ImagenABase64 = () => {
                             getEncodedText(item, outputFormat),
                           )
                         }
+                        aria-label={`Descargar base64 de ${item.file.name}`}
                         className={`cursor-pointer rounded-lg border border-slate-200 p-2 text-slate-500 hover:text-emerald-600 dark:border-slate-800 dark:text-slate-400 ${FOCUS_RING}`}
                       >
                         <IconDownload size={18} />
@@ -507,8 +527,9 @@ const ImagenABase64 = () => {
                   <textarea
                     value={getEncodedText(item, outputFormat)}
                     readOnly
+                    aria-label={`Base64 de ${item.file.name}`}
                     rows={5}
-                    className={`mt-3 w-full rounded-lg border border-slate-200 bg-slate-50 p-3 text-sm break-all text-slate-800 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100 ${FOCUS_RING}`}
+                    className={`mt-3 w-full rounded-lg border border-slate-500 bg-slate-50 p-3 text-sm break-all text-slate-800 dark:border-slate-500 dark:bg-slate-950 dark:text-slate-100 ${FOCUS_RING}`}
                   />
                 </div>
               ))}
@@ -517,8 +538,8 @@ const ImagenABase64 = () => {
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
               {results.items.map((item, i) => (
                 <div
-                  key={`${i}-${item.raw.slice(0, 12)}`}
-                  className={`p-3 motion-safe:opacity-0 motion-safe:animate-[reveal-up_0.4s_ease-out_forwards] ${CARD}`}
+                  key={item.id}
+                  className={`p-3 motion-safe:opacity-0 motion-safe:animate-[reveal-up_0.4s_ease-out_forwards] ${GLASS_CARD}`}
                   style={{ animationDelay: `${Math.min(i * 60, 300)}ms` }}
                 >
                   {item.error ? (
@@ -553,6 +574,7 @@ const ImagenABase64 = () => {
                             <button
                               type="button"
                               onClick={() => copyImage(item, i)}
+                              aria-label={`Copiar imagen ${i + 1}`}
                               className={`cursor-pointer rounded-lg p-1.5 text-slate-500 hover:text-emerald-600 dark:text-slate-400 ${FOCUS_RING}`}
                             >
                               {copiedIndex === i ? (
@@ -565,6 +587,7 @@ const ImagenABase64 = () => {
                           <button
                             type="button"
                             onClick={() => downloadImage(item, i)}
+                            aria-label={`Descargar imagen ${i + 1}`}
                             className={`cursor-pointer rounded-lg p-1.5 text-slate-500 hover:text-emerald-600 dark:text-slate-400 ${FOCUS_RING}`}
                           >
                             <IconDownload size={16} />
@@ -582,7 +605,6 @@ const ImagenABase64 = () => {
 
       <PreviewModal image={previewImage} onClose={() => setPreviewImage(null)} />
     </section>
-    <OtherTools currentHref="/base64" />
     </>
   )
 }

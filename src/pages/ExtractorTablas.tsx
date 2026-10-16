@@ -3,7 +3,6 @@ import { extractTable, tableToCsv } from '../lib/ai'
 
 const ExtractorTablas = () => (
   <ImageAiTool<string[][]>
-    currentHref="/extractor-tablas"
     title="Extractor de tablas"
     subtitle="Convierte tablas de una imagen a CSV listo para Excel."
     actionLabel="Extraer tabla"

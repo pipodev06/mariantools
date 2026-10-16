@@ -1,8 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { IconX } from '@tabler/icons-react'
-
-const FOCUS_RING =
-  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900'
+import { FOCUS_RING } from '../lib/ui'
 
 export type PreviewImage = {
   url: string

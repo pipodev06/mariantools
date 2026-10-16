@@ -1,13 +1,10 @@
-import { useEffect, useRef, useState, type ChangeEvent, type ClipboardEvent, type DragEvent } from 'react'
+import { useEffect, useId, useRef, useState, type ChangeEvent, type ClipboardEvent, type DragEvent } from 'react'
 import { IconDownload, IconResize, IconUpload, IconX } from '@tabler/icons-react'
 import { resizeImage, SOCIAL_PRESETS, type ResizeMode } from '../lib/resize'
-import OtherTools from '../components/OtherTools'
+import { FOCUS_RING, BUTTON_PRIMARY, CHIP_ACTIVE, CHIP_SELECTED, CHIP_INACTIVE } from '../lib/ui'
 
 const ACCEPTED_TYPES = ['image/jpeg', 'image/png', 'image/webp']
 const ACCEPTED_EXT = '.jpg,.jpeg,.png,.webp'
-
-const FOCUS_RING =
-  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900'
 
 const Redimensionar = () => {
   const [image, setImage] = useState<{ file: File; previewUrl: string } | null>(null)
@@ -18,6 +15,7 @@ const Redimensionar = () => {
   const [isDragging, setIsDragging] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
   const dragCounter = useRef(0)
+  const colorId = useId()
 
   const preset = SOCIAL_PRESETS.find((p) => p.key === presetKey) ?? SOCIAL_PRESETS[0]
 
@@ -32,14 +30,16 @@ const Redimensionar = () => {
     }
   }, [image, preset, mode, bgColor])
 
+  // Libera el object URL al cambiar de imagen, quitarla o desmontar la página.
+  useEffect(() => {
+    if (!image) return
+    return () => URL.revokeObjectURL(image.previewUrl)
+  }, [image])
+
   const addFile = (incoming: FileList | File[]) => {
     const file = Array.from(incoming).find((f) => ACCEPTED_TYPES.includes(f.type))
     if (!file) return
-    const previewUrl = URL.createObjectURL(file)
-    setImage((prev) => {
-      if (prev) URL.revokeObjectURL(prev.previewUrl)
-      return { file, previewUrl }
-    })
+    setImage({ file, previewUrl: URL.createObjectURL(file) })
   }
 
   const handleDrop = (e: DragEvent<HTMLDivElement>) => {
@@ -69,7 +69,6 @@ const Redimensionar = () => {
     if (e.clipboardData.files.length) addFile(e.clipboardData.files)
   }
   const removeImage = () => {
-    if (image) URL.revokeObjectURL(image.previewUrl)
     setImage(null)
     setResultUrl(null)
   }
@@ -87,7 +86,7 @@ const Redimensionar = () => {
         <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
           <div className="flex flex-col gap-4 lg:h-104">
             <div className="rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
-              <label className="text-sm font-semibold text-slate-800 dark:text-slate-100">Preset</label>
+              <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">Preset</p>
               <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-3">
                 {SOCIAL_PRESETS.map((p) => (
                   <button
@@ -96,12 +95,12 @@ const Redimensionar = () => {
                     onClick={() => setPresetKey(p.key)}
                     className={`cursor-pointer rounded-lg border px-3 py-2 text-left text-xs font-medium transition-colors ${FOCUS_RING} ${
                       presetKey === p.key
-                        ? 'border-emerald-600 bg-emerald-50 text-emerald-700 dark:border-emerald-400 dark:bg-emerald-500/10 dark:text-emerald-400'
-                        : 'border-slate-200 text-slate-500 hover:border-slate-300 dark:border-slate-800 dark:text-slate-400'
+                        ? CHIP_SELECTED
+                        : CHIP_INACTIVE
                     }`}
                   >
                     <span className="block font-semibold">{p.label}</span>
-                    <span className="block text-slate-400 dark:text-slate-500">
+                    <span className="block text-slate-500 dark:text-slate-400">
                       {p.width}×{p.height}
                     </span>
                   </button>
@@ -110,7 +109,7 @@ const Redimensionar = () => {
 
               <div className="mt-4 grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-sm font-semibold text-slate-800 dark:text-slate-100">Ajuste</label>
+                  <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">Ajuste</p>
                   <div className="mt-1 inline-flex w-full rounded-lg border border-slate-200 p-0.5 dark:border-slate-800">
                     {(['cover', 'contain'] as const).map((m) => (
                       <button
@@ -119,8 +118,8 @@ const Redimensionar = () => {
                         onClick={() => setMode(m)}
                         className={`flex-1 cursor-pointer rounded-md px-2 py-2 text-xs font-medium transition-colors ${FOCUS_RING} ${
                           mode === m
-                            ? 'bg-emerald-600 text-white'
-                            : 'text-slate-500 hover:text-emerald-600 dark:text-slate-400'
+                            ? CHIP_ACTIVE
+                            : CHIP_INACTIVE
                         }`}
                       >
                         {m === 'cover' ? 'Recortar' : 'Ajustar'}
@@ -130,12 +129,13 @@ const Redimensionar = () => {
                 </div>
                 {mode === 'contain' && (
                   <div>
-                    <label className="text-sm font-semibold text-slate-800 dark:text-slate-100">Fondo</label>
+                    <label htmlFor={colorId} className="text-sm font-semibold text-slate-800 dark:text-slate-100">Fondo</label>
                     <input
+                      id={colorId}
                       type="color"
                       value={bgColor}
                       onChange={(e) => setBgColor(e.target.value)}
-                      className={`mt-1 h-9 w-full cursor-pointer rounded-lg border border-slate-300 dark:border-slate-700 ${FOCUS_RING}`}
+                      className={`mt-1 h-9 w-full cursor-pointer rounded-lg border border-slate-500 dark:border-slate-500 ${FOCUS_RING}`}
                     />
                   </div>
                 )}
@@ -154,7 +154,7 @@ const Redimensionar = () => {
               className={`flex flex-1 cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed p-6 text-center transition-colors ${FOCUS_RING} ${
                 isDragging
                   ? 'border-emerald-600 bg-emerald-50/60 dark:border-emerald-400 dark:bg-emerald-500/10'
-                  : 'border-slate-300 bg-white hover:border-emerald-600 dark:border-slate-700 dark:bg-slate-900 dark:hover:border-emerald-400'
+                  : 'border-slate-500 bg-white hover:border-emerald-600 dark:border-slate-500 dark:bg-slate-900 dark:hover:border-emerald-400'
               }`}
             >
               {image ? (
@@ -166,7 +166,8 @@ const Redimensionar = () => {
                       e.stopPropagation()
                       removeImage()
                     }}
-                    className={`absolute -right-2 -top-2 cursor-pointer rounded-full bg-slate-800 p-1 text-white hover:bg-emerald-600 ${FOCUS_RING}`}
+                    aria-label="Quitar imagen"
+                    className={`absolute -right-2 -top-2 cursor-pointer rounded-full bg-slate-800 p-1 text-white hover:bg-emerald-700 ${FOCUS_RING}`}
                   >
                     <IconX size={16} />
                   </button>
@@ -183,7 +184,7 @@ const Redimensionar = () => {
                   </p>
                 </>
               )}
-              <input ref={inputRef} type="file" accept={ACCEPTED_EXT} onChange={handleChange} className="hidden" />
+              <input ref={inputRef} type="file" aria-label="Elegir imagen" accept={ACCEPTED_EXT} onChange={handleChange} className="hidden" />
             </div>
           </div>
 
@@ -198,7 +199,7 @@ const Redimensionar = () => {
                 <a
                   href={resultUrl}
                   download={`${preset.key}.png`}
-                  className={`inline-flex cursor-pointer items-center gap-2 rounded-lg bg-emerald-600 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-emerald-700 ${FOCUS_RING}`}
+                  className={BUTTON_PRIMARY}
                 >
                   <IconDownload size={18} />
                   Descargar
@@ -206,14 +207,13 @@ const Redimensionar = () => {
               </>
             ) : (
               <>
-                <IconResize className="text-slate-300 dark:text-slate-700" size={64} stroke={1.5} />
+                <IconResize className="text-slate-400 dark:text-slate-600" aria-hidden="true" size={64} stroke={1.5} />
                 <p className="text-sm text-slate-500 dark:text-slate-400">Sube una imagen para ver el resultado</p>
               </>
             )}
           </div>
         </div>
       </section>
-      <OtherTools currentHref="/redimensionar" />
     </>
   )
 }

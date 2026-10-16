@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { FOCUS_RING } from '../lib/ui'
 
 const NoEncontrada = () => (
   <section className="mx-auto max-w-7xl px-6 py-16">
@@ -9,7 +10,7 @@ const NoEncontrada = () => (
       La dirección que buscas no existe.{' '}
       <Link
         to="/"
-        className="font-semibold text-emerald-600 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 dark:text-emerald-400"
+        className={`font-semibold text-emerald-600 hover:underline dark:text-emerald-400 ${FOCUS_RING}`}
       >
         Volver al inicio
       </Link>

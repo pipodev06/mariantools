@@ -1,5 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
-import { getUserId, grant } from './_billing.js'
+import { grant } from './_billing.js'
+import { getUserId } from './_supabase.js'
 
 // Solo para desarrollo: acredita créditos de prueba al usuario con sesión iniciada.
 // En producción no existe (404). El cobro real lo hará el webhook del proveedor de pagos.

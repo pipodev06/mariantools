@@ -1,9 +1,10 @@
 import { Link } from 'react-router-dom'
+import { BADGE } from '../lib/ui'
 import type { Tool } from '../data/tools'
 
 type ToolCardProps = Tool & { comingSoon?: boolean }
 
-const ToolCard = ({ title, description, href, icon: Icon, comingSoon }: ToolCardProps) => {
+const ToolCard = ({ title, description, href, icon: Icon, ai, comingSoon }: ToolCardProps) => {
   const content = (
     <div
       className={`relative flex aspect-square flex-col items-center justify-center gap-2 overflow-hidden rounded-xl border border-slate-200 bg-white p-5 text-center transition-colors dark:border-slate-800 dark:bg-slate-900 ${
@@ -13,6 +14,11 @@ const ToolCard = ({ title, description, href, icon: Icon, comingSoon }: ToolCard
       {comingSoon && (
         <span className="absolute -right-9 top-4 w-32 rotate-45 bg-slate-800 py-0.5 text-center text-xs font-semibold uppercase tracking-wider text-white shadow-sm dark:bg-slate-700">
           Pronto
+        </span>
+      )}
+      {ai && (
+        <span className={`absolute left-3 top-3 rounded-full px-2 py-0.5 text-xs font-semibold ${BADGE.emerald}`}>
+          IA
         </span>
       )}
       <Icon className="text-emerald-600 dark:text-emerald-400" size={44} stroke={1.5} />

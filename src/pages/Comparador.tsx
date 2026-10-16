@@ -1,17 +1,15 @@
-import { useMemo, useState } from 'react'
+import { useId, useMemo, useState } from 'react'
 import { diffLines, diffWords } from 'diff'
 import { IconArrowsLeftRight, IconCheck, IconCopy, IconTrash } from '@tabler/icons-react'
-import OtherTools from '../components/OtherTools'
+import { FOCUS_RING, BUTTON_SECONDARY, CHIP_ACTIVE, CHIP_INACTIVE, BADGE } from '../lib/ui'
 
 type DiffMode = 'word' | 'line'
 
-const FOCUS_RING =
-  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900'
-
 const FIELD =
-  'mt-2 h-64 w-full resize-none rounded-lg border border-slate-300 bg-white p-3 text-sm text-slate-800 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100'
+  'mt-2 h-64 w-full resize-none rounded-lg border border-slate-500 bg-white p-3 text-sm text-slate-800 dark:border-slate-500 dark:bg-slate-900 dark:text-slate-100'
 
 const Comparador = () => {
+  const uid = useId()
   const [original, setOriginal] = useState('')
   const [nuevo, setNuevo] = useState('')
   const [mode, setMode] = useState<DiffMode>('word')
@@ -68,8 +66,8 @@ const Comparador = () => {
                 onClick={() => setMode(m)}
                 className={`cursor-pointer rounded-md px-4 py-1.5 text-sm font-medium transition-colors ${FOCUS_RING} ${
                   mode === m
-                    ? 'bg-emerald-600 text-white'
-                    : 'text-slate-500 hover:text-emerald-600 dark:text-slate-400'
+                    ? CHIP_ACTIVE
+                    : CHIP_INACTIVE
                 }`}
               >
                 {m === 'word' ? 'Por palabra' : 'Por línea'}
@@ -83,7 +81,7 @@ const Comparador = () => {
               onClick={swap}
               disabled={!hasInput}
               title="Intercambiar textos"
-              className={`inline-flex cursor-pointer items-center gap-2 rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-800 transition-colors hover:border-emerald-600 hover:text-emerald-600 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-800 dark:text-slate-100 dark:hover:border-emerald-400 dark:hover:text-emerald-400 ${FOCUS_RING}`}
+              className={BUTTON_SECONDARY}
             >
               <IconArrowsLeftRight size={18} />
               Intercambiar
@@ -92,7 +90,7 @@ const Comparador = () => {
               type="button"
               onClick={clear}
               disabled={!hasInput}
-              className={`inline-flex cursor-pointer items-center gap-2 rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-800 transition-colors hover:border-emerald-600 hover:text-emerald-600 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-800 dark:text-slate-100 dark:hover:border-emerald-400 dark:hover:text-emerald-400 ${FOCUS_RING}`}
+              className={BUTTON_SECONDARY}
             >
               <IconTrash size={18} />
               Limpiar
@@ -102,10 +100,11 @@ const Comparador = () => {
 
         <div className="mt-4 grid grid-cols-1 gap-6 lg:grid-cols-2">
           <div>
-            <label className="text-sm font-semibold text-slate-800 dark:text-slate-100">
+            <label htmlFor={`${uid}-original`} className="text-sm font-semibold text-slate-800 dark:text-slate-100">
               Texto original
             </label>
             <textarea
+              id={`${uid}-original`}
               value={original}
               onChange={(e) => setOriginal(e.target.value)}
               placeholder="Pega o escribe el texto original"
@@ -113,10 +112,11 @@ const Comparador = () => {
             />
           </div>
           <div>
-            <label className="text-sm font-semibold text-slate-800 dark:text-slate-100">
+            <label htmlFor={`${uid}-nuevo`} className="text-sm font-semibold text-slate-800 dark:text-slate-100">
               Texto nuevo
             </label>
             <textarea
+              id={`${uid}-nuevo`}
               value={nuevo}
               onChange={(e) => setNuevo(e.target.value)}
               placeholder="Pega o escribe el texto nuevo"
@@ -133,9 +133,9 @@ const Comparador = () => {
             {hasInput && (
               <div className="flex items-center gap-3">
                 <span className="text-xs text-slate-500 dark:text-slate-400">
-                  <span className="text-emerald-600 dark:text-emerald-400">+{stats.added}</span>
+                  <span className="text-emerald-700 dark:text-emerald-400">+{stats.added}</span>
                   {' / '}
-                  <span className="text-red-600 dark:text-red-400">-{stats.removed}</span>
+                  <span className="text-red-700 dark:text-red-400">-{stats.removed}</span>
                   {mode === 'word' ? ' palabras' : ' líneas'}
                 </span>
                 <button
@@ -157,9 +157,9 @@ const Comparador = () => {
                   key={i}
                   className={
                     part.added
-                      ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300'
+                      ? BADGE.emerald
                       : part.removed
-                        ? 'bg-red-100 text-red-700 line-through dark:bg-red-500/20 dark:text-red-300'
+                        ? `${BADGE.red} line-through`
                         : ''
                   }
                 >
@@ -174,7 +174,6 @@ const Comparador = () => {
           )}
         </div>
       </section>
-      <OtherTools currentHref="/comparador" />
     </>
   )
 }

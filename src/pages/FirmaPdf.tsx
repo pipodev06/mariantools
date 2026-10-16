@@ -1,7 +1,7 @@
-import { useEffect, useRef, useState, type ChangeEvent, type DragEvent, type PointerEvent as ReactPointerEvent } from 'react'
+import { useEffect, useId, useRef, useState, type ChangeEvent, type DragEvent, type PointerEvent as ReactPointerEvent } from 'react'
 import { IconDownload, IconEraser, IconFileTypePdf, IconLoader2, IconSignature, IconUpload, IconX } from '@tabler/icons-react'
 import { embedSignature, getPdfPageCount, type SignaturePosition } from '../lib/signature'
-import OtherTools from '../components/OtherTools'
+import { FOCUS_RING, BUTTON_PRIMARY, CHIP_SELECTED, CHIP_INACTIVE } from '../lib/ui'
 
 const ACCEPTED_TYPE = 'application/pdf'
 const ACCEPTED_EXT = '.pdf'
@@ -14,9 +14,6 @@ const POSITIONS: { key: SignaturePosition; label: string }[] = [
   { key: 'top-left', label: 'Arriba izquierda' },
   { key: 'center', label: 'Centro' },
 ]
-
-const FOCUS_RING =
-  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900'
 
 const CANVAS_WIDTH = 500
 const CANVAS_HEIGHT = 200
@@ -36,6 +33,7 @@ const FirmaPdf = () => {
   const [isDragging, setIsDragging] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
   const dragCounter = useRef(0)
+  const uid = useId()
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -46,6 +44,12 @@ const FirmaPdf = () => {
     ctx.lineCap = 'round'
     ctx.strokeStyle = '#0f172a'
   }, [])
+
+  // Libera el PDF firmado al generar otro o al desmontar la página.
+  useEffect(() => {
+    if (!resultUrl) return
+    return () => URL.revokeObjectURL(resultUrl)
+  }, [resultUrl])
 
   const getPos = (e: ReactPointerEvent<HTMLCanvasElement>) => {
     const rect = e.currentTarget.getBoundingClientRect()
@@ -125,7 +129,8 @@ const FirmaPdf = () => {
     try {
       const dataUrl = canvas.toDataURL('image/png')
       const blob = await embedSignature(file, pageNumber - 1, dataUrl, position, sigWidth)
-      setResultUrl(URL.createObjectURL(blob))
+      const url = URL.createObjectURL(blob)
+      setResultUrl(url)
     } finally {
       setIsProcessing(false)
     }
@@ -147,7 +152,7 @@ const FirmaPdf = () => {
           <div className="flex flex-col gap-4">
             <div className="rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
               <div className="flex items-center justify-between">
-                <label className="text-sm font-semibold text-slate-800 dark:text-slate-100">Tu firma</label>
+                <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">Tu firma</p>
                 <button
                   type="button"
                   onClick={clearSignature}
@@ -164,8 +169,10 @@ const FirmaPdf = () => {
                 onPointerDown={handlePointerDown}
                 onPointerMove={handlePointerMove}
                 onPointerUp={handlePointerUp}
+                onPointerCancel={handlePointerUp}
+                aria-label="Lienzo para dibujar tu firma"
                 onPointerLeave={handlePointerUp}
-                className={`mt-2 w-full touch-none rounded-lg border border-dashed border-slate-300 bg-slate-50 dark:border-slate-700 dark:bg-slate-950 ${FOCUS_RING}`}
+                className={`mt-2 w-full touch-none rounded-lg border border-dashed border-slate-500 bg-slate-50 dark:border-slate-500 dark:bg-slate-950 ${FOCUS_RING}`}
               />
             </div>
 
@@ -180,7 +187,7 @@ const FirmaPdf = () => {
               className={`flex flex-1 min-h-24 cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed p-6 text-center transition-colors ${FOCUS_RING} ${
                 isDragging
                   ? 'border-emerald-600 bg-emerald-50/60 dark:border-emerald-400 dark:bg-emerald-500/10'
-                  : 'border-slate-300 bg-white hover:border-emerald-600 dark:border-slate-700 dark:bg-slate-900 dark:hover:border-emerald-400'
+                  : 'border-slate-500 bg-white hover:border-emerald-600 dark:border-slate-500 dark:bg-slate-900 dark:hover:border-emerald-400'
               }`}
             >
               {file ? (
@@ -193,7 +200,8 @@ const FirmaPdf = () => {
                       setFile(null)
                       setResultUrl(null)
                     }}
-                    className={`cursor-pointer rounded-full bg-slate-800 p-1 text-white hover:bg-emerald-600 ${FOCUS_RING}`}
+                    aria-label="Quitar archivo"
+                    className={`cursor-pointer rounded-full bg-slate-800 p-1 text-white hover:bg-emerald-700 ${FOCUS_RING}`}
                   >
                     <IconX size={14} />
                   </button>
@@ -210,28 +218,30 @@ const FirmaPdf = () => {
                   </p>
                 </>
               )}
-              <input ref={inputRef} type="file" accept={ACCEPTED_EXT} onChange={handleChange} className="hidden" />
+              <input ref={inputRef} type="file" aria-label="Elegir PDF" accept={ACCEPTED_EXT} onChange={handleChange} className="hidden" />
             </div>
 
             {file && (
               <div className="rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="text-sm font-semibold text-slate-800 dark:text-slate-100">
+                    <label htmlFor={`${uid}-pagina`} className="text-sm font-semibold text-slate-800 dark:text-slate-100">
                       Página ({pageCount} en total)
                     </label>
                     <input
+                      id={`${uid}-pagina`}
                       type="number"
                       min={1}
                       max={pageCount}
                       value={pageNumber}
-                      onChange={(e) => setPageNumber(Math.min(pageCount, Math.max(1, Number(e.target.value))))}
-                      className={`mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 ${FOCUS_RING}`}
+                      onChange={(e) => setPageNumber(Math.min(pageCount, Math.max(1, Math.trunc(Number(e.target.value)) || 1)))}
+                      className={`mt-1 w-full rounded-lg border border-slate-500 bg-white px-3 py-2 text-sm text-slate-800 dark:border-slate-500 dark:bg-slate-900 dark:text-slate-100 ${FOCUS_RING}`}
                     />
                   </div>
                   <div>
-                    <label className="text-sm font-semibold text-slate-800 dark:text-slate-100">Tamaño</label>
+                    <label htmlFor={`${uid}-tamano`} className="text-sm font-semibold text-slate-800 dark:text-slate-100">Tamaño</label>
                     <input
+                      id={`${uid}-tamano`}
                       type="range"
                       min={80}
                       max={280}
@@ -242,7 +252,7 @@ const FirmaPdf = () => {
                   </div>
                 </div>
                 <div className="mt-4">
-                  <label className="text-sm font-semibold text-slate-800 dark:text-slate-100">Posición</label>
+                  <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">Posición</p>
                   <div className="mt-2 grid grid-cols-3 gap-2">
                     {POSITIONS.map((p) => (
                       <button
@@ -251,8 +261,8 @@ const FirmaPdf = () => {
                         onClick={() => setPosition(p.key)}
                         className={`cursor-pointer rounded-lg border px-2 py-2 text-xs font-medium transition-colors ${FOCUS_RING} ${
                           position === p.key
-                            ? 'border-emerald-600 bg-emerald-50 text-emerald-700 dark:border-emerald-400 dark:bg-emerald-500/10 dark:text-emerald-400'
-                            : 'border-slate-200 text-slate-500 hover:border-slate-300 dark:border-slate-800 dark:text-slate-400'
+                            ? CHIP_SELECTED
+                            : CHIP_INACTIVE
                         }`}
                       >
                         {p.label}
@@ -264,7 +274,7 @@ const FirmaPdf = () => {
                   type="button"
                   disabled={!canSign || isProcessing}
                   onClick={handleSign}
-                  className={`mt-4 inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg bg-emerald-600 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-emerald-700 disabled:cursor-not-allowed disabled:bg-slate-300 dark:disabled:bg-slate-700 ${FOCUS_RING}`}
+                  className={`mt-4 w-full justify-center ${BUTTON_PRIMARY}`}
                 >
                   {isProcessing && <IconLoader2 size={18} className="animate-spin" />}
                   {isProcessing ? 'Firmando...' : 'Firmar PDF'}
@@ -281,7 +291,7 @@ const FirmaPdf = () => {
                 <a
                   href={resultUrl}
                   download={`firmado-${file?.name ?? 'documento.pdf'}`}
-                  className={`inline-flex cursor-pointer items-center gap-2 rounded-lg bg-emerald-600 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-emerald-700 ${FOCUS_RING}`}
+                  className={BUTTON_PRIMARY}
                 >
                   <IconDownload size={18} />
                   Descargar PDF firmado
@@ -289,7 +299,7 @@ const FirmaPdf = () => {
               </>
             ) : (
               <>
-                <IconSignature className="text-slate-300 dark:text-slate-700" size={64} stroke={1.5} />
+                <IconSignature className="text-slate-400 dark:text-slate-600" aria-hidden="true" size={64} stroke={1.5} />
                 <p className="text-center text-sm text-slate-500 dark:text-slate-400">
                   Dibuja tu firma, sube un PDF y presiona "Firmar PDF"
                 </p>
@@ -298,7 +308,6 @@ const FirmaPdf = () => {
           </div>
         </div>
       </section>
-      <OtherTools currentHref="/firma-pdf" />
     </>
   )
 }

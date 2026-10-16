@@ -3,16 +3,12 @@ import { IconCheck, IconCopy, IconLoader2, IconTrash } from '@tabler/icons-react
 import { MAX_AI_TEXT_LENGTH } from '../lib/ai'
 import { AiError } from '../lib/aiClient'
 import AiErrorNotice from './AiErrorNotice'
-import OtherTools from './OtherTools'
-
-const FOCUS_RING =
-  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900'
+import { FOCUS_RING, BUTTON_PRIMARY, BUTTON_SECONDARY } from '../lib/ui'
 
 const FIELD =
-  'mt-2 h-80 w-full resize-none rounded-lg border border-slate-300 bg-white p-3 text-sm text-slate-800 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100'
+  'mt-2 h-80 w-full resize-none rounded-lg border border-slate-500 bg-white p-3 text-sm text-slate-800 dark:border-slate-500 dark:bg-slate-900 dark:text-slate-100'
 
 type Props = {
-  currentHref: string
   title: string
   subtitle: string
   inputPlaceholder: string
@@ -25,7 +21,6 @@ type Props = {
 }
 
 const TextAiTool = ({
-  currentHref,
   title,
   subtitle,
   inputPlaceholder,
@@ -129,7 +124,7 @@ const TextAiTool = ({
             type="button"
             disabled={!input.trim() || isRunning}
             onClick={handleRun}
-            className={`inline-flex cursor-pointer items-center gap-2 rounded-lg bg-emerald-600 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-emerald-700 disabled:cursor-not-allowed disabled:bg-slate-300 dark:disabled:bg-slate-700 ${FOCUS_RING}`}
+            className={BUTTON_PRIMARY}
           >
             {isRunning && <IconLoader2 size={18} className="animate-spin" />}
             <span role="status">{isRunning ? busyLabel : actionLabel}</span>
@@ -138,7 +133,7 @@ const TextAiTool = ({
             type="button"
             onClick={clear}
             disabled={!input && !output}
-            className={`inline-flex cursor-pointer items-center gap-2 rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-800 transition-colors hover:border-emerald-600 hover:text-emerald-600 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-800 dark:text-slate-100 dark:hover:border-emerald-400 dark:hover:text-emerald-400 ${FOCUS_RING}`}
+            className={BUTTON_SECONDARY}
           >
             <IconTrash size={18} />
             Limpiar
@@ -147,7 +142,6 @@ const TextAiTool = ({
 
         {error && <AiErrorNotice message={error} code={errorCode} className="mt-4" />}
       </section>
-      <OtherTools currentHref={currentHref} />
     </>
   )
 }

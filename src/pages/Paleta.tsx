@@ -1,4 +1,5 @@
 import {
+  useEffect,
   useRef,
   useState,
   type ChangeEvent,
@@ -7,13 +8,10 @@ import {
 } from 'react'
 import { IconCheck, IconCopy, IconDownload, IconPalette, IconUpload, IconX } from '@tabler/icons-react'
 import { extractPalette, type PaletteColor } from '../lib/palette'
-import OtherTools from '../components/OtherTools'
+import { FOCUS_RING, BUTTON_SECONDARY_BASE } from '../lib/ui'
 
 const ACCEPTED_TYPES = ['image/jpeg', 'image/png', 'image/webp']
 const ACCEPTED_EXT = '.jpg,.jpeg,.png,.webp'
-
-const FOCUS_RING =
-  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900'
 
 const Paleta = () => {
   const [image, setImage] = useState<{ file: File; previewUrl: string } | null>(null)
@@ -25,12 +23,14 @@ const Paleta = () => {
   const inputRef = useRef<HTMLInputElement>(null)
   const dragCounter = useRef(0)
 
+  // Libera el object URL al cambiar de imagen, quitarla o desmontar la página.
+  useEffect(() => {
+    if (!image) return
+    return () => URL.revokeObjectURL(image.previewUrl)
+  }, [image])
+
   const analyze = async (file: File) => {
-    const previewUrl = URL.createObjectURL(file)
-    setImage((prev) => {
-      if (prev) URL.revokeObjectURL(prev.previewUrl)
-      return { file, previewUrl }
-    })
+    setImage({ file, previewUrl: URL.createObjectURL(file) })
     setColors(null)
     setError(false)
     setIsAnalyzing(true)
@@ -85,7 +85,6 @@ const Paleta = () => {
   }
 
   const removeImage = () => {
-    if (image) URL.revokeObjectURL(image.previewUrl)
     setImage(null)
     setColors(null)
     setError(false)
@@ -134,7 +133,7 @@ const Paleta = () => {
             className={`flex min-h-72 cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed p-10 text-center transition-colors ${FOCUS_RING} ${
               isDragging
                 ? 'border-emerald-600 bg-emerald-50/60 dark:border-emerald-400 dark:bg-emerald-500/10'
-                : 'border-slate-300 bg-white hover:border-emerald-600 dark:border-slate-700 dark:bg-slate-900 dark:hover:border-emerald-400'
+                : 'border-slate-500 bg-white hover:border-emerald-600 dark:border-slate-500 dark:bg-slate-900 dark:hover:border-emerald-400'
             }`}
           >
             {image ? (
@@ -150,7 +149,8 @@ const Paleta = () => {
                     e.stopPropagation()
                     removeImage()
                   }}
-                  className={`absolute -right-2 -top-2 cursor-pointer rounded-full bg-slate-800 p-1 text-white hover:bg-emerald-600 ${FOCUS_RING}`}
+                  aria-label="Quitar imagen"
+                  className={`absolute -right-2 -top-2 cursor-pointer rounded-full bg-slate-800 p-1 text-white hover:bg-emerald-700 ${FOCUS_RING}`}
                 >
                   <IconX size={16} />
                 </button>
@@ -179,6 +179,7 @@ const Paleta = () => {
             <input
               ref={inputRef}
               type="file"
+              aria-label="Elegir imagen"
               accept={ACCEPTED_EXT}
               onChange={handleChange}
               className="hidden"
@@ -189,8 +190,9 @@ const Paleta = () => {
             {isAnalyzing ? (
               <div className="flex flex-1 flex-col items-center justify-center gap-2 text-center">
                 <IconPalette
-                  className="animate-pulse text-slate-300 dark:text-slate-700"
+                  className="animate-pulse text-slate-400 dark:text-slate-600"
                   size={48}
+                  aria-hidden="true"
                   stroke={1.5}
                 />
                 <p className="text-sm text-slate-500 dark:text-slate-400">
@@ -212,7 +214,7 @@ const Paleta = () => {
                   <button
                     type="button"
                     onClick={downloadPalette}
-                    className={`inline-flex cursor-pointer items-center gap-2 rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-800 transition-colors hover:border-emerald-600 hover:text-emerald-600 dark:border-slate-800 dark:text-slate-100 dark:hover:border-emerald-400 dark:hover:text-emerald-400 ${FOCUS_RING}`}
+                    className={`${BUTTON_SECONDARY_BASE} px-3 py-1.5 text-xs`}
                   >
                     <IconDownload size={14} />
                     Descargar
@@ -248,7 +250,7 @@ const Paleta = () => {
               </>
             ) : (
               <div className="flex flex-1 flex-col items-center justify-center gap-2 text-center">
-                <IconPalette className="text-slate-300 dark:text-slate-700" size={48} stroke={1.5} />
+                <IconPalette className="text-slate-400 dark:text-slate-600" aria-hidden="true" size={48} stroke={1.5} />
                 <p className="text-sm text-slate-500 dark:text-slate-400">
                   Sube una imagen para ver sus colores dominantes
                 </p>
@@ -257,7 +259,6 @@ const Paleta = () => {
           </div>
         </div>
       </section>
-      <OtherTools currentHref="/paleta" />
     </>
   )
 }

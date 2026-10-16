@@ -21,7 +21,6 @@ const NumerarPaginasPdf = () => {
 
   return (
     <PdfTransformTool
-      currentHref="/numerar-paginas-pdf"
       title="Numerar páginas de un PDF"
       subtitle="Agrega el número de página al pie de cada hoja."
       actionLabel="Numerar páginas"

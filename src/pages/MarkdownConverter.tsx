@@ -1,10 +1,7 @@
-import { useState } from 'react'
+import { useId, useState } from 'react'
 import { IconDownload, IconFileTypePdf, IconFileWord, IconLoader2, IconMarkdown } from '@tabler/icons-react'
 import { markdownToDocx, markdownToPdf } from '../lib/markdownExport'
-import OtherTools from '../components/OtherTools'
-
-const FOCUS_RING =
-  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900'
+import { FOCUS_RING, BUTTON_PRIMARY, BUTTON_SECONDARY_BASE } from '../lib/ui'
 
 const PLACEHOLDER = `# Título del documento
 
@@ -16,6 +13,7 @@ Escribe o pega tu **Markdown** acá. Soporta *cursiva*, listas, \`código\` y m�
 > Una cita destacada.`
 
 const MarkdownConverter = () => {
+  const textareaId = useId()
   const [markdown, setMarkdown] = useState('')
   const [isExportingPdf, setIsExportingPdf] = useState(false)
   const [isExportingDocx, setIsExportingDocx] = useState(false)
@@ -63,15 +61,16 @@ const MarkdownConverter = () => {
 
         <div className="mt-8 rounded-xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900">
           <div className="flex items-center justify-between">
-            <label className="text-sm font-semibold text-slate-800 dark:text-slate-100">Markdown</label>
-            <IconMarkdown className="text-slate-400 dark:text-slate-500" size={20} />
+            <label htmlFor={textareaId} className="text-sm font-semibold text-slate-800 dark:text-slate-100">Markdown</label>
+            <IconMarkdown className="text-slate-500 dark:text-slate-400" size={20} />
           </div>
           <textarea
+            id={textareaId}
             value={markdown}
             onChange={(e) => setMarkdown(e.target.value)}
             placeholder={PLACEHOLDER}
             rows={16}
-            className={`mt-2 w-full rounded-lg border border-slate-300 bg-white p-4 text-sm text-slate-800 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 ${FOCUS_RING}`}
+            className={`mt-2 w-full rounded-lg border border-slate-500 bg-white p-4 text-sm text-slate-800 dark:border-slate-500 dark:bg-slate-950 dark:text-slate-100 ${FOCUS_RING}`}
           />
 
           <div className="mt-4 flex flex-wrap gap-2">
@@ -79,7 +78,7 @@ const MarkdownConverter = () => {
               type="button"
               disabled={!hasContent || isExportingPdf}
               onClick={exportPdf}
-              className={`inline-flex cursor-pointer items-center gap-2 rounded-lg bg-emerald-600 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-emerald-700 disabled:cursor-not-allowed disabled:bg-slate-300 dark:disabled:bg-slate-700 ${FOCUS_RING}`}
+              className={BUTTON_PRIMARY}
             >
               {isExportingPdf ? <IconLoader2 size={18} className="animate-spin" /> : <IconFileTypePdf size={18} />}
               Descargar PDF
@@ -88,7 +87,7 @@ const MarkdownConverter = () => {
               type="button"
               disabled={!hasContent || isExportingDocx}
               onClick={exportDocx}
-              className={`inline-flex cursor-pointer items-center gap-2 rounded-lg border border-slate-200 px-6 py-3 text-sm font-semibold text-slate-800 transition-colors hover:border-emerald-600 hover:text-emerald-600 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-800 dark:text-slate-100 dark:hover:border-emerald-400 dark:hover:text-emerald-400 ${FOCUS_RING}`}
+              className={`${BUTTON_SECONDARY_BASE} px-6 py-3 text-sm`}
             >
               {isExportingDocx ? <IconLoader2 size={18} className="animate-spin" /> : <IconFileWord size={18} />}
               Descargar Word
@@ -102,7 +101,6 @@ const MarkdownConverter = () => {
           </div>
         </div>
       </section>
-      <OtherTools currentHref="/markdown" />
     </>
   )
 }

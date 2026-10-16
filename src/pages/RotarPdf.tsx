@@ -14,7 +14,6 @@ const RotarPdf = () => {
 
   return (
     <PdfTransformTool
-      currentHref="/rotar-pdf"
       title="Rotar PDF"
       subtitle="Gira todas las páginas de tu PDF y descarga el resultado."
       actionLabel="Rotar PDF"

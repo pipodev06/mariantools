@@ -3,7 +3,6 @@ import { transcribeAudio } from '../lib/audio'
 
 const AudioATexto = () => (
   <SingleFileTextTool
-    currentHref="/audio-a-texto"
     title="Audio a texto"
     subtitle="Transcribe notas de voz y grabaciones con IA."
     accept="audio/*,.mp3,.wav,.m4a,.ogg,.webm"

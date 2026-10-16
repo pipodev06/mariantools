@@ -1,13 +1,13 @@
 import { useState } from 'react'
 import ImageAiTool from '../components/ImageAiTool'
 import { TARGET_LANGUAGES, translateImage } from '../lib/ai'
+import { FOCUS_RING } from '../lib/ui'
 
 const TraductorImagen = () => {
   const [lang, setLang] = useState('es')
 
   return (
     <ImageAiTool<string>
-      currentHref="/traductor-imagen"
       title="Traductor de imagen"
       subtitle="Lee el texto de una imagen y lo traduce con IA."
       actionLabel="Traducir"
@@ -20,7 +20,7 @@ const TraductorImagen = () => {
           value={lang}
           onChange={(e) => setLang(e.target.value)}
           aria-label="Idioma de destino"
-          className="cursor-pointer rounded-lg border border-slate-200 bg-white px-3 py-3 text-sm text-slate-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-100 dark:focus-visible:ring-offset-slate-900"
+          className={`cursor-pointer rounded-lg border border-slate-500 bg-white px-3 py-3 text-sm text-slate-800 dark:border-slate-500 dark:bg-slate-900 dark:text-slate-100 ${FOCUS_RING}`}
         >
           {TARGET_LANGUAGES.map((l) => (
             <option key={l.value} value={l.value}>

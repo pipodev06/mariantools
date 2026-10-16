@@ -1,10 +1,12 @@
 import { useMemo, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { IconSearch } from '@tabler/icons-react'
 import ToolCard from '../components/ToolCard'
 import { availableTools, categories, upcomingTools, type Category } from '../data/tools'
-
-const FOCUS_RING =
-  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900'
+import { useAccount } from '../lib/account'
+import { WELCOME_CREDITS } from '../lib/credits'
+import { getRecent } from '../lib/recent'
+import { FOCUS_RING, BUTTON_PRIMARY_BASE, CHIP_ACTIVE, CHIP_INACTIVE } from '../lib/ui'
 
 // Búsqueda sin tildes ni mayúsculas: "extraccion" encuentra "Extracción".
 const normalize = (text: string) =>
@@ -13,9 +15,20 @@ const normalize = (text: string) =>
     .replace(/[̀-ͯ]/g, '')
     .toLowerCase()
 
+// Cantidad de herramientas por categoría (la clave null cuenta todas) para los chips.
+const counts = new Map<Category | null, number>([
+  [null, availableTools.length],
+  ...categories.map((c): [Category, number] => [c, availableTools.filter((t) => t.category === c).length]),
+])
+
 const Inicio = () => {
   const [query, setQuery] = useState('')
   const [category, setCategory] = useState<Category | null>(null)
+  const { status } = useAccount()
+  const [recentTools] = useState(() =>
+    getRecent().flatMap((href) => availableTools.find((tool) => tool.href === href) ?? []),
+  )
+  const filtering = Boolean(query.trim()) || category !== null
 
   const visibleTools = useMemo(() => {
     const needle = normalize(query.trim())
@@ -60,6 +73,33 @@ const Inicio = () => {
         </div>
       </section>
 
+      {status === 'anon' && (
+        <section className="mx-auto max-w-7xl px-6 pb-8">
+          <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-emerald-600 bg-white px-5 py-4 dark:border-emerald-400 dark:bg-slate-900">
+            <p className="text-base font-semibold text-slate-800 dark:text-slate-100">
+              Crea tu cuenta y recibe {WELCOME_CREDITS} créditos para las herramientas con IA.
+            </p>
+            <Link
+              to="/cuenta"
+              className={`${BUTTON_PRIMARY_BASE} px-4 py-2 text-sm`}
+            >
+              Crear cuenta
+            </Link>
+          </div>
+        </section>
+      )}
+
+      {recentTools.length > 0 && !filtering && (
+        <section className="mx-auto max-w-7xl px-6 pb-8">
+          <h2 className="text-2xl font-bold text-slate-800 sm:text-3xl dark:text-slate-100">Recientes</h2>
+          <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+            {recentTools.map((tool) => (
+              <ToolCard key={tool.title} {...tool} />
+            ))}
+          </div>
+        </section>
+      )}
+
       <section className="mx-auto max-w-7xl px-6 pb-16">
         <h2 className="text-2xl font-bold text-emerald-600 sm:text-3xl dark:text-emerald-400">
           Herramientas disponibles
@@ -77,7 +117,7 @@ const Inicio = () => {
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Buscar herramienta"
               aria-label="Buscar herramienta"
-              className={`w-full rounded-lg border border-slate-300 bg-white py-2 pl-10 pr-3 text-sm text-slate-800 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 ${FOCUS_RING}`}
+              className={`w-full rounded-lg border border-slate-500 bg-white py-2 pl-10 pr-3 text-sm text-slate-800 dark:border-slate-500 dark:bg-slate-900 dark:text-slate-100 ${FOCUS_RING}`}
             />
           </div>
           <div className="flex flex-wrap gap-2">
@@ -89,11 +129,11 @@ const Inicio = () => {
                 onClick={() => setCategory(c)}
                 className={`cursor-pointer rounded-lg border px-3 py-1.5 text-sm font-medium transition-colors ${FOCUS_RING} ${
                   category === c
-                    ? 'border-emerald-600 bg-emerald-600 text-white'
-                    : 'border-slate-200 text-slate-500 hover:border-emerald-600 hover:text-emerald-600 dark:border-slate-800 dark:text-slate-400 dark:hover:border-emerald-400 dark:hover:text-emerald-400'
+                    ? CHIP_ACTIVE
+                    : CHIP_INACTIVE
                 }`}
               >
-                {c ?? 'Todas'}
+                {c ?? 'Todas'} ({counts.get(c) ?? 0})
               </button>
             ))}
           </div>

@@ -18,7 +18,6 @@ const CalculadoraHorasExtras = () => {
 
   return (
     <ToolShell
-      currentHref="/calculadora-horas-extras"
       title="Calculadora de horas extras"
       subtitle="Calcula el pago de tus horas extras: 25% las dos primeras del día y 35% desde la tercera."
     >

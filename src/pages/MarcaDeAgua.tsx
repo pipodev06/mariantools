@@ -1,7 +1,7 @@
-import { useEffect, useRef, useState, type ChangeEvent, type ClipboardEvent, type DragEvent } from 'react'
+import { useEffect, useId, useRef, useState, type ChangeEvent, type ClipboardEvent, type DragEvent } from 'react'
 import { IconDownload, IconFileTypePdf, IconLoader2, IconPhoto, IconRubberStamp, IconUpload, IconX } from '@tabler/icons-react'
 import { watermarkImage, watermarkPdf } from '../lib/watermark'
-import OtherTools from '../components/OtherTools'
+import { FOCUS_RING, BUTTON_PRIMARY } from '../lib/ui'
 
 type Mode = 'image' | 'pdf'
 
@@ -9,9 +9,6 @@ const IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp']
 const IMAGE_EXT = '.jpg,.jpeg,.png,.webp'
 const PDF_TYPE = 'application/pdf'
 const PDF_EXT = '.pdf'
-
-const FOCUS_RING =
-  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900'
 
 const MarcaDeAgua = () => {
   const [mode, setMode] = useState<Mode>('image')
@@ -25,10 +22,19 @@ const MarcaDeAgua = () => {
   const [isDragging, setIsDragging] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
   const dragCounter = useRef(0)
+  const uid = useId()
 
-  const acceptedTypes = mode === 'image' ? IMAGE_TYPES : [PDF_TYPE]
+  const acceptedTypes = new Set(mode === 'image' ? IMAGE_TYPES : [PDF_TYPE])
   const acceptedExt = mode === 'image' ? IMAGE_EXT : PDF_EXT
   const resultUrlRef = useRef<string | null>(null)
+
+  // Libera el último resultado al desmontar la página.
+  useEffect(
+    () => () => {
+      if (resultUrlRef.current) URL.revokeObjectURL(resultUrlRef.current)
+    },
+    [],
+  )
 
   const switchMode = (next: Mode) => {
     setMode(next)
@@ -67,7 +73,7 @@ const MarcaDeAgua = () => {
   }, [file, text, color, opacity, fontSize, mode])
 
   const addFile = (incoming: FileList | File[]) => {
-    const found = Array.from(incoming).find((f) => acceptedTypes.includes(f.type))
+    const found = Array.from(incoming).find((f) => acceptedTypes.has(f.type))
     if (found) setFile(found)
   }
 
@@ -144,28 +150,31 @@ const MarcaDeAgua = () => {
         <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
           <div className="flex flex-col gap-4">
             <div className="rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
-              <label className="text-sm font-semibold text-slate-800 dark:text-slate-100">Texto</label>
+              <label htmlFor={`${uid}-texto`} className="text-sm font-semibold text-slate-800 dark:text-slate-100">Texto</label>
               <input
+                id={`${uid}-texto`}
                 type="text"
                 value={text}
                 onChange={(e) => setText(e.target.value)}
-                className={`mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 ${FOCUS_RING}`}
+                className={`mt-1 w-full rounded-lg border border-slate-500 bg-white px-3 py-2 text-sm text-slate-800 dark:border-slate-500 dark:bg-slate-900 dark:text-slate-100 ${FOCUS_RING}`}
               />
               <div className="mt-4 grid grid-cols-3 gap-4">
                 <div>
-                  <label className="text-sm font-semibold text-slate-800 dark:text-slate-100">Color</label>
+                  <label htmlFor={`${uid}-color`} className="text-sm font-semibold text-slate-800 dark:text-slate-100">Color</label>
                   <input
+                    id={`${uid}-color`}
                     type="color"
                     value={color}
                     onChange={(e) => setColor(e.target.value)}
-                    className={`mt-1 h-9 w-full cursor-pointer rounded-lg border border-slate-300 dark:border-slate-700 ${FOCUS_RING}`}
+                    className={`mt-1 h-9 w-full cursor-pointer rounded-lg border border-slate-500 dark:border-slate-500 ${FOCUS_RING}`}
                   />
                 </div>
                 <div>
                   <div className="flex items-center justify-between">
-                    <label className="text-sm font-semibold text-slate-800 dark:text-slate-100">Opacidad</label>
+                    <label htmlFor={`${uid}-opacidad`} className="text-sm font-semibold text-slate-800 dark:text-slate-100">Opacidad</label>
                   </div>
                   <input
+                    id={`${uid}-opacidad`}
                     type="range"
                     min={5}
                     max={80}
@@ -175,8 +184,9 @@ const MarcaDeAgua = () => {
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-semibold text-slate-800 dark:text-slate-100">Tamaño</label>
+                  <label htmlFor={`${uid}-tamano`} className="text-sm font-semibold text-slate-800 dark:text-slate-100">Tamaño</label>
                   <input
+                    id={`${uid}-tamano`}
                     type="range"
                     min={16}
                     max={96}
@@ -200,7 +210,7 @@ const MarcaDeAgua = () => {
               className={`flex flex-1 min-h-40 cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed p-8 text-center transition-colors ${FOCUS_RING} ${
                 isDragging
                   ? 'border-emerald-600 bg-emerald-50/60 dark:border-emerald-400 dark:bg-emerald-500/10'
-                  : 'border-slate-300 bg-white hover:border-emerald-600 dark:border-slate-700 dark:bg-slate-900 dark:hover:border-emerald-400'
+                  : 'border-slate-500 bg-white hover:border-emerald-600 dark:border-slate-500 dark:bg-slate-900 dark:hover:border-emerald-400'
               }`}
             >
               {file ? (
@@ -213,7 +223,8 @@ const MarcaDeAgua = () => {
                       setFile(null)
                       setResultUrl(null)
                     }}
-                    className={`cursor-pointer rounded-full bg-slate-800 p-1 text-white hover:bg-emerald-600 ${FOCUS_RING}`}
+                    aria-label="Quitar archivo"
+                    className={`cursor-pointer rounded-full bg-slate-800 p-1 text-white hover:bg-emerald-700 ${FOCUS_RING}`}
                   >
                     <IconX size={14} />
                   </button>
@@ -230,7 +241,7 @@ const MarcaDeAgua = () => {
                   </p>
                 </>
               )}
-              <input ref={inputRef} type="file" accept={acceptedExt} onChange={handleChange} className="hidden" />
+              <input ref={inputRef} type="file" aria-label="Elegir archivo" accept={acceptedExt} onChange={handleChange} className="hidden" />
             </div>
           </div>
 
@@ -244,7 +255,7 @@ const MarcaDeAgua = () => {
                   <a
                     href={resultUrl}
                     download={`marca-de-agua-${file?.name ?? 'imagen.png'}`}
-                    className={`inline-flex cursor-pointer items-center gap-2 rounded-lg bg-emerald-600 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-emerald-700 ${FOCUS_RING}`}
+                    className={BUTTON_PRIMARY}
                   >
                     <IconDownload size={18} />
                     Descargar
@@ -257,7 +268,7 @@ const MarcaDeAgua = () => {
                   <a
                     href={resultUrl}
                     download={`marca-de-agua-${file?.name ?? 'documento.pdf'}`}
-                    className={`inline-flex cursor-pointer items-center gap-2 rounded-lg bg-emerald-600 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-emerald-700 ${FOCUS_RING}`}
+                    className={BUTTON_PRIMARY}
                   >
                     <IconDownload size={18} />
                     Descargar PDF
@@ -266,7 +277,7 @@ const MarcaDeAgua = () => {
               )
             ) : (
               <>
-                <IconRubberStamp className="text-slate-300 dark:text-slate-700" size={64} stroke={1.5} />
+                <IconRubberStamp className="text-slate-400 dark:text-slate-600" aria-hidden="true" size={64} stroke={1.5} />
                 <p className="text-sm text-slate-500 dark:text-slate-400">
                   Sube un archivo para ver el resultado
                 </p>
@@ -275,7 +286,6 @@ const MarcaDeAgua = () => {
           </div>
         </div>
       </section>
-      <OtherTools currentHref="/marca-de-agua" />
     </>
   )
 }

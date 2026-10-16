@@ -1,8 +1,6 @@
 import { useRef, useState, type DragEvent } from 'react'
 import { IconUpload } from '@tabler/icons-react'
-
-const FOCUS_RING =
-  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900'
+import { FOCUS_RING } from '../lib/ui'
 
 type Props = {
   /** Valor del atributo `accept` del input (extensiones o MIME types). */
@@ -55,7 +53,7 @@ const FileDropzone = ({ accept, label, hint, onFile }: Props) => {
       className={`flex min-h-72 cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed p-10 text-center transition-colors ${FOCUS_RING} ${
         isDragging
           ? 'border-emerald-600 bg-emerald-50/60 dark:border-emerald-400 dark:bg-emerald-500/10'
-          : 'border-slate-300 bg-white hover:border-emerald-600 dark:border-slate-700 dark:bg-slate-900 dark:hover:border-emerald-400'
+          : 'border-slate-500 bg-white hover:border-emerald-600 dark:border-slate-500 dark:bg-slate-900 dark:hover:border-emerald-400'
       }`}
     >
       <IconUpload

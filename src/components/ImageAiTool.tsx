@@ -1,4 +1,4 @@
-import { useRef, useState, type ChangeEvent, type ClipboardEvent, type DragEvent, type ReactNode } from 'react'
+import { useEffect, useRef, useState, type ChangeEvent, type ClipboardEvent, type DragEvent, type ReactNode } from 'react'
 import {
   IconCheck,
   IconCopy,
@@ -12,16 +12,11 @@ import { AiError } from '../lib/aiClient'
 import { mapWithConcurrency } from '../lib/ocr'
 import AiErrorNotice from './AiErrorNotice'
 import PreviewModal, { type PreviewImage } from './PreviewModal'
-import OtherTools from './OtherTools'
+import { FOCUS_RING, BUTTON_PRIMARY, BUTTON_SECONDARY } from '../lib/ui'
 
 const AI_CONCURRENCY = 3
 const ACCEPTED_TYPES = ['image/jpeg', 'image/png', 'image/webp']
 const ACCEPTED_EXT = '.jpg,.jpeg,.png,.webp'
-
-const FOCUS_RING =
-  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900'
-
-const SECONDARY_BUTTON = `inline-flex cursor-pointer items-center gap-2 rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-800 transition-colors hover:border-emerald-600 hover:text-emerald-600 dark:border-slate-800 dark:text-slate-100 dark:hover:border-emerald-400 dark:hover:text-emerald-400 ${FOCUS_RING}`
 
 type PendingFile = { file: File; previewUrl: string }
 
@@ -34,7 +29,6 @@ type FileResult<T> = {
 }
 
 type Props<T> = {
-  currentHref: string
   title: string
   subtitle: string
   actionLabel: string
@@ -54,7 +48,6 @@ const formatFileSize = (bytes: number) => {
 }
 
 const ImageAiTool = <T,>({
-  currentHref,
   title,
   subtitle,
   actionLabel,
@@ -74,11 +67,22 @@ const ImageAiTool = <T,>({
   const [isDragging, setIsDragging] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
   const dragCounter = useRef(0)
+  // Todas las URLs de vista previa creadas; se revocan al desmontar (revocar dos veces es inofensivo).
+  const urlsRef = useRef<string[]>([])
+
+  useEffect(() => {
+    const urls = urlsRef.current
+    return () => urls.forEach((url) => URL.revokeObjectURL(url))
+  }, [])
 
   const addFiles = (incoming: FileList | File[]) => {
     const valid = Array.from(incoming)
       .filter((file) => ACCEPTED_TYPES.includes(file.type))
-      .map((file) => ({ file, previewUrl: URL.createObjectURL(file) }))
+      .map((file) => {
+        const previewUrl = URL.createObjectURL(file)
+        urlsRef.current.push(previewUrl)
+        return { file, previewUrl }
+      })
     setFiles((prev) => [...prev, ...valid])
   }
 
@@ -204,7 +208,7 @@ const ImageAiTool = <T,>({
                 className={`flex min-h-72 cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed p-10 text-center transition-colors ${FOCUS_RING} ${
                   isDragging
                     ? 'border-emerald-600 bg-emerald-50/60 dark:border-emerald-400 dark:bg-emerald-500/10'
-                    : 'border-slate-300 bg-white hover:border-emerald-600 dark:border-slate-700 dark:bg-slate-900 dark:hover:border-emerald-400'
+                    : 'border-slate-500 bg-white hover:border-emerald-600 dark:border-slate-500 dark:bg-slate-900 dark:hover:border-emerald-400'
                 }`}
               >
                 <IconUpload
@@ -228,6 +232,7 @@ const ImageAiTool = <T,>({
                 <input
                   ref={inputRef}
                   type="file"
+                  aria-label="Elegir imágenes"
                   accept={ACCEPTED_EXT}
                   multiple
                   onChange={handleChange}
@@ -240,7 +245,7 @@ const ImageAiTool = <T,>({
                   <ul className="max-h-80 flex-1 space-y-2 overflow-y-auto p-3 lg:max-h-none">
                     {files.map(({ file, previewUrl }, i) => (
                       <li
-                        key={`${file.name}-${i}`}
+                        key={previewUrl}
                         className="flex items-center gap-3 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm dark:border-slate-800 dark:bg-slate-900"
                       >
                         <button
@@ -278,7 +283,7 @@ const ImageAiTool = <T,>({
                 type="button"
                 disabled={files.length === 0 || isRunning}
                 onClick={handleRun}
-                className={`inline-flex cursor-pointer items-center gap-2 rounded-lg bg-emerald-600 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-emerald-700 disabled:cursor-not-allowed disabled:bg-slate-300 dark:disabled:bg-slate-700 ${FOCUS_RING}`}
+                className={BUTTON_PRIMARY}
               >
                 {isRunning && <IconLoader2 size={18} className="animate-spin" />}
                 <span role="status">
@@ -292,7 +297,7 @@ const ImageAiTool = <T,>({
         {results && (
           <div className="mt-8">
             <div className="mb-6 flex flex-wrap gap-2">
-              <button type="button" onClick={handleReset} className={SECONDARY_BUTTON}>
+              <button type="button" onClick={handleReset} className={BUTTON_SECONDARY}>
                 <IconRefresh size={18} />
                 Volver a empezar
               </button>
@@ -301,7 +306,7 @@ const ImageAiTool = <T,>({
             <div className="space-y-6">
               {results.map((result, i) => (
                 <div
-                  key={`${result.file.name}-${i}`}
+                  key={result.previewUrl}
                   className="rounded-xl border border-slate-200 bg-white p-5 motion-safe:opacity-0 motion-safe:animate-[reveal-up_0.4s_ease-out_forwards] dark:border-slate-800 dark:bg-slate-900"
                   style={{ animationDelay: `${Math.min(i * 60, 300)}ms` }}
                 >
@@ -367,7 +372,6 @@ const ImageAiTool = <T,>({
 
         <PreviewModal image={previewImage} onClose={() => setPreviewImage(null)} />
       </section>
-      <OtherTools currentHref={currentHref} />
     </>
   )
 }

@@ -35,6 +35,9 @@ import {
   IconReceiptTax,
   IconClockHour4,
   IconId,
+  IconCropLandscape,
+  IconRotate2,
+  IconDeviceMobile,
 } from '@tabler/icons-react'
 
 export const categories = [
@@ -54,6 +57,8 @@ export type Tool = {
   href?: string
   category: Category
   icon: TablerIcon
+  /** Usa IA en el servidor y cuesta créditos (`cost` es el texto del precio). `optional`: también hay modo gratis en el navegador. */
+  ai?: { cost: string; optional?: boolean }
 }
 
 // El orden refleja prioridad: primero lo fundacional (facturas, OCR) y lo de más demanda.
@@ -64,6 +69,7 @@ export const availableTools: Tool[] = [
     href: '/facturas',
     category: 'Extracción',
     icon: IconReceipt2,
+    ai: { cost: '1 crédito' },
   },
   {
     title: 'Imagen a texto',
@@ -71,6 +77,7 @@ export const availableTools: Tool[] = [
     href: '/ocr',
     category: 'Extracción',
     icon: IconScan,
+    ai: { cost: '1 crédito', optional: true },
   },
   {
     title: 'PDF a texto',
@@ -85,6 +92,7 @@ export const availableTools: Tool[] = [
     href: '/audio-a-texto',
     category: 'Extracción',
     icon: IconMicrophone,
+    ai: { cost: '1 crédito cada ~100 s de audio' },
   },
   {
     title: 'Manuscrito a texto',
@@ -92,6 +100,7 @@ export const availableTools: Tool[] = [
     href: '/manuscrito',
     category: 'Extracción',
     icon: IconWriting,
+    ai: { cost: '1 crédito' },
   },
   {
     title: 'Extractor de tablas',
@@ -99,6 +108,7 @@ export const availableTools: Tool[] = [
     href: '/extractor-tablas',
     category: 'Extracción',
     icon: IconTable,
+    ai: { cost: '2 créditos' },
   },
   {
     title: 'Quitar fondo de imagen',
@@ -113,6 +123,7 @@ export const availableTools: Tool[] = [
     href: '/traductor-imagen',
     category: 'Imagen',
     icon: IconLanguage,
+    ai: { cost: '1 crédito' },
   },
   {
     title: 'Comprimir/convertir imagen',
@@ -127,6 +138,27 @@ export const availableTools: Tool[] = [
     href: '/redimensionar',
     category: 'Imagen',
     icon: IconResize,
+  },
+  {
+    title: 'Recortar imagen',
+    description: 'Rectángulo, proporción o círculo',
+    href: '/recortar-imagen',
+    category: 'Imagen',
+    icon: IconCropLandscape,
+  },
+  {
+    title: 'Rotar y voltear imagen',
+    description: 'Gira o da la vuelta a tu foto',
+    href: '/rotar-imagen',
+    category: 'Imagen',
+    icon: IconRotate2,
+  },
+  {
+    title: 'HEIC a JPG',
+    description: 'Fotos de iPhone a JPG o PNG',
+    href: '/heic-a-jpg',
+    category: 'Imagen',
+    icon: IconDeviceMobile,
   },
   {
     title: 'Imagen a PDF',
@@ -199,32 +231,12 @@ export const availableTools: Tool[] = [
     icon: IconRubberStamp,
   },
   {
-    title: 'Imagen a Base64',
-    description: 'Data URL o base64 puro',
-    href: '/base64',
-    category: 'Imagen',
-    icon: IconBinary,
-  },
-  {
-    title: 'Paleta de colores',
-    description: 'Colores dominantes de una foto',
-    href: '/paleta',
-    category: 'Imagen',
-    icon: IconPalette,
-  },
-  {
-    title: 'Metadatos EXIF',
-    description: 'Ubicación, cámara y fecha',
-    href: '/exif',
-    category: 'Imagen',
-    icon: IconInfoCircle,
-  },
-  {
     title: 'Resumen de texto',
     description: 'Documentos largos, en segundos',
     href: '/resumen',
     category: 'Texto',
     icon: IconFileDescription,
+    ai: { cost: '1 crédito' },
   },
   {
     title: 'Corrector ortográfico',
@@ -232,6 +244,7 @@ export const availableTools: Tool[] = [
     href: '/corrector',
     category: 'Texto',
     icon: IconTextSpellcheck,
+    ai: { cost: '1 crédito' },
   },
   {
     title: 'Comparador de textos',
@@ -248,25 +261,11 @@ export const availableTools: Tool[] = [
     icon: IconVolume,
   },
   {
-    title: 'Markdown a PDF/Word',
-    description: 'Con formato listo para usar',
-    href: '/markdown',
-    category: 'Texto',
-    icon: IconMarkdown,
-  },
-  {
     title: 'Generador/lector QR',
     description: 'Crea o lee al instante',
     href: '/qr',
     category: 'Utilidades',
     icon: IconQrcode,
-  },
-  {
-    title: 'Contraseñas seguras',
-    description: 'Fuertes y aleatorias',
-    href: '/contrasenas',
-    category: 'Utilidades',
-    icon: IconKey,
   },
   {
     title: 'Calculadora de fechas',
@@ -316,6 +315,41 @@ export const availableTools: Tool[] = [
     href: '/validador-ruc',
     category: 'Utilidades',
     icon: IconId,
+  },
+  {
+    title: 'Imagen a Base64',
+    description: 'Data URL o base64 puro',
+    href: '/base64',
+    category: 'Imagen',
+    icon: IconBinary,
+  },
+  {
+    title: 'Metadatos EXIF',
+    description: 'Ubicación, cámara y fecha',
+    href: '/exif',
+    category: 'Imagen',
+    icon: IconInfoCircle,
+  },
+  {
+    title: 'Paleta de colores',
+    description: 'Colores dominantes de una foto',
+    href: '/paleta',
+    category: 'Imagen',
+    icon: IconPalette,
+  },
+  {
+    title: 'Markdown a PDF/Word',
+    description: 'Con formato listo para usar',
+    href: '/markdown',
+    category: 'Texto',
+    icon: IconMarkdown,
+  },
+  {
+    title: 'Contraseñas seguras',
+    description: 'Fuertes y aleatorias',
+    href: '/contrasenas',
+    category: 'Utilidades',
+    icon: IconKey,
   },
 ]
 

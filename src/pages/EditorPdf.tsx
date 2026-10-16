@@ -1,13 +1,10 @@
 import { useRef, useState, type ChangeEvent, type DragEvent } from 'react'
 import { IconArrowDown, IconArrowUp, IconDownload, IconFileTypePdf, IconLoader2, IconRefresh, IconUpload, IconX } from '@tabler/icons-react'
 import { buildEntries, exportPages, loadPdfFile, type LoadedPdf, type PdfPageEntry } from '../lib/pdfEditor'
-import OtherTools from '../components/OtherTools'
+import { FOCUS_RING, BUTTON_PRIMARY_BASE, BUTTON_SECONDARY } from '../lib/ui'
 
 const ACCEPTED_TYPE = 'application/pdf'
 const ACCEPTED_EXT = '.pdf'
-
-const FOCUS_RING =
-  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900'
 
 const EditorPdf = () => {
   const [sources, setSources] = useState<LoadedPdf[]>([])
@@ -124,7 +121,7 @@ const EditorPdf = () => {
             className={`flex min-h-72 cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed p-10 text-center transition-colors ${FOCUS_RING} ${
               isDragging
                 ? 'border-emerald-600 bg-emerald-50/60 dark:border-emerald-400 dark:bg-emerald-500/10'
-                : 'border-slate-300 bg-white hover:border-emerald-600 dark:border-slate-700 dark:bg-slate-900 dark:hover:border-emerald-400'
+                : 'border-slate-500 bg-white hover:border-emerald-600 dark:border-slate-500 dark:bg-slate-900 dark:hover:border-emerald-400'
             }`}
           >
             {isLoading ? (
@@ -144,7 +141,7 @@ const EditorPdf = () => {
                 </p>
               </>
             )}
-            <input ref={inputRef} type="file" accept={ACCEPTED_EXT} multiple onChange={handleChange} className="hidden" />
+            <input ref={inputRef} type="file" aria-label="Elegir PDF" accept={ACCEPTED_EXT} multiple onChange={handleChange} className="hidden" />
           </div>
 
           {entries.length > 0 && (
@@ -169,6 +166,7 @@ const EditorPdf = () => {
                         type="button"
                         disabled={i === 0}
                         onClick={() => moveEntry(i, -1)}
+                        aria-label={`Subir página ${i + 1}`}
                         className={`cursor-pointer rounded text-slate-500 hover:text-emerald-600 disabled:cursor-not-allowed disabled:opacity-30 dark:text-slate-400 ${FOCUS_RING}`}
                       >
                         <IconArrowUp size={16} />
@@ -177,6 +175,7 @@ const EditorPdf = () => {
                         type="button"
                         disabled={i === entries.length - 1}
                         onClick={() => moveEntry(i, 1)}
+                        aria-label={`Bajar página ${i + 1}`}
                         className={`cursor-pointer rounded text-slate-500 hover:text-emerald-600 disabled:cursor-not-allowed disabled:opacity-30 dark:text-slate-400 ${FOCUS_RING}`}
                       >
                         <IconArrowDown size={16} />
@@ -184,6 +183,7 @@ const EditorPdf = () => {
                       <button
                         type="button"
                         title="Descargar solo esta página"
+                        aria-label={`Descargar solo la página ${i + 1}`}
                         onClick={() => downloadSinglePage(entry, i + 1)}
                         className={`cursor-pointer rounded text-slate-500 hover:text-emerald-600 dark:text-slate-400 ${FOCUS_RING}`}
                       >
@@ -192,6 +192,7 @@ const EditorPdf = () => {
                       <button
                         type="button"
                         onClick={() => removeEntry(entry.id)}
+                        aria-label={`Quitar página ${i + 1}`}
                         className={`cursor-pointer rounded text-slate-500 hover:text-emerald-600 dark:text-slate-400 ${FOCUS_RING}`}
                       >
                         <IconX size={16} />
@@ -209,7 +210,7 @@ const EditorPdf = () => {
             <button
               type="button"
               onClick={handleReset}
-              className={`inline-flex cursor-pointer items-center gap-2 rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-800 transition-colors hover:border-emerald-600 hover:text-emerald-600 dark:border-slate-800 dark:text-slate-100 dark:hover:border-emerald-400 dark:hover:text-emerald-400 ${FOCUS_RING}`}
+              className={BUTTON_SECONDARY}
             >
               <IconRefresh size={18} />
               Volver a empezar
@@ -218,7 +219,7 @@ const EditorPdf = () => {
               type="button"
               disabled={isExporting}
               onClick={downloadCombined}
-              className={`inline-flex cursor-pointer items-center gap-2 rounded-lg bg-emerald-600 px-6 py-2 text-sm font-semibold text-white transition-colors hover:bg-emerald-700 disabled:cursor-not-allowed disabled:bg-slate-300 dark:disabled:bg-slate-700 ${FOCUS_RING}`}
+              className={`${BUTTON_PRIMARY_BASE} px-6 py-2 text-sm`}
             >
               {isExporting ? <IconLoader2 size={18} className="animate-spin" /> : <IconDownload size={18} />}
               Descargar PDF ({entries.length} {entries.length === 1 ? 'página' : 'páginas'})
@@ -226,7 +227,6 @@ const EditorPdf = () => {
           </div>
         )}
       </section>
-      <OtherTools currentHref="/editor-pdf" />
     </>
   )
 }

@@ -43,6 +43,14 @@ const CalculadoraHorasExtras = lazy(() => import('./pages/CalculadoraHorasExtras
 const CalculadoraIgv = lazy(() => import('./pages/CalculadoraIgv'))
 const ValidadorRuc = lazy(() => import('./pages/ValidadorRuc'))
 const Cuenta = lazy(() => import('./pages/Cuenta'))
+const RecortarImagen = lazy(() => import('./pages/RecortarImagen'))
+const RotarImagen = lazy(() => import('./pages/RotarImagen'))
+const HeicAJpg = lazy(() => import('./pages/HeicAJpg'))
+const PreguntasFrecuentes = lazy(() => import('./pages/PreguntasFrecuentes'))
+const Comentarios = lazy(() => import('./pages/Comentarios'))
+const Privacidad = lazy(() => import('./pages/Privacidad'))
+const Terminos = lazy(() => import('./pages/Terminos'))
+const Contacto = lazy(() => import('./pages/Contacto'))
 const NoEncontrada = lazy(() => import('./pages/NoEncontrada'))
 
 const App = () => {
@@ -87,7 +95,15 @@ const App = () => {
         <Route path="calculadora-horas-extras" element={<CalculadoraHorasExtras />} />
         <Route path="calculadora-igv" element={<CalculadoraIgv />} />
         <Route path="validador-ruc" element={<ValidadorRuc />} />
+        <Route path="recortar-imagen" element={<RecortarImagen />} />
+        <Route path="rotar-imagen" element={<RotarImagen />} />
+        <Route path="heic-a-jpg" element={<HeicAJpg />} />
         <Route path="cuenta" element={<Cuenta />} />
+        <Route path="preguntas-frecuentes" element={<PreguntasFrecuentes />} />
+        <Route path="comentarios" element={<Comentarios />} />
+        <Route path="privacidad" element={<Privacidad />} />
+        <Route path="terminos" element={<Terminos />} />
+        <Route path="contacto" element={<Contacto />} />
         <Route path="*" element={<NoEncontrada />} />
       </Route>
     </Routes>

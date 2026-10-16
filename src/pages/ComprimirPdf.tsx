@@ -10,7 +10,6 @@ const ComprimirPdf = () => {
 
   return (
     <PdfTransformTool
-      currentHref="/comprimir-pdf"
       title="Comprimir PDF"
       subtitle="Reduce el peso de tu PDF. Las páginas se convierten en imagen, así que el texto deja de poder seleccionarse."
       actionLabel="Comprimir PDF"

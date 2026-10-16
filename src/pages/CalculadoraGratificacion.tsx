@@ -35,7 +35,6 @@ const CalculadoraGratificacion = () => {
 
   return (
     <ToolShell
-      currentHref="/calculadora-gratificacion"
       title="Calculadora de gratificación"
       subtitle="Calcula tu gratificación de julio o diciembre con su bonificación extraordinaria."
     >

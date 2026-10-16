@@ -17,3 +17,12 @@ export const getSupabase = (): Promise<SupabaseClient | null> => {
   })()
   return client
 }
+
+/** Header con la sesión del usuario (si la hay) para que el servidor identifique su cuenta. */
+export const authHeaders = async (): Promise<Record<string, string>> => {
+  const supabase = await getSupabase()
+  if (!supabase) return {}
+  const { data } = await supabase.auth.getSession()
+  const token = data.session?.access_token
+  return token ? { Authorization: `Bearer ${token}` } : {}
+}

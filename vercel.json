@@ -1,7 +1,5 @@
 {
-  "rewrites": [
-    { "source": "/(.*)", "destination": "/index.html" }
-  ],
+  "trailingSlash": false,
   "functions": {
     "api/*.ts": { "maxDuration": 30 }
   },

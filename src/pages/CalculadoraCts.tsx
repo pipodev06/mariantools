@@ -26,7 +26,6 @@ const CalculadoraCts = () => {
 
   return (
     <ToolShell
-      currentHref="/calculadora-cts"
       title="Calculadora de CTS"
       subtitle="Calcula tu Compensación por Tiempo de Servicios del semestre."
     >

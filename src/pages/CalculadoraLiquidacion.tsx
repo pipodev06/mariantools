@@ -41,7 +41,6 @@ const CalculadoraLiquidacion = () => {
 
   return (
     <ToolShell
-      currentHref="/calculadora-liquidacion"
       title="Calculadora de liquidación"
       subtitle="Estima tus beneficios sociales al terminar tu contrato: CTS, vacaciones y gratificación truncas."
     >

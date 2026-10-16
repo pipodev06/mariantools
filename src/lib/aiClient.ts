@@ -1,4 +1,5 @@
-import { getSupabase } from './supabase'
+import { refreshAccount } from './account'
+import { authHeaders } from './supabase'
 
 /** Error de la API de IA; `code` distingue "inicia sesión" y "sin créditos" de un fallo cualquiera. */
 export class AiError extends Error {
@@ -13,15 +14,6 @@ export class AiError extends Error {
 
 export const NEEDS_ACCOUNT_CODES = ['login_required', 'no_credits']
 
-/** Header con la sesión del usuario (si la hay) para que el servidor descuente sus créditos. */
-export const authHeaders = async (): Promise<Record<string, string>> => {
-  const supabase = await getSupabase()
-  if (!supabase) return {}
-  const { data } = await supabase.auth.getSession()
-  const token = data.session?.access_token
-  return token ? { Authorization: `Bearer ${token}` } : {}
-}
-
 /** Convierte una respuesta con error de nuestra API en un AiError. */
 export const toAiError = async (response: Response, fallback: string): Promise<AiError> => {
   const body = await response.json().catch(() => null)
@@ -35,6 +27,8 @@ export const callAi = async (body: Record<string, unknown>): Promise<string> => 
     headers: { 'Content-Type': 'application/json', ...(await authHeaders()) },
     body: JSON.stringify(body),
   })
+  // El uso ya se cobró o se devolvió en el servidor: se actualizan saldo y cupo en pantalla.
+  refreshAccount()
 
   if (!response.ok) throw await toAiError(response, 'No se pudo completar la operación con IA')
 

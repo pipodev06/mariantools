@@ -3,7 +3,6 @@ import { transcribeHandwriting } from '../lib/ai'
 
 const Manuscrito = () => (
   <ImageAiTool<string>
-    currentHref="/manuscrito"
     title="Manuscrito a texto"
     subtitle="Reconoce letra a mano en tus imágenes con IA."
     actionLabel="Transcribir"
