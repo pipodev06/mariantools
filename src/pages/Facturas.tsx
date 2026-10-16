@@ -218,7 +218,8 @@ const Facturas = () => {
                     : 'Arrastra tus facturas o recibos aquí o haz click para elegirlos'}
                 </p>
                 <p className="text-sm text-slate-500 dark:text-slate-400">
-                  También puedes pegarlas con Ctrl+V. Formatos: JPG, PNG, WebP.
+                  También puedes pegarlas con Ctrl+V. Formatos: JPG, PNG, WebP. Se envían a IA para
+                  procesarse.
                 </p>
                 <input
                   ref={inputRef}

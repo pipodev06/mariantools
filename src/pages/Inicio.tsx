@@ -1,7 +1,31 @@
+import { useMemo, useState } from 'react'
+import { IconSearch } from '@tabler/icons-react'
 import ToolCard from '../components/ToolCard'
-import { availableTools, upcomingTools } from '../data/tools'
+import { availableTools, categories, upcomingTools, type Category } from '../data/tools'
+
+const FOCUS_RING =
+  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900'
+
+// Búsqueda sin tildes ni mayúsculas: "extraccion" encuentra "Extracción".
+const normalize = (text: string) =>
+  text
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .toLowerCase()
 
 const Inicio = () => {
+  const [query, setQuery] = useState('')
+  const [category, setCategory] = useState<Category | null>(null)
+
+  const visibleTools = useMemo(() => {
+    const needle = normalize(query.trim())
+    return availableTools.filter(
+      (tool) =>
+        (!category || tool.category === category) &&
+        (!needle || normalize(`${tool.title} ${tool.description} ${tool.category}`).includes(needle)),
+    )
+  }, [query, category])
+
   return (
     <>
       <section className="relative mx-auto max-w-5xl overflow-hidden px-6 py-16">
@@ -40,8 +64,43 @@ const Inicio = () => {
         <h2 className="text-2xl font-bold text-emerald-600 sm:text-3xl dark:text-emerald-400">
           Herramientas disponibles
         </h2>
+
+        <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center">
+          <div className="relative sm:w-72">
+            <IconSearch
+              size={18}
+              className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 dark:text-slate-400"
+            />
+            <input
+              type="search"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Buscar herramienta"
+              aria-label="Buscar herramienta"
+              className={`w-full rounded-lg border border-slate-300 bg-white py-2 pl-10 pr-3 text-sm text-slate-800 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 ${FOCUS_RING}`}
+            />
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {[null, ...categories].map((c) => (
+              <button
+                key={c ?? 'todas'}
+                type="button"
+                aria-pressed={category === c}
+                onClick={() => setCategory(c)}
+                className={`cursor-pointer rounded-lg border px-3 py-1.5 text-sm font-medium transition-colors ${FOCUS_RING} ${
+                  category === c
+                    ? 'border-emerald-600 bg-emerald-600 text-white'
+                    : 'border-slate-200 text-slate-500 hover:border-emerald-600 hover:text-emerald-600 dark:border-slate-800 dark:text-slate-400 dark:hover:border-emerald-400 dark:hover:text-emerald-400'
+                }`}
+              >
+                {c ?? 'Todas'}
+              </button>
+            ))}
+          </div>
+        </div>
+
         <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-          {availableTools.map((tool, i) => (
+          {visibleTools.map((tool, i) => (
             <div
               key={tool.title}
               className="motion-safe:opacity-0 motion-safe:animate-[reveal-up_0.5s_ease-out_forwards]"
@@ -51,24 +110,31 @@ const Inicio = () => {
             </div>
           ))}
         </div>
+        {visibleTools.length === 0 && (
+          <p role="status" className="mt-4 text-center text-base text-slate-500 dark:text-slate-400">
+            No hay herramientas que coincidan con tu búsqueda.
+          </p>
+        )}
       </section>
 
-      <section className="mx-auto max-w-7xl px-6 pb-16">
-        <h2 className="text-2xl font-bold text-slate-800 sm:text-3xl dark:text-slate-100">
-          Próximamente
-        </h2>
-        <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-          {upcomingTools.map((tool, i) => (
-            <div
-              key={tool.title}
-              className="motion-safe:opacity-0 motion-safe:animate-[reveal-up_0.5s_ease-out_forwards]"
-              style={{ animationDelay: `${Math.min(i * 40, 320)}ms` }}
-            >
-              <ToolCard {...tool} comingSoon />
-            </div>
-          ))}
-        </div>
-      </section>
+      {upcomingTools.length > 0 && (
+        <section className="mx-auto max-w-7xl px-6 pb-16">
+          <h2 className="text-2xl font-bold text-slate-800 sm:text-3xl dark:text-slate-100">
+            Próximamente
+          </h2>
+          <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+            {upcomingTools.map((tool, i) => (
+              <div
+                key={tool.title}
+                className="motion-safe:opacity-0 motion-safe:animate-[reveal-up_0.5s_ease-out_forwards]"
+                style={{ animationDelay: `${Math.min(i * 40, 320)}ms` }}
+              >
+                <ToolCard {...tool} comingSoon />
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
     </>
   )
 }

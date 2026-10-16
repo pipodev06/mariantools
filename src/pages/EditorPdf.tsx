@@ -17,6 +17,7 @@ const EditorPdf = () => {
   const [isDragging, setIsDragging] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
   const dragCounter = useRef(0)
+  const sourcesCount = useRef(0)
 
   const addFiles = async (incoming: FileList | File[]) => {
     const files = Array.from(incoming).filter((f) => f.type === ACCEPTED_TYPE)
@@ -24,11 +25,11 @@ const EditorPdf = () => {
     setIsLoading(true)
     try {
       const loaded = await Promise.all(files.map(loadPdfFile))
-      setSources((prev) => {
-        const next = [...prev, ...loaded]
-        setEntries((prevEntries) => [...prevEntries, ...buildEntries(loaded, prev.length)])
-        return next
-      })
+      // El offset sale de un ref (no de dentro de un updater) para no encadenar setState anidados.
+      const offset = sourcesCount.current
+      sourcesCount.current += loaded.length
+      setSources((prev) => [...prev, ...loaded])
+      setEntries((prev) => [...prev, ...buildEntries(loaded, offset)])
     } finally {
       setIsLoading(false)
     }
@@ -72,6 +73,7 @@ const EditorPdf = () => {
   }
 
   const handleReset = () => {
+    sourcesCount.current = 0
     setSources([])
     setEntries([])
   }
