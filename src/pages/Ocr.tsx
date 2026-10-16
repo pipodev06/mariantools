@@ -14,7 +14,7 @@ import {
 import {
   createOcrWorker,
   mapWithConcurrency,
-  recognizeWithMistral,
+  recognizeWithAi,
   recognizeWithTesseract,
 } from '../lib/ocr'
 import PreviewModal, { type PreviewImage } from '../components/PreviewModal'
@@ -143,7 +143,7 @@ const Ocr = () => {
           let text: string
           let confidence = 100
           try {
-            const result = await recognizeWithMistral(file)
+            const result = await recognizeWithAi(file)
             text = result.text
             confidence = result.confidence
           } catch (error) {
@@ -221,7 +221,7 @@ const Ocr = () => {
           await worker.terminate()
         }
       } else {
-        const result = await recognizeWithMistral(target.file)
+        const result = await recognizeWithAi(target.file)
         text = result.text
         confidence = result.confidence
       }

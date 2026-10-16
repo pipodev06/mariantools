@@ -35,7 +35,7 @@ export const mapWithConcurrency = async <T, R>(
 const loadBitmap = (file: File) => createImageBitmap(file)
 
 // Achica imágenes gigantes (fotos de celular, 4000px+) antes de procesar.
-// Tesseract y Mistral no ganan precisión pasado cierto tamaño, solo tiempo.
+// Tesseract y los modelos de IA no ganan precisión pasado cierto tamaño, solo tiempo.
 const drawScaled = (bitmap: ImageBitmap): HTMLCanvasElement => {
   const scale = Math.min(1, MAX_DIMENSION / Math.max(bitmap.width, bitmap.height))
   const canvas = document.createElement('canvas')
@@ -286,8 +286,8 @@ export const prepareImageForAi = async (file: File): Promise<string> => {
   }
 }
 
-/** OCR con IA vía `api/ai.ts` (Mistral con la key server-side; nunca llega al navegador). */
-export const recognizeWithMistral = async (file: File): Promise<OcrResult> => ({
+/** OCR con IA vía `api/ai.ts` (proveedor configurado por variables de entorno; la key nunca llega al navegador). */
+export const recognizeWithAi = async (file: File): Promise<OcrResult> => ({
   text: await callAi({ task: 'ocr', image: await prepareImageForAi(file) }),
   confidence: 100,
 })

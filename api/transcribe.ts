@@ -1,8 +1,18 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
 
-const MISTRAL_TRANSCRIBE_URL = 'https://api.mistral.ai/v1/audio/transcriptions'
-const MISTRAL_AUDIO_MODEL = 'voxtral-mini-latest'
-const MISTRAL_TIMEOUT_MS = 25_000
+const AI_TIMEOUT_MS = 25_000
+
+// Proveedor de transcripción intercambiable: cualquier API compatible con OpenAI
+// (/audio/transcriptions). Si AI_AUDIO_* no está definido, reutiliza AI_API_KEY y AI_BASE_URL;
+// el modelo (AI_AUDIO_MODEL) siempre es explícito porque el de texto/visión no sirve para audio.
+const getConfig = () => {
+  const env = process.env
+  const apiKey = env.AI_AUDIO_API_KEY || env.AI_API_KEY
+  const baseUrl = env.AI_AUDIO_BASE_URL || env.AI_BASE_URL
+  const model = env.AI_AUDIO_MODEL
+  if (!apiKey || !baseUrl || !model) return null
+  return { apiKey, model, url: `${baseUrl.replace(/\/+$/, '')}/audio/transcriptions` }
+}
 
 // Vercel corta los cuerpos de más de 4.5 MB; el cliente manda trozos WAV más chicos.
 const MAX_AUDIO_BYTES = 4_400_000
@@ -30,9 +40,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return
   }
 
-  const apiKey = process.env.MISTRAL_API_KEY
-  if (!apiKey) {
-    console.error('MISTRAL_API_KEY no configurada')
+  const config = getConfig()
+  if (!config) {
+    console.error('Faltan AI_AUDIO_MODEL y la key/URL (AI_AUDIO_* o AI_API_KEY y AI_BASE_URL)')
     res.status(503).json({ error: 'Servicio no disponible' })
     return
   }
@@ -50,30 +60,30 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   try {
     const form = new FormData()
-    form.append('model', MISTRAL_AUDIO_MODEL)
+    form.append('model', config.model)
     form.append('file', new Blob([new Uint8Array(audio)], { type: 'audio/wav' }), 'audio.wav')
 
-    const mistralResponse = await fetch(MISTRAL_TRANSCRIBE_URL, {
+    const aiResponse = await fetch(config.url, {
       method: 'POST',
-      headers: { Authorization: `Bearer ${apiKey}` },
+      headers: { Authorization: `Bearer ${config.apiKey}` },
       body: form,
-      signal: AbortSignal.timeout(MISTRAL_TIMEOUT_MS),
+      signal: AbortSignal.timeout(AI_TIMEOUT_MS),
     })
 
-    if (!mistralResponse.ok) {
-      console.error('Mistral error', mistralResponse.status, await mistralResponse.text())
-      const busy = mistralResponse.status === 429
+    if (!aiResponse.ok) {
+      console.error('Proveedor de IA error', aiResponse.status, await aiResponse.text())
+      const busy = aiResponse.status === 429
       res
         .status(busy ? 429 : 502)
         .json({ error: busy ? 'Demasiadas solicitudes, intenta en un momento' : 'La IA no pudo procesar el audio' })
       return
     }
 
-    const data = (await mistralResponse.json()) as { text?: string }
+    const data = (await aiResponse.json()) as { text?: string }
     res.status(200).json({ text: data.text ?? '' })
   } catch (err) {
     const timedOut = err instanceof Error && err.name === 'TimeoutError'
-    console.error('Mistral fetch falló', err)
+    console.error('Proveedor de IA fetch falló', err)
     res
       .status(timedOut ? 504 : 502)
       .json({ error: timedOut ? 'La IA tardó demasiado, intenta de nuevo' : 'No se pudo contactar a la IA' })

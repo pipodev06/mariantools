@@ -24,9 +24,27 @@ import {
   IconQrcode,
   IconKey,
   IconCalendar,
+  IconRotateClockwise2,
+  IconListNumbers,
+  IconCrop,
+  IconPhotoDown,
+  IconFileTypeDocx,
+  IconCalculator,
+  IconReportMoney,
+  IconGift,
+  IconReceiptTax,
+  IconClockHour4,
+  IconId,
 } from '@tabler/icons-react'
 
-export const categories = ['Extracción', 'Imagen', 'PDF', 'Texto', 'Utilidades'] as const
+export const categories = [
+  'Extracción',
+  'Imagen',
+  'PDF',
+  'Texto',
+  'Calculadoras',
+  'Utilidades',
+] as const
 
 export type Category = (typeof categories)[number]
 
@@ -132,6 +150,48 @@ export const availableTools: Tool[] = [
     icon: IconSignature,
   },
   {
+    title: 'Comprimir PDF',
+    description: 'Menos peso para enviarlo',
+    href: '/comprimir-pdf',
+    category: 'PDF',
+    icon: IconFileZip,
+  },
+  {
+    title: 'PDF a JPG',
+    description: 'Cada página como imagen',
+    href: '/pdf-a-jpg',
+    category: 'PDF',
+    icon: IconPhotoDown,
+  },
+  {
+    title: 'PDF a Word',
+    description: 'Texto editable en Word',
+    href: '/pdf-a-word',
+    category: 'PDF',
+    icon: IconFileTypeDocx,
+  },
+  {
+    title: 'Rotar PDF',
+    description: 'Gira todas las páginas',
+    href: '/rotar-pdf',
+    category: 'PDF',
+    icon: IconRotateClockwise2,
+  },
+  {
+    title: 'Numerar páginas',
+    description: 'Número al pie de cada hoja',
+    href: '/numerar-paginas-pdf',
+    category: 'PDF',
+    icon: IconListNumbers,
+  },
+  {
+    title: 'Recortar PDF',
+    description: 'Quita márgenes de las páginas',
+    href: '/recortar-pdf',
+    category: 'PDF',
+    icon: IconCrop,
+  },
+  {
     title: 'Marca de agua',
     description: 'Sobre imágenes o PDF',
     href: '/marca-de-agua',
@@ -212,8 +272,50 @@ export const availableTools: Tool[] = [
     title: 'Calculadora de fechas',
     description: 'Días entre fechas, días hábiles',
     href: '/calculadora-fechas',
-    category: 'Utilidades',
+    category: 'Calculadoras',
     icon: IconCalendar,
+  },
+  {
+    title: 'Calculadora de CTS',
+    description: 'Tu CTS del semestre',
+    href: '/calculadora-cts',
+    category: 'Calculadoras',
+    icon: IconCalculator,
+  },
+  {
+    title: 'Calculadora de gratificación',
+    description: 'Julio o diciembre, con bonificación',
+    href: '/calculadora-gratificacion',
+    category: 'Calculadoras',
+    icon: IconGift,
+  },
+  {
+    title: 'Calculadora de liquidación',
+    description: 'Beneficios sociales al cese',
+    href: '/calculadora-liquidacion',
+    category: 'Calculadoras',
+    icon: IconReportMoney,
+  },
+  {
+    title: 'Calculadora de horas extras',
+    description: 'Pago al 25% y al 35%',
+    href: '/calculadora-horas-extras',
+    category: 'Calculadoras',
+    icon: IconClockHour4,
+  },
+  {
+    title: 'Calculadora de IGV',
+    description: 'Agrega o quita el IGV',
+    href: '/calculadora-igv',
+    category: 'Calculadoras',
+    icon: IconReceiptTax,
+  },
+  {
+    title: 'Validador de RUC',
+    description: 'Formato y dígito verificador',
+    href: '/validador-ruc',
+    category: 'Utilidades',
+    icon: IconId,
   },
 ]
 

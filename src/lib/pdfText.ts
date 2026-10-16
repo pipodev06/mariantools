@@ -1,8 +1,5 @@
-import * as pdfjs from 'pdfjs-dist'
-import workerUrl from 'pdfjs-dist/build/pdf.worker.min.mjs?url'
 import { createOcrWorker, recognizeCanvasWithTesseract } from './ocr'
-
-pdfjs.GlobalWorkerOptions.workerSrc = workerUrl
+import { pdfjs } from './pdfjs'
 
 // Una página con menos caracteres que esto se considera escaneada (sin capa de texto).
 const MIN_TEXT_CHARS = 20
@@ -10,6 +7,8 @@ const OCR_RENDER_SCALE = 2
 
 export type PdfTextResult = {
   text: string
+  /** Texto de cada página, en orden. */
+  pageTexts: string[]
   pages: number
   ocrPages: number
 }
@@ -59,5 +58,5 @@ export const extractPdfText = async (
     await task.destroy()
   }
 
-  return { text: pages.join('\n\n'), pages: total, ocrPages }
+  return { text: pages.join('\n\n'), pageTexts: pages, pages: total, ocrPages }
 }
