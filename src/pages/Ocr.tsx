@@ -1,4 +1,4 @@
-import { useRef, useState, type ChangeEvent, type ClipboardEvent, type DragEvent } from 'react'
+import { useEffect, useRef, useState, type ChangeEvent, type ClipboardEvent, type DragEvent } from 'react'
 import {
   IconBolt,
   IconCheck,
@@ -18,7 +18,7 @@ import {
   recognizeWithTesseract,
 } from '../lib/ocr'
 import PreviewModal, { type PreviewImage } from '../components/PreviewModal'
-import OtherTools from '../components/OtherTools'
+import { FOCUS_RING, BUTTON_PRIMARY, BUTTON_SECONDARY, BADGE } from '../lib/ui'
 
 const AI_CONCURRENCY = 3
 
@@ -40,18 +40,15 @@ type FileResult = {
   engine: Engine
 }
 
-const FOCUS_RING =
-  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900'
-
 const formatFileSize = (bytes: number) => {
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(0)} KB`
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
 }
 
 const CONFIDENCE_LEVELS = {
-  high: { label: 'Confianza alta', className: 'bg-emerald-100 text-emerald-700' },
-  medium: { label: 'Confianza media', className: 'bg-amber-100 text-amber-700' },
-  low: { label: 'Confianza baja', className: 'bg-red-100 text-red-700' },
+  high: { label: 'Confianza alta', className: BADGE.emerald },
+  medium: { label: 'Confianza media', className: BADGE.amber },
+  low: { label: 'Confianza baja', className: BADGE.red },
 } as const
 
 const getConfidenceLevel = (confidence: number) => {
@@ -73,11 +70,22 @@ const Ocr = () => {
   const [isDragging, setIsDragging] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
   const dragCounter = useRef(0)
+  // Todas las URLs de vista previa creadas; se revocan al desmontar (revocar dos veces es inofensivo).
+  const urlsRef = useRef<string[]>([])
+
+  useEffect(() => {
+    const urls = urlsRef.current
+    return () => urls.forEach((url) => URL.revokeObjectURL(url))
+  }, [])
 
   const addFiles = (incoming: FileList | File[]) => {
     const valid = Array.from(incoming)
       .filter((file) => ACCEPTED_TYPES.includes(file.type))
-      .map((file) => ({ file, previewUrl: URL.createObjectURL(file) }))
+      .map((file) => {
+        const previewUrl = URL.createObjectURL(file)
+        urlsRef.current.push(previewUrl)
+        return { file, previewUrl }
+      })
     setFiles((prev) => [...prev, ...valid])
   }
 
@@ -321,7 +329,7 @@ const Ocr = () => {
                 className={`flex flex-1 cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed p-10 text-center transition-colors ${FOCUS_RING} ${
                   isDragging
                     ? 'border-emerald-600 bg-emerald-50/60 dark:border-emerald-400 dark:bg-emerald-500/10'
-                    : 'border-slate-300 bg-white hover:border-emerald-600 dark:border-slate-700 dark:bg-slate-900 dark:hover:border-emerald-400'
+                    : 'border-slate-500 bg-white hover:border-emerald-600 dark:border-slate-500 dark:bg-slate-900 dark:hover:border-emerald-400'
                 }`}
               >
                 <IconUpload
@@ -344,6 +352,7 @@ const Ocr = () => {
                 <input
                   ref={inputRef}
                   type="file"
+                  aria-label="Elegir imágenes"
                   accept={ACCEPTED_EXT}
                   multiple
                   onChange={handleChange}
@@ -357,7 +366,7 @@ const Ocr = () => {
                 <ul className="max-h-80 flex-1 space-y-2 overflow-y-auto p-3 lg:max-h-none">
                   {files.map(({ file, previewUrl }, i) => (
                     <li
-                      key={`${file.name}-${i}`}
+                      key={previewUrl}
                       className="flex items-center gap-3 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm dark:border-slate-800 dark:bg-slate-900"
                     >
                       <button
@@ -376,6 +385,7 @@ const Ocr = () => {
                       <button
                         type="button"
                         onClick={() => removeFile(i)}
+                        aria-label={`Quitar ${file.name}`}
                         className={`shrink-0 cursor-pointer rounded text-slate-500 hover:text-emerald-600 dark:text-slate-400 ${FOCUS_RING}`}
                       >
                         <IconX size={18} />
@@ -391,7 +401,7 @@ const Ocr = () => {
             type="button"
             disabled={files.length === 0 || isConverting}
             onClick={handleConvert}
-            className={`mt-6 inline-flex cursor-pointer items-center gap-2 rounded-lg bg-emerald-600 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-emerald-700 disabled:cursor-not-allowed disabled:bg-slate-300 dark:disabled:bg-slate-700 ${FOCUS_RING}`}
+            className={`mt-6 ${BUTTON_PRIMARY}`}
           >
             {isConverting && <IconLoader2 size={18} className="animate-spin" />}
             {isConverting
@@ -407,7 +417,7 @@ const Ocr = () => {
             <button
               type="button"
               onClick={handleReset}
-              className={`inline-flex cursor-pointer items-center gap-2 rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-800 transition-colors hover:border-emerald-600 hover:text-emerald-600 dark:border-slate-800 dark:text-slate-100 dark:hover:border-emerald-400 dark:hover:text-emerald-400 ${FOCUS_RING}`}
+              className={BUTTON_SECONDARY}
             >
               <IconRefresh size={18} />
               Volver a empezar
@@ -415,7 +425,7 @@ const Ocr = () => {
             <button
               type="button"
               onClick={copyAllText}
-              className={`inline-flex cursor-pointer items-center gap-2 rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-800 transition-colors hover:border-emerald-600 hover:text-emerald-600 dark:border-slate-800 dark:text-slate-100 dark:hover:border-emerald-400 dark:hover:text-emerald-400 ${FOCUS_RING}`}
+              className={BUTTON_SECONDARY}
             >
               {copiedAll ? <IconCheck size={18} /> : <IconCopy size={18} />}
               Copiar todo
@@ -423,7 +433,7 @@ const Ocr = () => {
             <button
               type="button"
               onClick={downloadAllText}
-              className={`inline-flex cursor-pointer items-center gap-2 rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-800 transition-colors hover:border-emerald-600 hover:text-emerald-600 dark:border-slate-800 dark:text-slate-100 dark:hover:border-emerald-400 dark:hover:text-emerald-400 ${FOCUS_RING}`}
+              className={BUTTON_SECONDARY}
             >
               <IconDownload size={18} />
               Descargar todo
@@ -435,7 +445,7 @@ const Ocr = () => {
               const confidenceLevel = getConfidenceLevel(result.confidence)
               return (
               <div
-                key={`${result.file.name}-${i}`}
+                key={result.previewUrl}
                 className="rounded-xl border border-slate-200 bg-white p-5 motion-safe:opacity-0 motion-safe:animate-[reveal-up_0.4s_ease-out_forwards] dark:border-slate-800 dark:bg-slate-900"
                 style={{ animationDelay: `${Math.min(i * 60, 300)}ms` }}
               >
@@ -470,6 +480,9 @@ const Ocr = () => {
                       type="button"
                       onClick={() => retryResult(i)}
                       disabled={retryingIndex === i}
+                      aria-label={
+                        result.engine === 'fast' ? 'Reintentar con IA' : 'Reintentar con Rápido'
+                      }
                       title={
                         result.engine === 'fast' ? 'Reintentar con IA' : 'Reintentar con Rápido'
                       }
@@ -484,6 +497,7 @@ const Ocr = () => {
                     <button
                       type="button"
                       onClick={() => copyText(result.text, i)}
+                      aria-label={`Copiar texto de ${result.file.name}`}
                       className={`cursor-pointer rounded-lg border border-slate-200 p-2 text-slate-500 hover:text-emerald-600 dark:border-slate-800 dark:text-slate-400 ${FOCUS_RING}`}
                     >
                       {copiedIndex === i ? <IconCheck size={18} /> : <IconCopy size={18} />}
@@ -491,6 +505,7 @@ const Ocr = () => {
                     <button
                       type="button"
                       onClick={() => downloadText(result.file.name, result.text)}
+                      aria-label={`Descargar texto de ${result.file.name}`}
                       className={`cursor-pointer rounded-lg border border-slate-200 p-2 text-slate-500 hover:text-emerald-600 dark:border-slate-800 dark:text-slate-400 ${FOCUS_RING}`}
                     >
                       <IconDownload size={18} />
@@ -501,8 +516,9 @@ const Ocr = () => {
                   value={result.text}
                   onChange={(e) => updateResultText(i, e.target.value)}
                   placeholder="El texto reconocido va a aparecer aquí..."
+                  aria-label={`Texto reconocido de ${result.file.name}`}
                   rows={6}
-                  className={`mt-3 w-full rounded-lg border border-slate-200 bg-slate-50 p-3 text-sm text-slate-800 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100 ${FOCUS_RING}`}
+                  className={`mt-3 w-full rounded-lg border border-slate-500 bg-slate-50 p-3 text-sm text-slate-800 dark:border-slate-500 dark:bg-slate-950 dark:text-slate-100 ${FOCUS_RING}`}
                 />
               </div>
               )
@@ -513,7 +529,6 @@ const Ocr = () => {
 
       <PreviewModal image={previewImage} onClose={() => setPreviewImage(null)} />
     </section>
-    <OtherTools currentHref="/ocr" />
     </>
   )
 }

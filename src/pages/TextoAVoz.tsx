@@ -1,18 +1,11 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useId, useRef, useState } from 'react'
 import { IconPlayerPlay, IconPlayerStop, IconVolume } from '@tabler/icons-react'
-import OtherTools from '../components/OtherTools'
-
-const FOCUS_RING =
-  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900'
-
-const CARD = 'rounded-xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900'
-
-const FIELD =
-  'mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100'
+import { FOCUS_RING, BUTTON_PRIMARY, BUTTON_SECONDARY_BASE, INPUT, CARD_BASE } from '../lib/ui'
 
 const CAN_SPEAK = typeof window !== 'undefined' && 'speechSynthesis' in window
 
 const TextoAVoz = () => {
+  const uid = useId()
   const [text, setText] = useState('')
   const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([])
   const [voiceIndex, setVoiceIndex] = useState(0)
@@ -72,29 +65,31 @@ const TextoAVoz = () => {
         </p>
 
         {!CAN_SPEAK ? (
-          <div className={`${CARD} mt-8 p-6 text-center text-sm text-slate-500 dark:text-slate-400`}>
+          <div className={`${CARD_BASE} mt-8 p-6 text-center text-sm text-slate-500 dark:text-slate-400`}>
             Tu navegador no soporta síntesis de voz (Web Speech API).
           </div>
         ) : (
           <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
-            <div className={`${CARD} p-6`}>
-              <label className="text-sm font-semibold text-slate-800 dark:text-slate-100">
+            <div className={`${CARD_BASE} p-6`}>
+              <label htmlFor={`${uid}-texto`} className="text-sm font-semibold text-slate-800 dark:text-slate-100">
                 Texto
               </label>
               <textarea
+                id={`${uid}-texto`}
                 value={text}
                 onChange={(e) => setText(e.target.value)}
                 rows={8}
                 placeholder="Escribe o pega el texto que quieres escuchar"
-                className={`${FIELD} ${FOCUS_RING}`}
+                className={`${INPUT}`}
               />
 
               <div className="mt-4">
-                <label className="text-sm font-semibold text-slate-800 dark:text-slate-100">Voz</label>
+                <label htmlFor={`${uid}-voz`} className="text-sm font-semibold text-slate-800 dark:text-slate-100">Voz</label>
                 <select
+                  id={`${uid}-voz`}
                   value={voiceIndex}
                   onChange={(e) => setVoiceIndex(Number(e.target.value))}
-                  className={`${FIELD} ${FOCUS_RING} cursor-pointer`}
+                  className={`${INPUT} cursor-pointer`}
                 >
                   {voices.map((v, i) => (
                     <option key={`${v.name}-${v.lang}`} value={i}>
@@ -107,12 +102,13 @@ const TextoAVoz = () => {
               <div className="mt-4 grid grid-cols-2 gap-4">
                 <div>
                   <div className="flex items-center justify-between">
-                    <label className="text-sm font-semibold text-slate-800 dark:text-slate-100">
+                    <label htmlFor={`${uid}-velocidad`} className="text-sm font-semibold text-slate-800 dark:text-slate-100">
                       Velocidad
                     </label>
                     <span className="text-sm text-slate-500 dark:text-slate-400">{rate.toFixed(1)}x</span>
                   </div>
                   <input
+                    id={`${uid}-velocidad`}
                     type="range"
                     min={0.5}
                     max={2}
@@ -124,12 +120,13 @@ const TextoAVoz = () => {
                 </div>
                 <div>
                   <div className="flex items-center justify-between">
-                    <label className="text-sm font-semibold text-slate-800 dark:text-slate-100">
+                    <label htmlFor={`${uid}-tono`} className="text-sm font-semibold text-slate-800 dark:text-slate-100">
                       Tono
                     </label>
                     <span className="text-sm text-slate-500 dark:text-slate-400">{pitch.toFixed(1)}</span>
                   </div>
                   <input
+                    id={`${uid}-tono`}
                     type="range"
                     min={0}
                     max={2}
@@ -142,9 +139,10 @@ const TextoAVoz = () => {
               </div>
             </div>
 
-            <div className={`${CARD} flex flex-col items-center justify-center gap-4 p-6 text-center`}>
+            <div className={`${CARD_BASE} flex flex-col items-center justify-center gap-4 p-6 text-center`}>
               <IconVolume
-                className={isSpeaking ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-300 dark:text-slate-700'}
+                className={isSpeaking ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-400 dark:text-slate-600'}
+                aria-hidden="true"
                 size={64}
                 stroke={1.5}
               />
@@ -153,7 +151,7 @@ const TextoAVoz = () => {
                   type="button"
                   disabled={!text.trim()}
                   onClick={speak}
-                  className={`inline-flex cursor-pointer items-center gap-2 rounded-lg bg-emerald-600 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-emerald-700 disabled:cursor-not-allowed disabled:bg-slate-300 dark:disabled:bg-slate-700 ${FOCUS_RING}`}
+                  className={BUTTON_PRIMARY}
                 >
                   <IconPlayerPlay size={18} />
                   {isSpeaking ? 'Reiniciar' : 'Reproducir'}
@@ -162,7 +160,8 @@ const TextoAVoz = () => {
                   <button
                     type="button"
                     onClick={stop}
-                    className={`inline-flex cursor-pointer items-center gap-2 rounded-lg border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-800 transition-colors hover:border-emerald-600 hover:text-emerald-600 dark:border-slate-800 dark:text-slate-100 dark:hover:border-emerald-400 dark:hover:text-emerald-400 ${FOCUS_RING}`}
+                    aria-label="Detener"
+                    className={`${BUTTON_SECONDARY_BASE} px-4 py-3 text-sm`}
                   >
                     <IconPlayerStop size={18} />
                   </button>
@@ -172,7 +171,6 @@ const TextoAVoz = () => {
           </div>
         )}
       </section>
-      <OtherTools currentHref="/texto-a-voz" />
     </>
   )
 }

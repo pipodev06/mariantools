@@ -1,16 +1,9 @@
 import { useState } from 'react'
 import { IconCalendarPlus, IconCalendarStats } from '@tabler/icons-react'
-import OtherTools from '../components/OtherTools'
+import { DateField, NumberField } from '../components/FormFields'
+import { FOCUS_RING, CARD_BASE, CHIP_ACTIVE, CHIP_INACTIVE } from '../lib/ui'
 
 type Mode = 'diff' | 'add'
-
-const FOCUS_RING =
-  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900'
-
-const CARD = 'rounded-xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900'
-
-const FIELD =
-  'mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100'
 
 const WEEKDAY_LABELS = [
   'Domingo',
@@ -122,8 +115,8 @@ const CalculadoraFechas = () => {
                 onClick={() => setMode(m)}
                 className={`cursor-pointer rounded-md px-4 py-1.5 text-sm font-medium transition-colors ${FOCUS_RING} ${
                   mode === m
-                    ? 'bg-emerald-600 text-white'
-                    : 'text-slate-500 hover:text-emerald-600 dark:text-slate-400'
+                    ? CHIP_ACTIVE
+                    : CHIP_INACTIVE
                 }`}
               >
                 {m === 'diff' ? 'Diferencia' : 'Sumar o restar'}
@@ -134,34 +127,14 @@ const CalculadoraFechas = () => {
 
         {mode === 'diff' ? (
           <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
-            <div className={`${CARD} p-6`}>
+            <div className={`${CARD_BASE} p-6`}>
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <div>
-                  <label className="text-sm font-semibold text-slate-800 dark:text-slate-100">
-                    Fecha inicial
-                  </label>
-                  <input
-                    type="date"
-                    value={dateA}
-                    onChange={(e) => setDateA(e.target.value)}
-                    className={`${FIELD} ${FOCUS_RING}`}
-                  />
-                </div>
-                <div>
-                  <label className="text-sm font-semibold text-slate-800 dark:text-slate-100">
-                    Fecha final
-                  </label>
-                  <input
-                    type="date"
-                    value={dateB}
-                    onChange={(e) => setDateB(e.target.value)}
-                    className={`${FIELD} ${FOCUS_RING}`}
-                  />
-                </div>
+                <DateField label="Fecha inicial" value={dateA} onChange={setDateA} />
+                <DateField label="Fecha final" value={dateB} onChange={setDateB} />
               </div>
             </div>
 
-            <div className={`${CARD} flex flex-col items-center justify-center gap-4 p-6 text-center`}>
+            <div className={`${CARD_BASE} flex flex-col items-center justify-center gap-4 p-6 text-center`}>
               {diffResult ? (
                 <>
                   <IconCalendarStats className="text-emerald-600 dark:text-emerald-400" size={40} stroke={1.5} />
@@ -188,23 +161,13 @@ const CalculadoraFechas = () => {
           </div>
         ) : (
           <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
-            <div className={`${CARD} space-y-4 p-6`}>
-              <div>
-                <label className="text-sm font-semibold text-slate-800 dark:text-slate-100">
-                  Fecha base
-                </label>
-                <input
-                  type="date"
-                  value={baseDate}
-                  onChange={(e) => setBaseDate(e.target.value)}
-                  className={`${FIELD} ${FOCUS_RING}`}
-                />
-              </div>
+            <div className={`${CARD_BASE} space-y-4 p-6`}>
+              <DateField label="Fecha base" value={baseDate} onChange={setBaseDate} />
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-sm font-semibold text-slate-800 dark:text-slate-100">
+                  <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">
                     Operación
-                  </label>
+                  </p>
                   <div className="mt-1 inline-flex w-full rounded-lg border border-slate-200 p-0.5 dark:border-slate-800">
                     {(['add', 'subtract'] as const).map((op) => (
                       <button
@@ -213,8 +176,8 @@ const CalculadoraFechas = () => {
                         onClick={() => setOperation(op)}
                         className={`flex-1 cursor-pointer rounded-md px-3 py-2 text-sm font-medium transition-colors ${FOCUS_RING} ${
                           operation === op
-                            ? 'bg-emerald-600 text-white'
-                            : 'text-slate-500 hover:text-emerald-600 dark:text-slate-400'
+                            ? CHIP_ACTIVE
+                            : CHIP_INACTIVE
                         }`}
                       >
                         {op === 'add' ? 'Sumar' : 'Restar'}
@@ -222,22 +185,16 @@ const CalculadoraFechas = () => {
                     ))}
                   </div>
                 </div>
-                <div>
-                  <label className="text-sm font-semibold text-slate-800 dark:text-slate-100">
-                    Días
-                  </label>
-                  <input
-                    type="number"
-                    min={0}
-                    value={amount}
-                    onChange={(e) => setAmount(Math.max(0, Number(e.target.value)))}
-                    className={`${FIELD} ${FOCUS_RING}`}
-                  />
-                </div>
+                <NumberField
+                  label="Días"
+                  value={String(amount)}
+                  step={1}
+                  onChange={(v) => setAmount(Math.max(0, Number(v) || 0))}
+                />
               </div>
             </div>
 
-            <div className={`${CARD} flex flex-col items-center justify-center gap-3 p-6 text-center`}>
+            <div className={`${CARD_BASE} flex flex-col items-center justify-center gap-3 p-6 text-center`}>
               {addResult ? (
                 <>
                   <IconCalendarPlus className="text-emerald-600 dark:text-emerald-400" size={40} stroke={1.5} />
@@ -256,7 +213,6 @@ const CalculadoraFechas = () => {
           </div>
         )}
       </section>
-      <OtherTools currentHref="/calculadora-fechas" />
     </>
   )
 }

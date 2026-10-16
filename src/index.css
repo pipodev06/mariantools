@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @font-face {
   font-family: 'Comfortaa';
   src: url('./assets/fonts/comfortaa/Comfortaa-Regular.ttf') format('truetype');
@@ -66,5 +68,16 @@
   }
   to {
     opacity: 1;
+  }
+}
+
+/* Placeholders legibles: Tailwind v4 los pinta con currentColor al 50 %, que no llega a contraste AA en claro. */
+@layer base {
+  ::placeholder {
+    color: var(--color-slate-500);
+  }
+
+  .dark ::placeholder {
+    color: var(--color-slate-400);
   }
 }

@@ -10,7 +10,6 @@ const RecortarPdf = () => {
 
   return (
     <PdfTransformTool
-      currentHref="/recortar-pdf"
       title="Recortar PDF"
       subtitle="Quita los márgenes de todas las páginas. Medidas en milímetros."
       actionLabel="Recortar PDF"

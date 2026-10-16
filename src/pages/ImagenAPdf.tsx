@@ -1,16 +1,13 @@
-import { useRef, useState, type ChangeEvent, type ClipboardEvent, type DragEvent } from 'react'
+import { useEffect, useRef, useState, type ChangeEvent, type ClipboardEvent, type DragEvent } from 'react'
 import { IconArrowDown, IconArrowUp, IconDownload, IconFileTypePdf, IconLoader2, IconRefresh, IconUpload, IconX } from '@tabler/icons-react'
 import { buildPdfFromImages } from '../lib/imageToPdf'
 import PreviewModal, { type PreviewImage } from '../components/PreviewModal'
-import OtherTools from '../components/OtherTools'
+import { FOCUS_RING, BUTTON_PRIMARY_BASE, BUTTON_PRIMARY, BUTTON_SECONDARY } from '../lib/ui'
 
 const ACCEPTED_TYPES = ['image/jpeg', 'image/png', 'image/webp']
 const ACCEPTED_EXT = '.jpg,.jpeg,.png,.webp'
 
 type PendingFile = { file: File; previewUrl: string }
-
-const FOCUS_RING =
-  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900'
 
 const formatFileSize = (bytes: number) => {
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(0)} KB`
@@ -25,11 +22,28 @@ const ImagenAPdf = () => {
   const [isDragging, setIsDragging] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
   const dragCounter = useRef(0)
+  // Todas las URLs de vista previa creadas; se revocan al desmontar (revocar dos veces es inofensivo).
+  const urlsRef = useRef<string[]>([])
+
+  useEffect(() => {
+    const urls = urlsRef.current
+    return () => urls.forEach((url) => URL.revokeObjectURL(url))
+  }, [])
+
+  // Libera el PDF generado al reemplazarlo, reiniciar o desmontar la página.
+  useEffect(() => {
+    if (!resultUrl) return
+    return () => URL.revokeObjectURL(resultUrl)
+  }, [resultUrl])
 
   const addFiles = (incoming: FileList | File[]) => {
     const valid = Array.from(incoming)
       .filter((file) => ACCEPTED_TYPES.includes(file.type))
-      .map((file) => ({ file, previewUrl: URL.createObjectURL(file) }))
+      .map((file) => {
+        const previewUrl = URL.createObjectURL(file)
+        urlsRef.current.push(previewUrl)
+        return { file, previewUrl }
+      })
     setFiles((prev) => [...prev, ...valid])
   }
 
@@ -80,7 +94,8 @@ const ImagenAPdf = () => {
     setIsConverting(true)
     try {
       const blob = await buildPdfFromImages(files.map((f) => f.file))
-      setResultUrl(URL.createObjectURL(blob))
+      const url = URL.createObjectURL(blob)
+      setResultUrl(url)
     } finally {
       setIsConverting(false)
     }
@@ -88,7 +103,6 @@ const ImagenAPdf = () => {
 
   const handleReset = () => {
     files.forEach((f) => URL.revokeObjectURL(f.previewUrl))
-    if (resultUrl) URL.revokeObjectURL(resultUrl)
     setResultUrl(null)
     setFiles([])
   }
@@ -118,7 +132,7 @@ const ImagenAPdf = () => {
                 className={`flex min-h-72 cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed p-10 text-center transition-colors ${FOCUS_RING} ${
                   isDragging
                     ? 'border-emerald-600 bg-emerald-50/60 dark:border-emerald-400 dark:bg-emerald-500/10'
-                    : 'border-slate-300 bg-white hover:border-emerald-600 dark:border-slate-700 dark:bg-slate-900 dark:hover:border-emerald-400'
+                    : 'border-slate-500 bg-white hover:border-emerald-600 dark:border-slate-500 dark:bg-slate-900 dark:hover:border-emerald-400'
                 }`}
               >
                 <IconUpload
@@ -132,7 +146,7 @@ const ImagenAPdf = () => {
                 <p className="text-sm text-slate-500 dark:text-slate-400">
                   El orden de la lista es el orden de las páginas. Formatos: JPG, PNG, WebP.
                 </p>
-                <input ref={inputRef} type="file" accept={ACCEPTED_EXT} multiple onChange={handleChange} className="hidden" />
+                <input ref={inputRef} type="file" aria-label="Elegir imágenes" accept={ACCEPTED_EXT} multiple onChange={handleChange} className="hidden" />
               </div>
 
               {files.length > 0 && (
@@ -140,10 +154,10 @@ const ImagenAPdf = () => {
                   <ul className="max-h-80 flex-1 space-y-2 overflow-y-auto p-3 lg:max-h-none">
                     {files.map(({ file, previewUrl }, i) => (
                       <li
-                        key={`${file.name}-${i}`}
+                        key={previewUrl}
                         className="flex items-center gap-3 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm dark:border-slate-800 dark:bg-slate-900"
                       >
-                        <span className="w-5 shrink-0 text-center text-xs font-semibold text-slate-400 dark:text-slate-500">
+                        <span className="w-5 shrink-0 text-center text-xs font-semibold text-slate-500 dark:text-slate-400">
                           {i + 1}
                         </span>
                         <button
@@ -162,6 +176,7 @@ const ImagenAPdf = () => {
                             type="button"
                             disabled={i === 0}
                             onClick={() => moveFile(i, -1)}
+                            aria-label={`Subir ${file.name}`}
                             className={`cursor-pointer rounded text-slate-500 hover:text-emerald-600 disabled:cursor-not-allowed disabled:opacity-30 dark:text-slate-400 ${FOCUS_RING}`}
                           >
                             <IconArrowUp size={18} />
@@ -170,6 +185,7 @@ const ImagenAPdf = () => {
                             type="button"
                             disabled={i === files.length - 1}
                             onClick={() => moveFile(i, 1)}
+                            aria-label={`Bajar ${file.name}`}
                             className={`cursor-pointer rounded text-slate-500 hover:text-emerald-600 disabled:cursor-not-allowed disabled:opacity-30 dark:text-slate-400 ${FOCUS_RING}`}
                           >
                             <IconArrowDown size={18} />
@@ -177,6 +193,7 @@ const ImagenAPdf = () => {
                           <button
                             type="button"
                             onClick={() => removeFile(i)}
+                            aria-label={`Quitar ${file.name}`}
                             className={`cursor-pointer rounded text-slate-500 hover:text-emerald-600 dark:text-slate-400 ${FOCUS_RING}`}
                           >
                             <IconX size={18} />
@@ -193,7 +210,7 @@ const ImagenAPdf = () => {
               type="button"
               disabled={files.length === 0 || isConverting}
               onClick={handleConvert}
-              className={`mt-6 inline-flex cursor-pointer items-center gap-2 rounded-lg bg-emerald-600 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-emerald-700 disabled:cursor-not-allowed disabled:bg-slate-300 dark:disabled:bg-slate-700 ${FOCUS_RING}`}
+              className={`mt-6 ${BUTTON_PRIMARY}`}
             >
               {isConverting && <IconLoader2 size={18} className="animate-spin" />}
               {isConverting ? 'Generando PDF...' : 'Convertir'}
@@ -211,7 +228,7 @@ const ImagenAPdf = () => {
               <button
                 type="button"
                 onClick={handleReset}
-                className={`inline-flex cursor-pointer items-center gap-2 rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-800 transition-colors hover:border-emerald-600 hover:text-emerald-600 dark:border-slate-800 dark:text-slate-100 dark:hover:border-emerald-400 dark:hover:text-emerald-400 ${FOCUS_RING}`}
+                className={BUTTON_SECONDARY}
               >
                 <IconRefresh size={18} />
                 Volver a empezar
@@ -219,7 +236,7 @@ const ImagenAPdf = () => {
               <a
                 href={resultUrl}
                 download="imagenes.pdf"
-                className={`inline-flex cursor-pointer items-center gap-2 rounded-lg bg-emerald-600 px-6 py-2 text-sm font-semibold text-white transition-colors hover:bg-emerald-700 ${FOCUS_RING}`}
+                className={`${BUTTON_PRIMARY_BASE} px-6 py-2 text-sm`}
               >
                 <IconDownload size={18} />
                 Descargar PDF
@@ -230,7 +247,6 @@ const ImagenAPdf = () => {
 
         <PreviewModal image={previewImage} onClose={() => setPreviewImage(null)} />
       </section>
-      <OtherTools currentHref="/imagen-a-pdf" />
     </>
   )
 }

@@ -17,7 +17,6 @@ const CalculadoraIgv = () => {
 
   return (
     <ToolShell
-      currentHref="/calculadora-igv"
       title="Calculadora de IGV"
       subtitle="Agrega o quita el IGV de un monto al instante."
     >

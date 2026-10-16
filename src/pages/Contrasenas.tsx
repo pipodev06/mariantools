@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { IconCheck, IconChevronDown, IconCopy, IconRefresh, IconX } from '@tabler/icons-react'
 import { WORDLIST } from '../lib/wordlist'
-import OtherTools from '../components/OtherTools'
+import { FOCUS_RING, BUTTON_PRIMARY, CHIP_ACTIVE, CHIP_INACTIVE, BADGE } from '../lib/ui'
 
 const SYMBOLS = '!@#$%^&*()-_=+[]{}|;:,.<>?'
 
@@ -29,9 +29,9 @@ type SeparatorKey = (typeof SEPARATOR_OPTIONS)[number]['key']
 type Mode = 'random' | 'memorable'
 
 const STRENGTH_LEVELS = {
-  weak: { label: 'Débil', badge: 'bg-red-100 text-red-700', bar: 'bg-red-500' },
-  medium: { label: 'Media', badge: 'bg-amber-100 text-amber-700', bar: 'bg-amber-500' },
-  strong: { label: 'Fuerte', badge: 'bg-emerald-100 text-emerald-700', bar: 'bg-emerald-500' },
+  weak: { label: 'Débil', badge: BADGE.red, bar: 'bg-red-500' },
+  medium: { label: 'Media', badge: BADGE.amber, bar: 'bg-amber-500' },
+  strong: { label: 'Fuerte', badge: BADGE.emerald, bar: 'bg-emerald-500' },
 } as const
 
 const MAX_ENTROPY_BITS = 100
@@ -123,10 +123,7 @@ const generatePassphrase = (
   return parts.reduce((acc, part, i) => (i === 0 ? part : acc + getSeparator(sepKey) + part), '')
 }
 
-const FOCUS_RING =
-  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900'
-
-const CARD =
+const GLASS_CARD =
   'rounded-xl border border-white/40 bg-white/60 p-4 shadow-sm backdrop-blur-md dark:border-slate-700/40 dark:bg-slate-800/40'
 
 const OPTION_ROW =
@@ -242,7 +239,7 @@ const Contrasenas = () => {
         <div className="pointer-events-none absolute inset-0 -z-10 rounded-2xl bg-linear-to-br from-emerald-200/40 via-transparent to-slate-200/40 dark:from-emerald-500/10 dark:via-transparent dark:to-slate-800/20" />
 
         <div className="grid grid-cols-1 items-start gap-1.5 lg:grid-cols-[auto_auto]">
-          <div className={`${CARD} relative z-20 h-155 w-100 max-lg:h-auto max-lg:w-full`}>
+          <div className={`${GLASS_CARD} relative z-20 h-155 w-100 max-lg:h-auto max-lg:w-full`}>
             <div className="flex justify-center">
               <div className="inline-flex rounded-lg border border-slate-200 p-0.5 dark:border-slate-800">
                 {(['random', 'memorable'] as const).map((m) => (
@@ -252,8 +249,8 @@ const Contrasenas = () => {
                     onClick={() => setMode(m)}
                     className={`cursor-pointer rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${FOCUS_RING} ${
                       mode === m
-                        ? 'bg-emerald-600 text-white'
-                        : 'text-slate-500 hover:text-emerald-600 dark:text-slate-400'
+                        ? CHIP_ACTIVE
+                        : CHIP_INACTIVE
                     }`}
                   >
                     {m === 'random' ? 'Random' : 'Memorable'}
@@ -303,8 +300,8 @@ const Contrasenas = () => {
                         <span
                           className={`flex h-5 w-5 shrink-0 items-center justify-center rounded border ${
                             active[opt.key]
-                              ? 'border-emerald-600 bg-emerald-600 text-white'
-                              : 'border-slate-300 dark:border-slate-600'
+                              ? CHIP_ACTIVE
+                              : 'border-slate-500 dark:border-slate-500'
                           }`}
                         >
                           {active[opt.key] && <IconCheck size={14} />}
@@ -359,8 +356,8 @@ const Contrasenas = () => {
                       <span
                         className={`flex h-5 w-5 shrink-0 items-center justify-center rounded border ${
                           memorableUpper
-                            ? 'border-emerald-600 bg-emerald-600 text-white'
-                            : 'border-slate-300 dark:border-slate-600'
+                            ? CHIP_ACTIVE
+                            : 'border-slate-500 dark:border-slate-500'
                         }`}
                       >
                         {memorableUpper && <IconCheck size={14} />}
@@ -385,8 +382,8 @@ const Contrasenas = () => {
                       <span
                         className={`flex h-5 w-5 shrink-0 items-center justify-center rounded border ${
                           memorableNumbers
-                            ? 'border-emerald-600 bg-emerald-600 text-white'
-                            : 'border-slate-300 dark:border-slate-600'
+                            ? CHIP_ACTIVE
+                            : 'border-slate-500 dark:border-slate-500'
                         }`}
                       >
                         {memorableNumbers && <IconCheck size={14} />}
@@ -400,9 +397,9 @@ const Contrasenas = () => {
                 </div>
 
                 <div className="relative mt-6" ref={separatorRef}>
-                  <label className="text-sm font-semibold text-slate-800 dark:text-slate-100">
+                  <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">
                     Separadores
-                  </label>
+                  </p>
                   <button
                     type="button"
                     onClick={() => setSeparatorOpen((prev) => !prev)}
@@ -434,8 +431,8 @@ const Contrasenas = () => {
                             }}
                             className={`flex w-full cursor-pointer items-center px-3 py-2 text-left text-sm transition-colors ${FOCUS_RING} ${
                               separator === opt.key
-                                ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400'
-                                : 'text-slate-800 hover:bg-emerald-50 hover:text-emerald-700 dark:text-slate-100 dark:hover:bg-emerald-500/10 dark:hover:text-emerald-400'
+                                ? 'bg-emerald-50 text-emerald-800 dark:bg-emerald-500/10 dark:text-emerald-400'
+                                : 'text-slate-800 hover:bg-emerald-50 hover:text-emerald-800 dark:text-slate-100 dark:hover:bg-emerald-500/10 dark:hover:text-emerald-400'
                             }`}
                           >
                             {opt.label}
@@ -451,7 +448,7 @@ const Contrasenas = () => {
 
           <div className="flex min-w-0 flex-col gap-1.5">
             <div
-              className={`${CARD} flex h-44 w-210 max-lg:h-auto max-lg:w-full flex-col items-center justify-center overflow-y-auto text-center`}
+              className={`${GLASS_CARD} flex h-44 w-210 max-lg:h-auto max-lg:w-full flex-col items-center justify-center overflow-y-auto text-center`}
             >
               {featured ? (
                 <>
@@ -465,6 +462,7 @@ const Contrasenas = () => {
                     <button
                       type="button"
                       onClick={() => copyText(featured, -1)}
+                      aria-label="Copiar contraseña"
                       className={`shrink-0 cursor-pointer rounded-lg border border-slate-200 p-2 text-slate-500 hover:text-emerald-600 dark:border-slate-800 dark:text-slate-400 ${FOCUS_RING}`}
                     >
                       {copiedIndex === -1 ? <IconCheck size={18} /> : <IconCopy size={18} />}
@@ -473,7 +471,7 @@ const Contrasenas = () => {
                   <button
                     type="button"
                     onClick={regenerate}
-                    className={`mt-4 inline-flex cursor-pointer items-center gap-2 rounded-lg bg-emerald-600 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-emerald-700 ${FOCUS_RING}`}
+                    className={`mt-4 ${BUTTON_PRIMARY}`}
                   >
                     <IconRefresh size={18} />
                     Regenerar
@@ -487,7 +485,7 @@ const Contrasenas = () => {
             </div>
 
             <div
-              className={`${CARD} flex h-54 w-210 max-lg:h-auto max-lg:w-full flex-col items-center justify-center overflow-y-auto text-center`}
+              className={`${GLASS_CARD} flex h-54 w-210 max-lg:h-auto max-lg:w-full flex-col items-center justify-center overflow-y-auto text-center`}
             >
               <h2 className="text-sm font-semibold text-slate-800 dark:text-slate-100">
                 Puntuación de seguridad
@@ -522,14 +520,14 @@ const Contrasenas = () => {
             </div>
 
             {alternates.length > 0 && (
-              <div className={`${CARD} h-54 w-210 max-lg:h-auto max-lg:w-full overflow-y-auto`}>
+              <div className={`${GLASS_CARD} h-54 w-210 max-lg:h-auto max-lg:w-full overflow-y-auto`}>
                 <h3 className="text-sm font-semibold text-slate-800 dark:text-slate-100">
                   Más contraseñas
                 </h3>
                 <ul className="mt-4 space-y-1">
                   {alternates.map((pwd, i) => (
                     <li
-                      key={i}
+                      key={pwd}
                       className="flex items-center gap-3 rounded-lg px-2 py-1.5 hover:bg-white/50 dark:hover:bg-slate-900/40"
                     >
                       <span
@@ -541,6 +539,7 @@ const Contrasenas = () => {
                       <button
                         type="button"
                         onClick={() => copyText(pwd, i)}
+                        aria-label={`Copiar contraseña ${i + 2}`}
                         className={`shrink-0 cursor-pointer rounded text-slate-500 hover:text-emerald-600 dark:text-slate-400 ${FOCUS_RING}`}
                       >
                         {copiedIndex === i ? <IconCheck size={16} /> : <IconCopy size={16} />}
@@ -558,6 +557,7 @@ const Contrasenas = () => {
       {infoOpen && (
         <div
           onClick={() => setInfoOpen(false)}
+          role="presentation"
           className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/95 p-6 motion-safe:animate-[fade-in_0.15s_ease-out]"
         >
           <div
@@ -565,7 +565,7 @@ const Contrasenas = () => {
             role="dialog"
             aria-modal="true"
             aria-label="¿Cómo saber si mi contraseña es vulnerable?"
-            className="max-h-[85vh] w-full max-w-2xl overflow-y-auto rounded-xl border-2 border-[#10b981] bg-white motion-safe:animate-[modal-pop_0.18s_ease-out] dark:border-[#34d399] dark:bg-slate-900"
+            className="max-h-[85vh] w-full max-w-2xl overflow-y-auto rounded-xl border-2 border-emerald-500 bg-white motion-safe:animate-[modal-pop_0.18s_ease-out] dark:border-emerald-400 dark:bg-slate-900"
           >
             <div className="sticky top-0 flex items-center justify-between border-b border-emerald-200 bg-white px-6 py-5 dark:border-emerald-900 dark:bg-slate-900">
               <h2 className="text-lg font-semibold text-slate-800 dark:text-slate-100">
@@ -574,7 +574,8 @@ const Contrasenas = () => {
               <button
                 type="button"
                 onClick={() => setInfoOpen(false)}
-                className={`ml-3 shrink-0 cursor-pointer rounded text-emerald-700 hover:text-emerald-900 dark:text-emerald-400 dark:hover:text-emerald-300 ${FOCUS_RING}`}
+                aria-label="Cerrar"
+                className={`ml-3 shrink-0 cursor-pointer rounded text-slate-500 hover:text-emerald-600 dark:text-slate-400 dark:hover:text-emerald-400 ${FOCUS_RING}`}
               >
                 <IconX size={20} />
               </button>
@@ -611,7 +612,7 @@ const Contrasenas = () => {
                   conocida — vale la pena revisar de vez en cuando.
                 </li>
               </ul>
-              <p className="font-medium text-emerald-700 dark:text-emerald-400">
+              <p className="font-medium text-emerald-800 dark:text-emerald-400">
                 La buena noticia: no tienes que memorizar nada de esto. Usando el generador de
                 arriba ya estás dando el paso más importante.
               </p>
@@ -623,7 +624,6 @@ const Contrasenas = () => {
         </div>
       )}
     </section>
-    <OtherTools currentHref="/contrasenas" />
     </>
   )
 }

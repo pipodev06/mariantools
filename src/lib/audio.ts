@@ -1,4 +1,6 @@
-import { authHeaders, toAiError } from './aiClient'
+import { refreshAccount } from './account'
+import { toAiError } from './aiClient'
+import { authHeaders } from './supabase'
 
 const TARGET_SAMPLE_RATE = 16000
 // 100 s a 16 kHz mono de 16 bits ≈ 3.2 MB: cabe bajo el límite de 4.5 MB de Vercel.
@@ -59,6 +61,7 @@ const transcribeChunk = async (wav: Blob): Promise<string> => {
     headers: { 'Content-Type': 'audio/wav', ...(await authHeaders()) },
     body: wav,
   })
+  refreshAccount()
 
   if (!response.ok) throw await toAiError(response, 'No se pudo transcribir el audio')
 

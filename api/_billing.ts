@@ -1,59 +1,38 @@
 import type { VercelRequest } from '@vercel/node'
-import { createHash, randomUUID } from 'node:crypto'
+import { randomUUID } from 'node:crypto'
+import { SUPABASE_TIMEOUT_MS, getConfig, getUserId, hashedIp, rpc } from './_supabase.js'
 
 // Medición de uso de IA: cupo gratis diario y créditos prepagados guardados en Supabase.
-// Habla con Supabase por REST (sin SDK) usando la service_role key, que solo existe en el servidor.
-// El archivo empieza con `_`, así que Vercel no lo expone como endpoint.
+// Habla con Supabase a través de `_supabase.ts`. El archivo empieza con `_`, así que Vercel no lo
+// expone como endpoint.
 
 const FREE_DAILY_USES = Number(process.env.FREE_DAILY_USES ?? 3)
-const SUPABASE_TIMEOUT_MS = 8_000
 
-type Config = { url: string; key: string }
+/** Usos gratis que le quedan hoy a quien llama (por cuenta o por IP). `remaining` es null sin medición. */
+export const freeQuota = async (
+  req: VercelRequest,
+): Promise<{ limit: number; remaining: number | null }> => {
+  const config = getConfig()
+  if (!config) return { limit: FREE_DAILY_USES, remaining: null }
 
-const getConfig = (): Config | null => {
-  const url = process.env.SUPABASE_URL
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY
-  return url && key ? { url: url.replace(/\/+$/, ''), key } : null
-}
-
-const rpc = async <T>(config: Config, fn: string, args: Record<string, unknown>): Promise<T> => {
-  const response = await fetch(`${config.url}/rest/v1/rpc/${fn}`, {
-    method: 'POST',
-    headers: {
-      apikey: config.key,
-      Authorization: `Bearer ${config.key}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(args),
-    signal: AbortSignal.timeout(SUPABASE_TIMEOUT_MS),
-  })
-  if (!response.ok) throw new Error(`rpc ${fn} respondió ${response.status}`)
-  return (await response.json()) as T
-}
-
-/** Devuelve el id del usuario si el JWT del header Authorization es válido; si no, null. */
-export const getUserId = async (req: VercelRequest, config = getConfig()): Promise<string | null> => {
-  const token = req.headers.authorization?.match(/^Bearer (.+)$/)?.[1]
-  if (!token || !config) return null
-
-  const response = await fetch(`${config.url}/auth/v1/user`, {
-    headers: { apikey: config.key, Authorization: `Bearer ${token}` },
-    signal: AbortSignal.timeout(SUPABASE_TIMEOUT_MS),
-  })
-  if (!response.ok) return null
-  const user = (await response.json()) as { id?: string }
-  return user.id ?? null
-}
-
-// Solo se guarda un hash de la IP (con sal), nunca la IP.
-const hashedIp = (req: VercelRequest): string => {
-  const forwarded = req.headers['x-forwarded-for']
-  const raw = (Array.isArray(forwarded) ? forwarded[0] : forwarded)?.split(',')[0].trim()
-  const ip = raw || req.socket?.remoteAddress || 'unknown'
-  return createHash('sha256')
-    .update(`${process.env.BILLING_SALT ?? ''}${ip}`)
-    .digest('hex')
-    .slice(0, 32)
+  try {
+    const userId = await getUserId(req, config)
+    const key = userId ? `u:${userId}` : `ip:${hashedIp(req)}`
+    const day = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Lima' })
+    const response = await fetch(
+      `${config.url}/rest/v1/free_usage?key=eq.${encodeURIComponent(key)}&day=eq.${day}&select=uses`,
+      {
+        headers: { apikey: config.key, Authorization: `Bearer ${config.key}` },
+        signal: AbortSignal.timeout(SUPABASE_TIMEOUT_MS),
+      },
+    )
+    if (!response.ok) throw new Error(`free_usage respondió ${response.status}`)
+    const rows = (await response.json()) as { uses: number }[]
+    return { limit: FREE_DAILY_USES, remaining: Math.max(FREE_DAILY_USES - (rows[0]?.uses ?? 0), 0) }
+  } catch (err) {
+    console.error('Falló la consulta del cupo gratis', err)
+    return { limit: FREE_DAILY_USES, remaining: null }
+  }
 }
 
 export type Reservation = {

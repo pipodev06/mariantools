@@ -3,17 +3,11 @@ import { IconCheck, IconCopy, IconDownload, IconLoader2, IconRefresh } from '@ta
 import { AiError } from '../lib/aiClient'
 import AiErrorNotice from './AiErrorNotice'
 import FileDropzone from './FileDropzone'
-import OtherTools from './OtherTools'
-
-const FOCUS_RING =
-  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900'
-
-const SECONDARY_BUTTON = `inline-flex cursor-pointer items-center gap-2 rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-800 transition-colors hover:border-emerald-600 hover:text-emerald-600 dark:border-slate-800 dark:text-slate-100 dark:hover:border-emerald-400 dark:hover:text-emerald-400 ${FOCUS_RING}`
+import { BUTTON_SECONDARY } from '../lib/ui'
 
 export type SingleFileOutput = { text: string; note?: string }
 
 type Props = {
-  currentHref: string
   title: string
   subtitle: string
   accept: string
@@ -25,7 +19,6 @@ type Props = {
 
 /** Un archivo entra, un texto sale (PDF a texto, audio a texto). */
 const SingleFileTextTool = ({
-  currentHref,
   title,
   subtitle,
   accept,
@@ -99,7 +92,7 @@ const SingleFileTextTool = ({
         {file && (
           <div className="mt-8">
             <div className="mb-4 flex flex-wrap items-center gap-3">
-              <button type="button" onClick={reset} disabled={isRunning} className={`${SECONDARY_BUTTON} disabled:cursor-not-allowed disabled:opacity-50`}>
+              <button type="button" onClick={reset} disabled={isRunning} className={BUTTON_SECONDARY}>
                 <IconRefresh size={18} />
                 Otro archivo
               </button>
@@ -126,11 +119,11 @@ const SingleFileTextTool = ({
                 <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
                   <p className="text-xs text-slate-500 dark:text-slate-400">{output.note}</p>
                   <div className="flex gap-2">
-                    <button type="button" onClick={copyText} className={SECONDARY_BUTTON}>
+                    <button type="button" onClick={copyText} className={BUTTON_SECONDARY}>
                       {copied ? <IconCheck size={18} /> : <IconCopy size={18} />}
                       Copiar
                     </button>
-                    <button type="button" onClick={download} className={SECONDARY_BUTTON}>
+                    <button type="button" onClick={download} className={BUTTON_SECONDARY}>
                       <IconDownload size={18} />
                       Descargar .txt
                     </button>
@@ -144,7 +137,6 @@ const SingleFileTextTool = ({
           </div>
         )}
       </section>
-      <OtherTools currentHref={currentHref} />
     </>
   )
 }

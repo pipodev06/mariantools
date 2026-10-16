@@ -1,5 +1,7 @@
 import { Link } from 'react-router-dom'
 import { NEEDS_ACCOUNT_CODES } from '../lib/aiClient'
+import { FOCUS_RING } from '../lib/ui'
+import ErrorNotice from './ErrorNotice'
 
 type Props = {
   message: string
@@ -9,24 +11,23 @@ type Props = {
 }
 
 /** Chip de error de las herramientas con IA, con enlace a /cuenta cuando falta sesión o saldo. */
-const AiErrorNotice = ({ message, code, className = '' }: Props) => (
-  <p
-    role="alert"
-    className={`inline-block rounded-full bg-red-100 px-3 py-1 text-sm font-medium text-red-700 dark:bg-red-500/15 dark:text-red-300 ${className}`}
-  >
-    {message}
-    {code && NEEDS_ACCOUNT_CODES.includes(code) && (
+const AiErrorNotice = ({ message, code, className }: Props) => (
+  <ErrorNotice
+    className={className}
+    message={
       <>
-        {' '}
-        <Link
-          to="/cuenta"
-          className="font-semibold underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
-        >
-          Ir a mi cuenta
-        </Link>
+        {message}
+        {code && NEEDS_ACCOUNT_CODES.includes(code) && (
+          <>
+            {' '}
+            <Link to="/cuenta" className={`rounded font-semibold underline ${FOCUS_RING}`}>
+              Ir a mi cuenta
+            </Link>
+          </>
+        )}
       </>
-    )}
-  </p>
+    }
+  />
 )
 
 export default AiErrorNotice

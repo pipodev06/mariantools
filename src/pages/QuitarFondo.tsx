@@ -1,13 +1,9 @@
 import { useEffect, useState } from 'react'
+import ErrorNotice from '../components/ErrorNotice'
 import { IconDownload, IconLoader2, IconRefresh } from '@tabler/icons-react'
 import FileDropzone from '../components/FileDropzone'
-import OtherTools from '../components/OtherTools'
 import { removeBackground } from '../lib/removeBackground'
-
-const FOCUS_RING =
-  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900'
-
-const SECONDARY_BUTTON = `inline-flex cursor-pointer items-center gap-2 rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-800 transition-colors hover:border-emerald-600 hover:text-emerald-600 dark:border-slate-800 dark:text-slate-100 dark:hover:border-emerald-400 dark:hover:text-emerald-400 ${FOCUS_RING}`
+import { BUTTON_SECONDARY } from '../lib/ui'
 
 const CHECKERBOARD = {
   backgroundImage:
@@ -95,13 +91,13 @@ const QuitarFondo = () => {
                 type="button"
                 onClick={() => setState(null)}
                 disabled={isRunning}
-                className={`${SECONDARY_BUTTON} disabled:cursor-not-allowed disabled:opacity-50`}
+                className={BUTTON_SECONDARY}
               >
                 <IconRefresh size={18} />
                 Otra imagen
               </button>
               {state.resultUrl && (
-                <button type="button" onClick={download} className={SECONDARY_BUTTON}>
+                <button type="button" onClick={download} className={BUTTON_SECONDARY}>
                   <IconDownload size={18} />
                   Descargar PNG
                 </button>
@@ -109,12 +105,7 @@ const QuitarFondo = () => {
             </div>
 
             {state.error && (
-              <p
-                role="alert"
-                className="mb-4 inline-block rounded-full bg-red-100 px-3 py-1 text-sm font-medium text-red-700 dark:bg-red-500/15 dark:text-red-300"
-              >
-                {state.error}
-              </p>
+              <ErrorNotice message={state.error} className="mb-4" />
             )}
 
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
@@ -154,7 +145,6 @@ const QuitarFondo = () => {
           </div>
         )}
       </section>
-      <OtherTools currentHref="/quitar-fondo" />
     </>
   )
 }

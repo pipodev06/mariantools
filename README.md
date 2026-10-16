@@ -89,7 +89,7 @@ Nunca se exponen al cliente — solo las leen las funciones serverless en `api/`
 
 ## Despliegue
 
-El proyecto está desplegado en Vercel, con `vercel.json` reescribiendo todas las rutas a `index.html` para que las rutas hijas de React Router (ej. `/ocr`) no den 404 al refrescar — sin afectar `/api/*`, que Vercel prioriza sobre los rewrites.
+El proyecto está desplegado en Vercel. `pnpm build` prerenderiza cada ruta (`dist/<ruta>/index.html`) y genera `dist/404.html`: Vercel responde con ese archivo y estado 404 a las rutas inexistentes. `/api/*` son funciones de Vercel.
 
 ## Convenciones de diseño y código
 

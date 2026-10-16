@@ -10,8 +10,9 @@ export const parseMoney = (value: string): number => {
   return Number.isFinite(n) && n > 0 ? n : 0
 }
 
-export const formatSoles = (n: number): string =>
-  new Intl.NumberFormat('es-PE', { style: 'currency', currency: 'PEN' }).format(n)
+const SOLES_FORMAT = new Intl.NumberFormat('es-PE', { style: 'currency', currency: 'PEN' })
+
+export const formatSoles = (n: number): string => SOLES_FORMAT.format(n)
 
 /** "YYYY-MM-DD" como fecha local (new Date('YYYY-MM-DD') sería UTC y correría un día). */
 export const parseDate = (value: string): Date | null => {

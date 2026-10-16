@@ -56,7 +56,7 @@ export const toolSeo: Record<string, SeoEntry> = {
   '/comprimir': {
     title: 'Comprimir y convertir imágenes online',
     description:
-      'Reduce el peso de tus imágenes y conviértelas a JPG, PNG o WebP con poca pérdida de calidad, directo en tu navegador.',
+      'Reduce el peso de tus imágenes o llévalas a un peso exacto en KB, y conviértelas a JPG, PNG o WebP con poca pérdida de calidad, directo en tu navegador.',
   },
   '/imagen-a-pdf': {
     title: 'Imagen a PDF: une varias imágenes en un PDF',
@@ -86,7 +86,7 @@ export const toolSeo: Record<string, SeoEntry> = {
   '/firma-pdf': {
     title: 'Firmar PDF online con tu firma',
     description:
-      'Dibuja o sube tu firma y colócala sobre cualquier página de un documento PDF. Gratis y sin registro.',
+      'Dibuja tu firma y colócala sobre cualquier página de un documento PDF. Gratis y sin registro.',
   },
   '/texto-a-voz': {
     title: 'Texto a voz online',
@@ -198,6 +198,21 @@ export const toolSeo: Record<string, SeoEntry> = {
     description:
       'Comprueba si un RUC tiene 11 dígitos, un prefijo válido y el dígito verificador correcto. No consulta SUNAT.',
   },
+  '/recortar-imagen': {
+    title: 'Recortar imagen online',
+    description:
+      'Recorta tu imagen en rectángulo, en proporción 1:1, 4:3, 16:9 o en círculo. Mueve, haz zoom y descarga el resultado gratis.',
+  },
+  '/rotar-imagen': {
+    title: 'Rotar y voltear imagen online',
+    description:
+      'Gira tu imagen 90°, 180° o 270° y voltéala en horizontal o vertical. Gratis, rápido y sin registro.',
+  },
+  '/heic-a-jpg': {
+    title: 'HEIC a JPG: convierte fotos de iPhone',
+    description:
+      'Convierte fotos HEIC o HEIF de tu iPhone a JPG o PNG para abrirlas en cualquier equipo. Gratis y sin registro.',
+  },
   '/quitar-fondo': {
     title: 'Quitar fondo de imagen online',
     description:
@@ -205,4 +220,32 @@ export const toolSeo: Record<string, SeoEntry> = {
   },
 }
 
-export const toTitle = (entry: SeoEntry) => `${entry.title} | ${SITE_NAME}`
+// Páginas informativas (no son herramientas): entran al sitemap con schema WebPage.
+export const legalSeo: Record<string, SeoEntry> = {
+  '/preguntas-frecuentes': {
+    title: 'Preguntas frecuentes',
+    description:
+      'Resuelve tus dudas sobre MarianTools: si es gratis, qué pasa con tus archivos, cómo funcionan los créditos de IA y más.',
+  },
+  '/comentarios': {
+    title: 'Comentarios y sugerencias',
+    description:
+      'Cuéntanos qué herramienta te falta, qué mejorarías o qué no funciona en MarianTools.',
+  },
+  '/privacidad': {
+    title: 'Política de privacidad',
+    description:
+      'Qué datos usa MarianTools, qué se procesa en tu navegador, qué se envía a la IA y cómo ejercer tus derechos.',
+  },
+  '/terminos': {
+    title: 'Términos de uso',
+    description:
+      'Condiciones de uso de MarianTools: herramientas gratuitas, créditos de IA, alcance de los resultados y responsabilidades.',
+  },
+  '/contacto': {
+    title: 'Contacto',
+    description: 'Cómo escribir a MarianTools para consultas, errores o solicitudes sobre tus datos.',
+  },
+}
+
+export const toTitle =(entry: SeoEntry) => `${entry.title} | ${SITE_NAME}`

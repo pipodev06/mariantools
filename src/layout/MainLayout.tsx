@@ -4,6 +4,8 @@ import Header from "../components/Header";
 import Footer from "../components/Footer";
 import RouteSeo from "../components/RouteSeo";
 import ScrollToTop from "../components/ScrollToTop";
+import ToolExtras from "../components/ToolExtras";
+import ToolNote from "../components/ToolNote";
 
 const MainLayout = () => {
   return (
@@ -12,10 +14,12 @@ const MainLayout = () => {
       <ScrollToTop />
       <Header />
 
-      <main className="flex-1 bg-slate-100 dark:bg-slate-950">
+      <main className="flex-1 bg-slate-50 dark:bg-slate-950">
+        <ToolNote />
         <Suspense fallback={null}>
           <Outlet />
         </Suspense>
+        <ToolExtras />
       </main>
 
       <Footer />

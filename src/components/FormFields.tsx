@@ -1,9 +1,5 @@
 import { useId } from 'react'
-
-const FOCUS_RING =
-  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900'
-
-const INPUT = `mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 ${FOCUS_RING}`
+import { INPUT } from '../lib/ui'
 
 const LABEL = 'text-sm font-semibold text-slate-800 dark:text-slate-100'
 
@@ -74,6 +70,51 @@ export const TextField = ({
         id={id}
         type="text"
         inputMode="numeric"
+        maxLength={maxLength}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className={INPUT}
+      />
+    </div>
+  )
+}
+
+export const EmailField = ({ label, value, onChange }: FieldProps) => {
+  const id = useId()
+  return (
+    <div>
+      <label htmlFor={id} className={LABEL}>
+        {label}
+      </label>
+      <input
+        id={id}
+        type="email"
+        autoComplete="email"
+        maxLength={200}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className={INPUT}
+      />
+    </div>
+  )
+}
+
+export const TextAreaField = ({
+  label,
+  value,
+  onChange,
+  maxLength,
+  rows = 5,
+}: FieldProps & { maxLength?: number; rows?: number }) => {
+  const id = useId()
+  return (
+    <div>
+      <label htmlFor={id} className={LABEL}>
+        {label}
+      </label>
+      <textarea
+        id={id}
+        rows={rows}
         maxLength={maxLength}
         value={value}
         onChange={(e) => onChange(e.target.value)}

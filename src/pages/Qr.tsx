@@ -1,5 +1,6 @@
 import {
   useEffect,
+  useId,
   useRef,
   useState,
   type ChangeEvent,
@@ -8,7 +9,6 @@ import {
 } from 'react'
 import QRCode from 'qrcode'
 import jsQR from 'jsqr'
-import OtherTools from '../components/OtherTools'
 import {
   IconCheck,
   IconCopy,
@@ -18,6 +18,7 @@ import {
   IconUpload,
   IconX,
 } from '@tabler/icons-react'
+import { FOCUS_RING, BUTTON_PRIMARY_BASE, BUTTON_PRIMARY, BUTTON_SECONDARY_BASE, BUTTON_SECONDARY, INPUT, CARD_BASE, CHIP_ACTIVE, CHIP_SELECTED, CHIP_INACTIVE } from '../lib/ui'
 
 const ACCEPTED_TYPES = ['image/jpeg', 'image/png', 'image/webp']
 const ACCEPTED_EXT = '.jpg,.jpeg,.png,.webp'
@@ -37,16 +38,8 @@ const QR_TYPES: { key: QrType; label: string }[] = [
 
 const escapeWifi = (value: string) => value.replace(/([\\;,:"])/g, '\\$1')
 
-const FOCUS_RING =
-  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900'
-
-const CARD =
-  'rounded-xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900'
-
-const FIELD =
-  'mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100'
-
 const Qr = () => {
+  const uid = useId()
   const [mode, setMode] = useState<Mode>('generate')
   const [qrType, setQrType] = useState<QrType>('text')
 
@@ -115,12 +108,14 @@ const Qr = () => {
     })
   }
 
+  // Libera el object URL al cambiar de imagen, quitarla o desmontar la página.
+  useEffect(() => {
+    if (!readFile) return
+    return () => URL.revokeObjectURL(readFile.previewUrl)
+  }, [readFile])
+
   const decodeFile = async (file: File) => {
-    const previewUrl = URL.createObjectURL(file)
-    setReadFile((prev) => {
-      if (prev) URL.revokeObjectURL(prev.previewUrl)
-      return { file, previewUrl }
-    })
+    setReadFile({ file, previewUrl: URL.createObjectURL(file) })
     setReadResult(null)
     setReadError(false)
 
@@ -181,7 +176,6 @@ const Qr = () => {
   }
 
   const removeReadFile = () => {
-    if (readFile) URL.revokeObjectURL(readFile.previewUrl)
     setReadFile(null)
     setReadResult(null)
     setReadError(false)
@@ -215,8 +209,8 @@ const Qr = () => {
               onClick={() => setMode(m)}
               className={`cursor-pointer rounded-md px-4 py-1.5 text-sm font-medium transition-colors ${FOCUS_RING} ${
                 mode === m
-                  ? 'bg-emerald-600 text-white'
-                  : 'text-slate-500 hover:text-emerald-600 dark:text-slate-400'
+                  ? CHIP_ACTIVE
+                  : CHIP_INACTIVE
               }`}
             >
               {m === 'generate' ? 'Generar' : 'Leer'}
@@ -227,7 +221,7 @@ const Qr = () => {
 
       {mode === 'generate' ? (
         <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
-          <div className={`${CARD} overflow-y-auto p-6 lg:h-104`}>
+          <div className={`${CARD_BASE} overflow-y-auto p-6 lg:h-104`}>
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
               {QR_TYPES.map((t) => (
                 <button
@@ -236,8 +230,8 @@ const Qr = () => {
                   onClick={() => setQrType(t.key)}
                   className={`cursor-pointer rounded-lg border px-3 py-2 text-sm font-medium transition-colors ${FOCUS_RING} ${
                     qrType === t.key
-                      ? 'border-emerald-600 bg-emerald-50 text-emerald-700 dark:border-emerald-400 dark:bg-emerald-500/10 dark:text-emerald-400'
-                      : 'border-slate-200 text-slate-500 hover:border-slate-300 dark:border-slate-800 dark:text-slate-400'
+                      ? CHIP_SELECTED
+                      : CHIP_INACTIVE
                   }`}
                 >
                   {t.label}
@@ -248,30 +242,30 @@ const Qr = () => {
             <div className="mt-6">
               {qrType === 'text' && (
                 <div>
-                  <label className="text-sm font-semibold text-slate-800 dark:text-slate-100">
+                  <label htmlFor={`${uid}-text`} className="text-sm font-semibold text-slate-800 dark:text-slate-100">
                     Texto
                   </label>
-                  <textarea
+                  <textarea id={`${uid}-text`}
                     value={text}
                     onChange={(e) => setText(e.target.value)}
                     rows={4}
-                    placeholder="Escribe el texto que querés convertir en QR"
-                    className={`${FIELD} ${FOCUS_RING}`}
+                    placeholder="Escribe el texto que quieres convertir en QR"
+                    className={`${INPUT}`}
                   />
                 </div>
               )}
 
               {qrType === 'url' && (
                 <div>
-                  <label className="text-sm font-semibold text-slate-800 dark:text-slate-100">
+                  <label htmlFor={`${uid}-url`} className="text-sm font-semibold text-slate-800 dark:text-slate-100">
                     URL
                   </label>
-                  <input
+                  <input id={`${uid}-url`}
                     type="url"
                     value={url}
                     onChange={(e) => setUrl(e.target.value)}
                     placeholder="https://ejemplo.com"
-                    className={`${FIELD} ${FOCUS_RING}`}
+                    className={`${INPUT}`}
                   />
                 </div>
               )}
@@ -279,24 +273,24 @@ const Qr = () => {
               {qrType === 'wifi' && (
                 <div className="space-y-4">
                   <div>
-                    <label className="text-sm font-semibold text-slate-800 dark:text-slate-100">
+                    <label htmlFor={`${uid}-ssid`} className="text-sm font-semibold text-slate-800 dark:text-slate-100">
                       Nombre de red (SSID)
                     </label>
-                    <input
+                    <input id={`${uid}-ssid`}
                       type="text"
                       value={wifiSsid}
                       onChange={(e) => setWifiSsid(e.target.value)}
-                      className={`${FIELD} ${FOCUS_RING}`}
+                      className={`${INPUT}`}
                     />
                   </div>
                   <div>
-                    <label className="text-sm font-semibold text-slate-800 dark:text-slate-100">
+                    <label htmlFor={`${uid}-security`} className="text-sm font-semibold text-slate-800 dark:text-slate-100">
                       Seguridad
                     </label>
-                    <select
+                    <select id={`${uid}-security`}
                       value={wifiSecurity}
                       onChange={(e) => setWifiSecurity(e.target.value as WifiSecurity)}
-                      className={`${FIELD} ${FOCUS_RING} cursor-pointer`}
+                      className={`${INPUT} cursor-pointer`}
                     >
                       <option value="WPA">WPA/WPA2</option>
                       <option value="WEP">WEP</option>
@@ -305,14 +299,14 @@ const Qr = () => {
                   </div>
                   {wifiSecurity !== 'nopass' && (
                     <div>
-                      <label className="text-sm font-semibold text-slate-800 dark:text-slate-100">
+                      <label htmlFor={`${uid}-password`} className="text-sm font-semibold text-slate-800 dark:text-slate-100">
                         Contraseña
                       </label>
-                      <input
+                      <input id={`${uid}-password`}
                         type="text"
                         value={wifiPassword}
                         onChange={(e) => setWifiPassword(e.target.value)}
-                        className={`${FIELD} ${FOCUS_RING}`}
+                        className={`${INPUT}`}
                       />
                     </div>
                   )}
@@ -322,36 +316,36 @@ const Qr = () => {
               {qrType === 'contact' && (
                 <div className="space-y-4">
                   <div>
-                    <label className="text-sm font-semibold text-slate-800 dark:text-slate-100">
+                    <label htmlFor={`${uid}-name`} className="text-sm font-semibold text-slate-800 dark:text-slate-100">
                       Nombre
                     </label>
-                    <input
+                    <input id={`${uid}-name`}
                       type="text"
                       value={contactName}
                       onChange={(e) => setContactName(e.target.value)}
-                      className={`${FIELD} ${FOCUS_RING}`}
+                      className={`${INPUT}`}
                     />
                   </div>
                   <div>
-                    <label className="text-sm font-semibold text-slate-800 dark:text-slate-100">
+                    <label htmlFor={`${uid}-phone`} className="text-sm font-semibold text-slate-800 dark:text-slate-100">
                       Teléfono
                     </label>
-                    <input
+                    <input id={`${uid}-phone`}
                       type="tel"
                       value={contactPhone}
                       onChange={(e) => setContactPhone(e.target.value)}
-                      className={`${FIELD} ${FOCUS_RING}`}
+                      className={`${INPUT}`}
                     />
                   </div>
                   <div>
-                    <label className="text-sm font-semibold text-slate-800 dark:text-slate-100">
+                    <label htmlFor={`${uid}-email`} className="text-sm font-semibold text-slate-800 dark:text-slate-100">
                       Email
                     </label>
-                    <input
+                    <input id={`${uid}-email`}
                       type="email"
                       value={contactEmail}
                       onChange={(e) => setContactEmail(e.target.value)}
-                      className={`${FIELD} ${FOCUS_RING}`}
+                      className={`${INPUT}`}
                     />
                   </div>
                 </div>
@@ -360,31 +354,31 @@ const Qr = () => {
 
             <div className="mt-6 grid grid-cols-2 gap-4">
               <div>
-                <label className="text-sm font-semibold text-slate-800 dark:text-slate-100">
+                <label htmlFor={`${uid}-fg`} className="text-sm font-semibold text-slate-800 dark:text-slate-100">
                   Color del QR
                 </label>
-                <input
+                <input id={`${uid}-fg`}
                   type="color"
                   value={fgColor}
                   onChange={(e) => setFgColor(e.target.value)}
-                  className={`mt-1 h-10 w-full cursor-pointer rounded-lg border border-slate-300 dark:border-slate-700 ${FOCUS_RING}`}
+                  className={`mt-1 h-10 w-full cursor-pointer rounded-lg border border-slate-500 dark:border-slate-500 ${FOCUS_RING}`}
                 />
               </div>
               <div>
-                <label className="text-sm font-semibold text-slate-800 dark:text-slate-100">
+                <label htmlFor={`${uid}-bg`} className="text-sm font-semibold text-slate-800 dark:text-slate-100">
                   Color de fondo
                 </label>
-                <input
+                <input id={`${uid}-bg`}
                   type="color"
                   value={bgColor}
                   onChange={(e) => setBgColor(e.target.value)}
-                  className={`mt-1 h-10 w-full cursor-pointer rounded-lg border border-slate-300 dark:border-slate-700 ${FOCUS_RING}`}
+                  className={`mt-1 h-10 w-full cursor-pointer rounded-lg border border-slate-500 dark:border-slate-500 ${FOCUS_RING}`}
                 />
               </div>
             </div>
           </div>
 
-          <div className={`${CARD} flex flex-col items-center justify-center p-6 text-center lg:h-104`}>
+          <div className={`${CARD_BASE} flex flex-col items-center justify-center p-6 text-center lg:h-104`}>
             {qrValue ? (
               <>
                 <canvas ref={canvasRef} className="rounded-lg" />
@@ -392,7 +386,7 @@ const Qr = () => {
                   <button
                     type="button"
                     onClick={downloadQr}
-                    className={`inline-flex cursor-pointer items-center gap-2 rounded-lg bg-emerald-600 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-emerald-700 ${FOCUS_RING}`}
+                    className={BUTTON_PRIMARY}
                   >
                     <IconDownload size={18} />
                     Descargar
@@ -401,7 +395,8 @@ const Qr = () => {
                     <button
                       type="button"
                       onClick={copyQrImage}
-                      className={`inline-flex cursor-pointer items-center gap-2 rounded-lg border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-800 transition-colors hover:border-emerald-600 hover:text-emerald-600 dark:border-slate-800 dark:text-slate-100 dark:hover:border-emerald-400 dark:hover:text-emerald-400 ${FOCUS_RING}`}
+                      aria-label="Copiar imagen del QR"
+                      className={`${BUTTON_SECONDARY_BASE} px-4 py-3 text-sm`}
                     >
                       {copiedImage ? <IconCheck size={18} /> : <IconCopy size={18} />}
                     </button>
@@ -410,7 +405,7 @@ const Qr = () => {
               </>
             ) : (
               <>
-                <IconQrcode className="text-slate-300 dark:text-slate-700" size={64} stroke={1.5} />
+                <IconQrcode className="text-slate-400 dark:text-slate-600" aria-hidden="true" size={64} stroke={1.5} />
                 <p className="mt-3 text-sm text-slate-500 dark:text-slate-400">
                   Completa los datos para ver el código QR
                 </p>
@@ -432,7 +427,7 @@ const Qr = () => {
             className={`flex min-h-72 cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed p-10 text-center transition-colors lg:h-104 ${FOCUS_RING} ${
               isDragging
                 ? 'border-emerald-600 bg-emerald-50/60 dark:border-emerald-400 dark:bg-emerald-500/10'
-                : 'border-slate-300 bg-white hover:border-emerald-600 dark:border-slate-700 dark:bg-slate-900 dark:hover:border-emerald-400'
+                : 'border-slate-500 bg-white hover:border-emerald-600 dark:border-slate-500 dark:bg-slate-900 dark:hover:border-emerald-400'
             }`}
           >
             {readFile ? (
@@ -448,7 +443,8 @@ const Qr = () => {
                     e.stopPropagation()
                     removeReadFile()
                   }}
-                  className={`absolute -right-2 -top-2 cursor-pointer rounded-full bg-slate-800 p-1 text-white hover:bg-emerald-600 ${FOCUS_RING}`}
+                  aria-label="Quitar imagen"
+                  className={`absolute -right-2 -top-2 cursor-pointer rounded-full bg-slate-800 p-1 text-white hover:bg-emerald-700 ${FOCUS_RING}`}
                 >
                   <IconX size={16} />
                 </button>
@@ -477,13 +473,14 @@ const Qr = () => {
             <input
               ref={inputRef}
               type="file"
+              aria-label="Elegir imagen"
               accept={ACCEPTED_EXT}
               onChange={handleChange}
               className="hidden"
             />
           </div>
 
-          <div className={`${CARD} flex min-h-72 flex-col justify-center overflow-y-auto p-6 lg:h-104`}>
+          <div className={`${CARD_BASE} flex min-h-72 flex-col justify-center overflow-y-auto p-6 lg:h-104`}>
             {readResult ? (
               <div className="motion-safe:animate-[reveal-up_0.4s_ease-out_forwards]">
                 <h3 className="text-sm font-semibold text-slate-800 dark:text-slate-100">
@@ -496,7 +493,7 @@ const Qr = () => {
                   <button
                     type="button"
                     onClick={copyReadResult}
-                    className={`inline-flex cursor-pointer items-center gap-2 rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-800 transition-colors hover:border-emerald-600 hover:text-emerald-600 dark:border-slate-800 dark:text-slate-100 dark:hover:border-emerald-400 dark:hover:text-emerald-400 ${FOCUS_RING}`}
+                    className={BUTTON_SECONDARY}
                   >
                     {copiedText ? <IconCheck size={18} /> : <IconCopy size={18} />}
                     Copiar
@@ -506,7 +503,7 @@ const Qr = () => {
                       href={readResult}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className={`inline-flex cursor-pointer items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-emerald-700 ${FOCUS_RING}`}
+                      className={`${BUTTON_PRIMARY_BASE} px-4 py-2 text-sm`}
                     >
                       <IconExternalLink size={18} />
                       Abrir enlace
@@ -527,7 +524,6 @@ const Qr = () => {
         </div>
       )}
     </section>
-    <OtherTools currentHref="/qr" />
     </>
   )
 }

@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
-import { HOME_SEO, SITE_NAME, SITE_URL, toTitle, toolSeo } from '../data/seo'
+import { HOME_SEO, SITE_NAME, SITE_URL, legalSeo, toTitle, toolSeo } from '../data/seo'
 
 const setMeta = (selector: string, attrs: Record<string, string>) => {
   let element = document.head.querySelector<HTMLElement>(selector)
@@ -21,7 +21,7 @@ const RouteSeo = () => {
 
   useEffect(() => {
     const path = pathname.replace(/\/+$/, '') || '/'
-    const entry = path === '/' ? HOME_SEO : toolSeo[path]
+    const entry = path === '/' ? HOME_SEO : (toolSeo[path] ?? legalSeo[path])
 
     // Rutas desconocidas (404): sin indexar y con el título genérico.
     setMeta('meta[name="robots"]', { name: 'robots', content: entry ? 'index,follow' : 'noindex' })

@@ -10,7 +10,6 @@ const ValidadorRuc = () => {
 
   return (
     <ToolShell
-      currentHref="/validador-ruc"
       title="Validador de RUC"
       subtitle="Comprueba si un RUC peruano tiene un formato y un dígito verificador correctos."
     >
