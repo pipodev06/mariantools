@@ -8,7 +8,7 @@ La idea original del proyecto fue construir un "OCR para contadores": extraer da
 
 | Herramienta | Ruta | Qué hace |
 |---|---|---|
-| Imagen a texto | `/ocr` | OCR de imágenes con dos motores a elección: Tesseract.js (rápido, 100% en el navegador) o Mistral Pixtral (IA, entiende columnas/gráficos). Soporta varios archivos a la vez. |
+| Imagen a texto | `/ocr` | OCR de imágenes con dos motores a elección: Tesseract.js (rápido, 100% en el navegador) o Mistral (IA, entiende columnas/gráficos). Soporta varios archivos a la vez. |
 | Imagen a Base64 | `/base64` | Codifica imágenes a Base64 (Data URL o base64 puro) o decodifica de vuelta a imagen. Bidireccional, 100% client-side. |
 | Contraseñas seguras | `/contrasenas` | Generador de contraseñas con modo Random (charset configurable) o Memorable (passphrase estilo diceware, wordlist BIP39). `crypto.getRandomValues`, nunca `Math.random`. |
 | Generador/lector QR | `/qr` | Genera códigos QR (texto, URL, WiFi, contacto vCard) con color personalizable, o lee uno desde una imagen. |
@@ -37,7 +37,7 @@ Ver `tools.md` para el catálogo completo, incluidas las herramientas planeadas 
 - [react-router-dom](https://reactrouter.com/) v7
 - [@tabler/icons-react](https://tabler.io/icons) para íconos
 - [Tesseract.js](https://github.com/naptha/tesseract.js) para OCR local
-- [Mistral AI](https://mistral.ai/) (modelo Pixtral) para OCR/extracción con IA, vía funciones serverless propias
+- [Mistral AI](https://mistral.ai/) (modelo `mistral-small-latest`) para OCR/extracción con IA, vía funciones serverless propias
 - [pdf-lib](https://pdf-lib.js.org/) (editar/unir/firmar/marca de agua en PDF), [jsPDF](https://github.com/parallax/jsPDF) (generar PDF desde imágenes o Markdown), [docx](https://docx.js.org/) (generar `.docx`), [marked](https://marked.js.org/) (parseo de Markdown), [exifr](https://github.com/MikeKovarik/exifr) (metadatos EXIF)
 - Fuente self-hosted: [Comfortaa](https://fonts.google.com/specimen/Comfortaa)
 - Despliegue en [Vercel](https://vercel.com/)
@@ -46,8 +46,8 @@ Ver `tools.md` para el catálogo completo, incluidas las herramientas planeadas 
 
 ```
 api/                    Funciones serverless (Vercel) que hablan con Mistral
-  ocr-ai.ts             OCR con IA para /ocr
-  factura-ai.ts         Extracción estructurada (JSON) para /facturas
+  ai.ts                 Tareas de IA (ocr, factura, manuscrito, tabla, traducir, corregir, resumir)
+  transcribe.ts         Audio a texto (Voxtral)
 src/
   pages/                Una página por herramienta (Ocr.tsx, Contrasenas.tsx, ...)
   components/           Componentes compartidos (Header, Footer, ToolCard, OtherTools, PreviewModal)

@@ -26,62 +26,75 @@ import {
   IconCalendar,
 } from '@tabler/icons-react'
 
+export const categories = ['Extracción', 'Imagen', 'PDF', 'Texto', 'Utilidades'] as const
+
+export type Category = (typeof categories)[number]
+
 export type Tool = {
   title: string
   description: string
   href?: string
-  category?: string
+  category: Category
   icon: TablerIcon
 }
 
+// El orden refleja prioridad: primero lo fundacional (facturas, OCR) y lo de más demanda.
 export const availableTools: Tool[] = [
-  {
-    title: 'Imagen a texto',
-    description: 'Con OCR e IA para conversiones',
-    href: '/ocr',
-    icon: IconScan,
-  },
-  {
-    title: 'Imagen a Base64',
-    description: 'Data URL o base64 puro',
-    href: '/base64',
-    category: 'Imagen',
-    icon: IconBinary,
-  },
-  {
-    title: 'Contraseñas seguras',
-    description: 'Fuertes y aleatorias',
-    href: '/contrasenas',
-    category: 'Otros',
-    icon: IconKey,
-  },
-  {
-    title: 'Generador/lector QR',
-    description: 'Crea o lee al instante',
-    href: '/qr',
-    category: 'Otros',
-    icon: IconQrcode,
-  },
-  {
-    title: 'Comparador de textos',
-    description: 'Diferencias entre dos versiones',
-    href: '/comparador',
-    category: 'Texto',
-    icon: IconGitCompare,
-  },
-  {
-    title: 'Paleta de colores',
-    description: 'Colores dominantes de una foto',
-    href: '/paleta',
-    category: 'Imagen',
-    icon: IconPalette,
-  },
   {
     title: 'Facturas y recibos',
     description: 'Fecha, monto y RUC con IA',
     href: '/facturas',
-    category: 'Extracción / conversión',
+    category: 'Extracción',
     icon: IconReceipt2,
+  },
+  {
+    title: 'Imagen a texto',
+    description: 'Con OCR e IA para conversiones',
+    href: '/ocr',
+    category: 'Extracción',
+    icon: IconScan,
+  },
+  {
+    title: 'PDF a texto',
+    description: 'Incluso si está escaneado',
+    href: '/pdf-a-texto',
+    category: 'Extracción',
+    icon: IconFileTypePdf,
+  },
+  {
+    title: 'Audio a texto',
+    description: 'Transcribe notas de voz',
+    href: '/audio-a-texto',
+    category: 'Extracción',
+    icon: IconMicrophone,
+  },
+  {
+    title: 'Manuscrito a texto',
+    description: 'Reconoce letra a mano',
+    href: '/manuscrito',
+    category: 'Extracción',
+    icon: IconWriting,
+  },
+  {
+    title: 'Extractor de tablas',
+    description: 'De imagen a CSV para Excel',
+    href: '/extractor-tablas',
+    category: 'Extracción',
+    icon: IconTable,
+  },
+  {
+    title: 'Quitar fondo de imagen',
+    description: 'Fondo transparente al instante',
+    href: '/quitar-fondo',
+    category: 'Imagen',
+    icon: IconPhotoOff,
+  },
+  {
+    title: 'Traductor de imagen',
+    description: 'OCR más traducción',
+    href: '/traductor-imagen',
+    category: 'Imagen',
+    icon: IconLanguage,
   },
   {
     title: 'Comprimir/convertir imagen',
@@ -91,13 +104,6 @@ export const availableTools: Tool[] = [
     icon: IconFileZip,
   },
   {
-    title: 'Imagen a PDF',
-    description: 'Varias imágenes, un solo PDF',
-    href: '/imagen-a-pdf',
-    category: 'Imagen',
-    icon: IconFileTypePdf,
-  },
-  {
     title: 'Redimensionar para redes',
     description: 'Presets para cada red social',
     href: '/redimensionar',
@@ -105,18 +111,11 @@ export const availableTools: Tool[] = [
     icon: IconResize,
   },
   {
-    title: 'Marca de agua',
-    description: 'Sobre imágenes o PDF',
-    href: '/marca-de-agua',
-    category: 'Imagen',
-    icon: IconRubberStamp,
-  },
-  {
-    title: 'Metadatos EXIF',
-    description: 'Ubicación, cámara y fecha',
-    href: '/exif',
-    category: 'Imagen',
-    icon: IconInfoCircle,
+    title: 'Imagen a PDF',
+    description: 'Varias imágenes, un solo PDF',
+    href: '/imagen-a-pdf',
+    category: 'PDF',
+    icon: IconFileTypePdf,
   },
   {
     title: 'Editor de PDF',
@@ -133,6 +132,55 @@ export const availableTools: Tool[] = [
     icon: IconSignature,
   },
   {
+    title: 'Marca de agua',
+    description: 'Sobre imágenes o PDF',
+    href: '/marca-de-agua',
+    category: 'Imagen',
+    icon: IconRubberStamp,
+  },
+  {
+    title: 'Imagen a Base64',
+    description: 'Data URL o base64 puro',
+    href: '/base64',
+    category: 'Imagen',
+    icon: IconBinary,
+  },
+  {
+    title: 'Paleta de colores',
+    description: 'Colores dominantes de una foto',
+    href: '/paleta',
+    category: 'Imagen',
+    icon: IconPalette,
+  },
+  {
+    title: 'Metadatos EXIF',
+    description: 'Ubicación, cámara y fecha',
+    href: '/exif',
+    category: 'Imagen',
+    icon: IconInfoCircle,
+  },
+  {
+    title: 'Resumen de texto',
+    description: 'Documentos largos, en segundos',
+    href: '/resumen',
+    category: 'Texto',
+    icon: IconFileDescription,
+  },
+  {
+    title: 'Corrector ortográfico',
+    description: 'Ortografía y gramática',
+    href: '/corrector',
+    category: 'Texto',
+    icon: IconTextSpellcheck,
+  },
+  {
+    title: 'Comparador de textos',
+    description: 'Diferencias entre dos versiones',
+    href: '/comparador',
+    category: 'Texto',
+    icon: IconGitCompare,
+  },
+  {
     title: 'Texto a voz',
     description: 'Audio narrado al instante',
     href: '/texto-a-voz',
@@ -147,61 +195,26 @@ export const availableTools: Tool[] = [
     icon: IconMarkdown,
   },
   {
+    title: 'Generador/lector QR',
+    description: 'Crea o lee al instante',
+    href: '/qr',
+    category: 'Utilidades',
+    icon: IconQrcode,
+  },
+  {
+    title: 'Contraseñas seguras',
+    description: 'Fuertes y aleatorias',
+    href: '/contrasenas',
+    category: 'Utilidades',
+    icon: IconKey,
+  },
+  {
     title: 'Calculadora de fechas',
     description: 'Días entre fechas, días hábiles',
     href: '/calculadora-fechas',
-    category: 'Otros',
+    category: 'Utilidades',
     icon: IconCalendar,
   },
 ]
 
-export const upcomingTools: Tool[] = [
-  {
-    title: 'PDF a texto',
-    description: 'Incluso si está escaneado',
-    category: 'Extracción / conversión',
-    icon: IconFileTypePdf,
-  },
-  {
-    title: 'Audio a texto',
-    description: 'Transcribe notas de voz',
-    category: 'Extracción / conversión',
-    icon: IconMicrophone,
-  },
-  {
-    title: 'Extractor de tablas',
-    description: 'De imagen o PDF a Excel/CSV',
-    category: 'Extracción / conversión',
-    icon: IconTable,
-  },
-  {
-    title: 'Manuscrito a texto',
-    description: 'Reconoce letra a mano',
-    category: 'Extracción / conversión',
-    icon: IconWriting,
-  },
-  {
-    title: 'Quitar fondo de imagen',
-    description: 'Fondo transparente al instante',
-    category: 'Imagen',
-    icon: IconPhotoOff,
-  },
-  {
-    title: 'Traductor de imagen',
-    description: 'OCR más traducción',
-    category: 'Imagen',
-    icon: IconLanguage,
-  },
-  {
-    title: 'Corrector ortográfico',
-    description: 'Ortografía y gramática',
-    category: 'Texto',
-    icon: IconTextSpellcheck,
-  },
-  {
-    title: 'Resumen de texto',
-    description: 'Documentos largos, en segundos',
-    category: 'Texto',
-    icon: IconFileDescription,
-  },
-]
+export const upcomingTools: Tool[] = []

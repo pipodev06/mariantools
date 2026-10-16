@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { IconX } from '@tabler/icons-react'
 
 const FOCUS_RING =
@@ -15,20 +15,30 @@ type PreviewModalProps = {
 }
 
 const PreviewModal = ({ image, onClose }: PreviewModalProps) => {
+  const closeRef = useRef<HTMLButtonElement>(null)
+  // Ref al callback: así el efecto no se vuelve a suscribir cuando el padre pasa una función nueva.
+  const onCloseRef = useRef(onClose)
+  useEffect(() => {
+    onCloseRef.current = onClose
+  })
+
   useEffect(() => {
     if (!image) return
 
+    const previouslyFocused = document.activeElement as HTMLElement | null
+    closeRef.current?.focus()
     document.body.style.overflow = 'hidden'
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose()
+      if (e.key === 'Escape') onCloseRef.current()
     }
     window.addEventListener('keydown', handleKeyDown)
 
     return () => {
       document.body.style.overflow = ''
       window.removeEventListener('keydown', handleKeyDown)
+      previouslyFocused?.focus()
     }
-  }, [image, onClose])
+  }, [image])
 
   if (!image) return null
 
@@ -42,14 +52,16 @@ const PreviewModal = ({ image, onClose }: PreviewModalProps) => {
         role="dialog"
         aria-modal="true"
         aria-label={image.name}
-        className="max-h-[85vh] w-full max-w-3xl overflow-hidden rounded-xl bg-white motion-safe:animate-[modal-pop_0.18s_ease-out]"
+        className="max-h-[85vh] w-full max-w-3xl overflow-hidden rounded-xl bg-white motion-safe:animate-[modal-pop_0.18s_ease-out] dark:bg-slate-900"
       >
-        <div className="flex items-center justify-between border-b border-emerald-200 px-4 py-3">
-          <h3 className="truncate font-semibold text-slate-800">{image.name}</h3>
+        <div className="flex items-center justify-between border-b border-slate-200 px-4 py-3 dark:border-slate-800">
+          <h3 className="truncate font-semibold text-slate-800 dark:text-slate-100">{image.name}</h3>
           <button
+            ref={closeRef}
             type="button"
             onClick={onClose}
-            className={`ml-3 shrink-0 cursor-pointer rounded text-emerald-700 hover:text-emerald-900 ${FOCUS_RING}`}
+            aria-label="Cerrar vista previa"
+            className={`ml-3 shrink-0 cursor-pointer rounded p-1 text-slate-500 hover:text-emerald-600 dark:text-slate-400 dark:hover:text-emerald-400 ${FOCUS_RING}`}
           >
             <IconX size={20} />
           </button>
@@ -57,7 +69,7 @@ const PreviewModal = ({ image, onClose }: PreviewModalProps) => {
         <img
           src={image.url}
           alt={image.name}
-          className="max-h-[calc(85vh-53px)] w-full bg-white object-contain"
+          className="max-h-[calc(85vh-53px)] w-full object-contain"
         />
       </div>
     </div>
