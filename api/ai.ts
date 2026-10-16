@@ -1,8 +1,14 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
 
-const MISTRAL_API_URL = 'https://api.mistral.ai/v1/chat/completions'
-const MISTRAL_MODEL = 'mistral-small-latest'
-const MISTRAL_TIMEOUT_MS = 25_000
+const AI_TIMEOUT_MS = 25_000
+
+// Proveedor intercambiable: cualquier API compatible con OpenAI (/chat/completions) con visión.
+// Se configura solo por variables de entorno, sin nombres de modelo ni URLs en el código.
+const getConfig = () => {
+  const { AI_API_KEY: apiKey, AI_BASE_URL: baseUrl, AI_MODEL: model } = process.env
+  if (!apiKey || !baseUrl || !model) return null
+  return { apiKey, model, url: `${baseUrl.replace(/\/+$/, '')}/chat/completions` }
+}
 
 const MAX_TEXT_LENGTH = 20000
 // Vercel corta los cuerpos de más de 4.5 MB; el cliente ya reduce la imagen a 2000 px JPEG.
@@ -109,9 +115,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return
   }
 
-  const apiKey = process.env.MISTRAL_API_KEY
-  if (!apiKey) {
-    console.error('MISTRAL_API_KEY no configurada')
+  const config = getConfig()
+  if (!config) {
+    console.error('Faltan AI_API_KEY, AI_BASE_URL o AI_MODEL')
     res.status(503).json({ error: 'Servicio no disponible' })
     return
   }
@@ -142,7 +148,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           role: 'user',
           content: [
             { type: 'text', text: job.prompt },
-            { type: 'image_url', image_url: image },
+            { type: 'image_url', image_url: { url: image } },
           ],
         },
       ]
@@ -152,38 +158,38 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       ]
 
   try {
-    const mistralResponse = await fetch(MISTRAL_API_URL, {
+    const aiResponse = await fetch(config.url, {
       method: 'POST',
       headers: {
-        Authorization: `Bearer ${apiKey}`,
+        Authorization: `Bearer ${config.apiKey}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: MISTRAL_MODEL,
+        model: config.model,
         temperature: 0.2,
         ...(job.json ? { response_format: { type: 'json_object' } } : {}),
         messages,
       }),
-      signal: AbortSignal.timeout(MISTRAL_TIMEOUT_MS),
+      signal: AbortSignal.timeout(AI_TIMEOUT_MS),
     })
 
-    if (!mistralResponse.ok) {
-      console.error('Mistral error', mistralResponse.status, await mistralResponse.text())
+    if (!aiResponse.ok) {
+      console.error('Proveedor de IA error', aiResponse.status, await aiResponse.text())
       // Solo se expone 429 (límite); el resto (401/402/5xx) no debe filtrar el estado del proveedor.
-      const busy = mistralResponse.status === 429
+      const busy = aiResponse.status === 429
       res
         .status(busy ? 429 : 502)
         .json({ error: busy ? 'Demasiadas solicitudes, intenta en un momento' : 'La IA no pudo procesar la solicitud' })
       return
     }
 
-    const data = (await mistralResponse.json()) as {
+    const data = (await aiResponse.json()) as {
       choices?: { message?: { content?: string } }[]
     }
     res.status(200).json({ result: data.choices?.[0]?.message?.content ?? '' })
   } catch (err) {
     const timedOut = err instanceof Error && err.name === 'TimeoutError'
-    console.error('Mistral fetch falló', err)
+    console.error('Proveedor de IA fetch falló', err)
     res
       .status(timedOut ? 504 : 502)
       .json({ error: timedOut ? 'La IA tardó demasiado, intenta de nuevo' : 'No se pudo contactar a la IA' })

@@ -1,4 +1,4 @@
-/** Llama a `api/ai.ts`, que arma el prompt de cada tarea y le pega a Mistral con la key server-side. */
+/** Llama a `api/ai.ts`, que arma el prompt de cada tarea y le pega al proveedor de IA configurado (key server-side). */
 export const callAi = async (body: Record<string, unknown>): Promise<string> => {
   const response = await fetch('/api/ai', {
     method: 'POST',

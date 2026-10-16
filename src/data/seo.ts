@@ -138,6 +138,66 @@ export const toolSeo: Record<string, SeoEntry> = {
     description:
       'Transcribe notas de voz y grabaciones a texto con IA. Admite MP3, WAV, M4A y OGG.',
   },
+  '/comprimir-pdf': {
+    title: 'Comprimir PDF online',
+    description:
+      'Reduce el peso de tu PDF para enviarlo por correo o subirlo a un portal. Elige el nivel de compresión y descarga el resultado.',
+  },
+  '/pdf-a-jpg': {
+    title: 'PDF a JPG: convierte cada página en imagen',
+    description:
+      'Convierte las páginas de un PDF en imágenes JPG y descárgalas juntas en un ZIP. Gratis y en tu navegador.',
+  },
+  '/pdf-a-word': {
+    title: 'PDF a Word: texto editable',
+    description:
+      'Pasa el texto de un PDF a un documento Word (.docx) que puedes editar. Si está escaneado, lo lee con OCR.',
+  },
+  '/rotar-pdf': {
+    title: 'Rotar PDF online',
+    description:
+      'Gira todas las páginas de un PDF 90°, 180° o 270° y descarga el archivo corregido. Gratis y sin registro.',
+  },
+  '/numerar-paginas-pdf': {
+    title: 'Numerar páginas de un PDF',
+    description:
+      'Agrega el número de página al pie de cada hoja de tu PDF. Elige la posición, el formato y el número inicial.',
+  },
+  '/recortar-pdf': {
+    title: 'Recortar PDF: quitar márgenes',
+    description:
+      'Recorta los márgenes de todas las páginas de un PDF indicando los milímetros a quitar por cada lado.',
+  },
+  '/calculadora-cts': {
+    title: 'Calculadora de CTS en Perú',
+    description:
+      'Calcula tu Compensación por Tiempo de Servicios del semestre con tu sueldo, asignación familiar y gratificación. Cálculo referencial.',
+  },
+  '/calculadora-gratificacion': {
+    title: 'Calculadora de gratificación en Perú',
+    description:
+      'Calcula tu gratificación de julio o diciembre y su bonificación extraordinaria de EsSalud o EPS. Cálculo referencial.',
+  },
+  '/calculadora-liquidacion': {
+    title: 'Calculadora de liquidación laboral en Perú',
+    description:
+      'Estima tus beneficios sociales al cese: CTS trunca, vacaciones truncas y gratificación trunca. Cálculo referencial.',
+  },
+  '/calculadora-horas-extras': {
+    title: 'Calculadora de horas extras en Perú',
+    description:
+      'Calcula el pago de tus horas extras: 25% las dos primeras horas del día y 35% desde la tercera. Cálculo referencial.',
+  },
+  '/calculadora-igv': {
+    title: 'Calculadora de IGV',
+    description:
+      'Agrega o quita el IGV de un monto y obtén el valor sin IGV, el impuesto y el total al instante.',
+  },
+  '/validador-ruc': {
+    title: 'Validador de RUC peruano',
+    description:
+      'Comprueba si un RUC tiene 11 dígitos, un prefijo válido y el dígito verificador correcto. No consulta SUNAT.',
+  },
   '/quitar-fondo': {
     title: 'Quitar fondo de imagen online',
     description:

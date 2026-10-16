@@ -30,6 +30,18 @@ const ResumenTexto = lazy(() => import('./pages/ResumenTexto'))
 const PdfATexto = lazy(() => import('./pages/PdfATexto'))
 const AudioATexto = lazy(() => import('./pages/AudioATexto'))
 const QuitarFondo = lazy(() => import('./pages/QuitarFondo'))
+const ComprimirPdf = lazy(() => import('./pages/ComprimirPdf'))
+const PdfAJpg = lazy(() => import('./pages/PdfAJpg'))
+const PdfAWord = lazy(() => import('./pages/PdfAWord'))
+const RotarPdf = lazy(() => import('./pages/RotarPdf'))
+const NumerarPaginasPdf = lazy(() => import('./pages/NumerarPaginasPdf'))
+const RecortarPdf = lazy(() => import('./pages/RecortarPdf'))
+const CalculadoraCts = lazy(() => import('./pages/CalculadoraCts'))
+const CalculadoraGratificacion = lazy(() => import('./pages/CalculadoraGratificacion'))
+const CalculadoraLiquidacion = lazy(() => import('./pages/CalculadoraLiquidacion'))
+const CalculadoraHorasExtras = lazy(() => import('./pages/CalculadoraHorasExtras'))
+const CalculadoraIgv = lazy(() => import('./pages/CalculadoraIgv'))
+const ValidadorRuc = lazy(() => import('./pages/ValidadorRuc'))
 const NoEncontrada = lazy(() => import('./pages/NoEncontrada'))
 
 const App = () => {
@@ -62,6 +74,18 @@ const App = () => {
         <Route path="pdf-a-texto" element={<PdfATexto />} />
         <Route path="audio-a-texto" element={<AudioATexto />} />
         <Route path="quitar-fondo" element={<QuitarFondo />} />
+        <Route path="comprimir-pdf" element={<ComprimirPdf />} />
+        <Route path="pdf-a-jpg" element={<PdfAJpg />} />
+        <Route path="pdf-a-word" element={<PdfAWord />} />
+        <Route path="rotar-pdf" element={<RotarPdf />} />
+        <Route path="numerar-paginas-pdf" element={<NumerarPaginasPdf />} />
+        <Route path="recortar-pdf" element={<RecortarPdf />} />
+        <Route path="calculadora-cts" element={<CalculadoraCts />} />
+        <Route path="calculadora-gratificacion" element={<CalculadoraGratificacion />} />
+        <Route path="calculadora-liquidacion" element={<CalculadoraLiquidacion />} />
+        <Route path="calculadora-horas-extras" element={<CalculadoraHorasExtras />} />
+        <Route path="calculadora-igv" element={<CalculadoraIgv />} />
+        <Route path="validador-ruc" element={<ValidadorRuc />} />
         <Route path="*" element={<NoEncontrada />} />
       </Route>
     </Routes>
