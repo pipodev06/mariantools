@@ -29,7 +29,10 @@ const localApi = (): Plugin => ({
 
     server.middlewares.use(async (req, res, next) => {
       const name = req.url?.match(/^\/api\/([\w-]+)(?:\?.*)?$/)?.[1]
-      if (!name || !existsSync(join(server.config.root, 'api', `${name}.ts`))) return next()
+      // Los archivos que empiezan con `_` son módulos internos (como en Vercel), no endpoints.
+      if (!name || name.startsWith('_') || !existsSync(join(server.config.root, 'api', `${name}.ts`))) {
+        return next()
+      }
 
       const vercelRes = Object.assign(res, {
         status(code: number) {

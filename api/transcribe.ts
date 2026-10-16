@@ -1,6 +1,10 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
 
+import { isDenied, refund, reserve } from './_billing.js'
+
 const AI_TIMEOUT_MS = 25_000
+// Cada trozo de audio (~100 s) cuesta 1 crédito.
+const AUDIO_CHUNK_COST = 1
 
 // Proveedor de transcripción intercambiable: cualquier API compatible con OpenAI
 // (/audio/transcriptions). Si AI_AUDIO_* no está definido, reutiliza AI_API_KEY y AI_BASE_URL;
@@ -58,6 +62,18 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return
   }
 
+  const reservation = await reserve(req, 'audio', AUDIO_CHUNK_COST)
+  if (isDenied(reservation)) {
+    res.status(reservation.status).json({ error: reservation.error, code: reservation.code })
+    return
+  }
+
+  // Si la IA falla, se devuelve el uso reservado antes de responder el error.
+  const fail = async (status: number, error: string) => {
+    await refund(reservation, 'audio')
+    res.status(status).json({ error })
+  }
+
   try {
     const form = new FormData()
     form.append('model', config.model)
@@ -72,10 +88,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     if (!aiResponse.ok) {
       console.error('Proveedor de IA error', aiResponse.status, await aiResponse.text())
-      const busy = aiResponse.status === 429
-      res
-        .status(busy ? 429 : 502)
-        .json({ error: busy ? 'Demasiadas solicitudes, intenta en un momento' : 'La IA no pudo procesar el audio' })
+      if (aiResponse.status === 429) {
+        await fail(429, 'Demasiadas solicitudes, intenta en un momento')
+      } else {
+        await fail(502, 'La IA no pudo procesar el audio')
+      }
       return
     }
 
@@ -84,8 +101,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   } catch (err) {
     const timedOut = err instanceof Error && err.name === 'TimeoutError'
     console.error('Proveedor de IA fetch falló', err)
-    res
-      .status(timedOut ? 504 : 502)
-      .json({ error: timedOut ? 'La IA tardó demasiado, intenta de nuevo' : 'No se pudo contactar a la IA' })
+    if (timedOut) {
+      await fail(504, 'La IA tardó demasiado, intenta de nuevo')
+    } else {
+      await fail(502, 'No se pudo contactar a la IA')
+    }
   }
 }

@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import { IconCheck, IconCopy, IconDownload, IconLoader2, IconRefresh } from '@tabler/icons-react'
+import { AiError } from '../lib/aiClient'
+import AiErrorNotice from './AiErrorNotice'
 import FileDropzone from './FileDropzone'
 import OtherTools from './OtherTools'
 
@@ -35,6 +37,7 @@ const SingleFileTextTool = ({
   const [file, setFile] = useState<File | null>(null)
   const [output, setOutput] = useState<SingleFileOutput | null>(null)
   const [error, setError] = useState('')
+  const [errorCode, setErrorCode] = useState<string>()
   const [progress, setProgress] = useState<{ done: number; total: number } | null>(null)
   const [isRunning, setIsRunning] = useState(false)
   const [copied, setCopied] = useState(false)
@@ -49,6 +52,7 @@ const SingleFileTextTool = ({
       setOutput(await run(selected, (done, total) => setProgress({ done, total })))
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error desconocido')
+      setErrorCode(err instanceof AiError ? err.code : undefined)
     } finally {
       setIsRunning(false)
     }
@@ -115,14 +119,7 @@ const SingleFileTextTool = ({
               </p>
             )}
 
-            {error && (
-              <p
-                role="alert"
-                className="inline-block rounded-full bg-red-100 px-3 py-1 text-sm font-medium text-red-700 dark:bg-red-500/15 dark:text-red-300"
-              >
-                {error}
-              </p>
-            )}
+            {error && <AiErrorNotice message={error} code={errorCode} />}
 
             {output && (
               <div className="rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900">
