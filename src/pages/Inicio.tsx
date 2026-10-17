@@ -49,8 +49,8 @@ const Inicio = () => {
               Herramientas web para todos tus archivos
             </h1>
             <p className="mx-auto mt-4 max-w-2xl text-lg text-slate-800 dark:text-slate-100 lg:mx-0">
-              OCR, conversión de archivos, edición de imágenes y más — gratis, directo
-              desde el navegador.
+              OCR, PDF, imágenes y calculadoras laborales de Perú en un solo lugar — gratis, directo
+              desde el navegador y con IA cuando la necesitas.
             </p>
           </div>
 

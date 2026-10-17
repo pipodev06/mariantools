@@ -1,96 +1,87 @@
 # MarianTools
 
-Suite de herramientas web gratuitas para trabajar con archivos — OCR, imágenes, texto y más — corriendo 100% en el navegador cuando es posible, y con IA para lo que necesita más que reconocimiento básico.
+**40 herramientas web gratis para trabajar con archivos:** OCR, PDF, imágenes, texto y calculadoras laborales de Perú. La mayoría corre 100% en el navegador (el archivo no sale del equipo); las que necesitan comprensión de lenguaje usan IA con usos gratis cada día.
 
-La idea original del proyecto fue construir un "OCR para contadores": extraer datos de facturas y recibos automáticamente. Esa sigue siendo la herramienta fundacional (**Facturas y recibos**), y el resto de la suite creció alrededor de esa misma idea — utilidades chicas, rápidas y sin fricción para tareas del día a día con archivos.
+🌐 [mariantools.vercel.app](https://mariantools.vercel.app) · dominio final previsto: `www.mariantools.com`
 
-## Herramientas disponibles
+El proyecto nació como un "OCR para contadores": extraer datos de facturas y recibos automáticamente. **Facturas y recibos** sigue siendo la herramienta fundacional, y el resto de la suite creció alrededor de esa idea: utilidades rápidas y sin fricción para el día a día.
 
-| Herramienta | Ruta | Qué hace |
-|---|---|---|
-| Imagen a texto | `/ocr` | OCR de imágenes con dos motores a elección: Tesseract.js (rápido, 100% en el navegador) o IA ( entiende columnas/gráficos). Soporta varios archivos a la vez. |
-| Imagen a Base64 | `/base64` | Codifica imágenes a Base64 (Data URL o base64 puro) o decodifica de vuelta a imagen. Bidireccional, 100% client-side. |
-| Contraseñas seguras | `/contrasenas` | Generador de contraseñas con modo Random (charset configurable) o Memorable (passphrase estilo diceware, wordlist BIP39). `crypto.getRandomValues`, nunca `Math.random`. |
-| Generador/lector QR | `/qr` | Genera códigos QR (texto, URL, WiFi, contacto vCard) con color personalizable, o lee uno desde una imagen. |
-| Comparador de textos | `/comparador` | Diferencias entre dos textos, por palabra o por línea, resaltadas. |
-| Paleta de colores | `/paleta` | Extrae los colores dominantes de una imagen (cuantización manual con Canvas API, sin dependencias). |
-| Facturas y recibos | `/facturas` | Extrae fecha, monto, RUC, proveedor y N° de comprobante de facturas/recibos con IA, en lote, exportable a CSV. |
-| Comprimir/convertir imagen | `/comprimir` | Convierte entre JPG, PNG y WebP con calidad ajustable, en lote. |
-| Imagen a PDF | `/imagen-a-pdf` | Junta varias imágenes en un solo PDF, con reordenamiento. |
-| Redimensionar para redes | `/redimensionar` | Presets para Instagram, Facebook, LinkedIn, X e YouTube, con recorte o ajuste. |
-| Marca de agua | `/marca-de-agua` | Marca de agua de texto sobre imágenes o todas las páginas de un PDF. |
-| Metadatos EXIF | `/exif` | Cámara, fecha y ubicación GPS (si existe) de una foto, exportable a JSON. |
-| Editor de PDF | `/editor-pdf` | Une varios PDF, reordena o elimina páginas, extrae una página como PDF aparte. |
-| Firma digital en PDF | `/firma-pdf` | Dibuja tu firma y colócala en cualquier página del PDF. |
-| Texto a voz | `/texto-a-voz` | Lee un texto en voz alta con las voces del navegador (Web Speech API). |
-| Markdown a PDF/Word | `/markdown` | Convierte Markdown a un PDF o `.docx` con formato. |
-| Calculadora de fechas | `/calculadora-fechas` | Diferencia entre dos fechas (con días hábiles) o sumar/restar días a una fecha. |
+## Herramientas
 
-Todas las de esta lista corren 100% en el navegador — ninguna depende de una API de IA salvo Imagen a texto (motor IA opcional) y Facturas y recibos.
+🖥️ = local, en el navegador · ✨ = IA (usos gratis al día, luego créditos)
 
-Ver `tools.md` para el catálogo completo, incluidas las herramientas planeadas que sí necesitan IA ("Próximamente" en la página de inicio: Extractor de tablas, Manuscrito a texto, Traductor de imagen, Resumen de texto, etc.).
+| Categoría | Herramientas |
+|---|---|
+| **Extracción** | ✨ Facturas y recibos (fecha, monto, RUC, proveedor → CSV) · 🖥️✨ Imagen a texto (OCR local o con IA) · 🖥️ PDF a texto (con OCR para escaneos) · ✨ Audio a texto · ✨ Manuscrito a texto · ✨ Extractor de tablas (→ CSV) |
+| **PDF** | Imagen a PDF · Editor (unir, dividir, reordenar) · Firma · Comprimir · PDF a JPG · PDF a Word · Rotar · Numerar páginas · Recortar márgenes — todas 🖥️ |
+| **Imagen** | 🖥️ Quitar fondo (modelo en el navegador) · ✨ Traductor de imagen · Comprimir/convertir (a peso exacto en KB) · Redimensionar para redes · Recortar · Rotar y voltear · HEIC a JPG · Marca de agua · Base64 · Metadatos EXIF · Paleta de colores |
+| **Texto** | ✨ Resumen · ✨ Corrector ortográfico · 🖥️ Comparador de textos · 🖥️ Texto a voz · 🖥️ Markdown a PDF/Word |
+| **Calculadoras (Perú)** | CTS · Gratificación · Liquidación · Horas extras · IGV · Fechas y días hábiles — todas 🖥️, régimen general, referenciales |
+| **Utilidades** | Generador/lector QR · Validador de RUC · Contraseñas seguras — todas 🖥️ |
+
+### Motores locales
+
+- **OCR (Tesseract.js, español + inglés):** detecta la orientación, agranda el texto chico hasta ~32 px de alto, endereza la inclinación, invierte capturas en modo oscuro y binariza con umbral adaptativo. Si la confianza sale baja, prueba en grises suavizados (contra el ruido) y se queda con la mejor lectura.
+- **PDF a texto / Word:** une los fragmentos de la capa de texto por su posición (sin palabras partidas en letras sueltas) y pasa las páginas escaneadas por el OCR a ~216 DPI.
+- **Lector QR:** lector nativo del navegador cuando existe (`BarcodeDetector`) y jsQR a varias escalas, con margen blanco añadido y soporte de QR invertidos.
+- **Paleta:** k-means en espacio CIELAB (distancia perceptual) con fusión de tonos casi iguales.
 
 ## Stack
 
-- [Vite](https://vite.dev/) + [React 19](https://react.dev/) + TypeScript
-- [Tailwind CSS v4](https://tailwindcss.com/) (CSS-first, sin `tailwind.config`)
-- [react-router-dom](https://reactrouter.com/) v7
-- [@tabler/icons-react](https://tabler.io/icons) para íconos
-- [Tesseract.js](https://github.com/naptha/tesseract.js) para OCR local
-- Proveedor de IA intercambiable (cualquier API compatible con OpenAI, configurado por variables `AI_*`) para OCR/extracción/transcripción, vía funciones serverless propias
-- [pdf-lib](https://pdf-lib.js.org/) (editar/unir/firmar/marca de agua en PDF), [jsPDF](https://github.com/parallax/jsPDF) (generar PDF desde imágenes o Markdown), [docx](https://docx.js.org/) (generar `.docx`), [marked](https://marked.js.org/) (parseo de Markdown), [exifr](https://github.com/MikeKovarik/exifr) (metadatos EXIF)
-- Fuente self-hosted: Manrope + Sora (@fontsource-variable)
-- Despliegue en [Vercel](https://vercel.com/)
+- [Vite](https://vite.dev/) + [React 19](https://react.dev/) + TypeScript, [Tailwind CSS v4](https://tailwindcss.com/), [react-router-dom](https://reactrouter.com/) v7, [@tabler/icons-react](https://tabler.io/icons)
+- Procesamiento local: [Tesseract.js](https://github.com/naptha/tesseract.js), [pdf.js](https://mozilla.github.io/pdf.js/), [pdf-lib](https://pdf-lib.js.org/), [jsPDF](https://github.com/parallax/jsPDF), [docx](https://docx.js.org/), [jsQR](https://github.com/cozmo/jsQR), [exifr](https://github.com/MikeKovarik/exifr), [Transformers.js](https://huggingface.co/docs/transformers.js) (quitar fondo)
+- IA: cualquier API compatible con OpenAI, configurada solo por variables de entorno, con **rotación entre varios proveedores y respaldo en paralelo** (`api/_providers.ts`)
+- Cuentas y créditos: [Supabase](https://supabase.com/) (Auth con Google o código por correo, saldo, cupo gratis diario, comentarios)
+- Despliegue en [Vercel](https://vercel.com/) con prerender por ruta (SEO) y funciones serverless en `api/`
+- Tipografía Manrope + Sora, self-hosted; modo claro y oscuro
 
-## Estructura del proyecto
+## Estructura
 
 ```
-api/                    Funciones serverless (Vercel) que hablan con el proveedor de IA
-  ai.ts                 Tareas de IA (ocr, factura, manuscrito, tabla, traducir, corregir, resumir)
-  transcribe.ts         Audio a texto (Voxtral)
+api/                 Funciones serverless (los archivos con _ no son endpoints)
+  ai.ts              Tareas de IA (ocr, factura, manuscrito, tabla, traducir, corregir, resumir)
+  transcribe.ts      Audio a texto
+  _providers.ts      Rotación y respaldo entre proveedores de IA
+  _billing.ts        Reserva y devolución de créditos / cupo gratis
 src/
-  pages/                Una página por herramienta (Ocr.tsx, Contrasenas.tsx, ...)
-  components/           Componentes compartidos (Header, Footer, ToolCard, OtherTools, PreviewModal)
-  lib/                  Lógica de negocio client-side (ocr.ts, base64.ts, palette.ts, factura.ts, pdfEditor.ts, watermark.ts, signature.ts, markdownExport.ts, resize.ts, imageConvert.ts, imageToPdf.ts, wordlist.ts)
-  data/tools.ts          Catálogo centralizado de herramientas (disponibles / próximamente)
-  layout/               MainLayout con Header/Footer
-tools.md                Documento de planificación del catálogo de herramientas
-CLAUDE.md               Convenciones de diseño/código congeladas del proyecto (fuente de verdad para estilo)
+  pages/             Una página por herramienta
+  components/        Componentes compartidos (ToolCard, Select, FileTransformTool, ...)
+  lib/               Lógica client-side (ocr, pdfText, qrDecode, palette, ...)
+  data/              Catálogo (tools.ts), SEO (seo.ts), ayuda de cada herramienta (toolInfo.ts)
+scripts/             prerender.mjs (HTML por ruta + sitemap) y check-ai.mjs (prueba los proveedores)
+supabase/migrations/ Esquema de créditos y comentarios
+docs/                Decisiones y configuración (auth, créditos, proveedores de IA, herramientas)
+AGENTS.md            Convenciones de diseño y código congeladas (fuente de verdad)
 ```
 
 ## Empezar
 
 ```bash
 pnpm install
-pnpm dev          # http://localhost:5173 — no sirve /api/*
+cp .env.example .env.local   # completar las variables
+pnpm dev                     # http://localhost:5173, también sirve /api/*
 ```
 
-Las herramientas 100% client-side (Ocr en modo Rápido, Base64, Contraseñas, Qr, Comparador, Paleta) funcionan con `pnpm dev` normal. Las que dependen de un motor de IA (Ocr en modo IA, Facturas) necesitan las funciones serverless de `api/`:
+Las herramientas locales funcionan sin ninguna variable. Para las de IA y los créditos hacen falta:
+
+- **IA:** `AI_API_KEY`, `AI_BASE_URL`, `AI_MODEL` (o varios proveedores con `AI_1_*`, `AI_2_*` …) y `AI_AUDIO_*` para audio. Detalle en [`docs/proveedores-ia.md`](docs/proveedores-ia.md).
+- **Supabase:** `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, `FREE_DAILY_USES`, `BILLING_SALT`.
+
+Las claves solo las leen las funciones de `api/`; nunca llegan al navegador. Para validar los proveedores configurados:
 
 ```bash
-pnpm dev:vercel   # vercel dev — sirve también /api/*, requiere `vercel` CLI
+node --env-file=.env.local scripts/check-ai.mjs
 ```
-
-### Variables de entorno
-
-Crear `.env.local` en la raíz copiando `.env.example` y rellenando las variables `AI_*` (proveedor, URL base y modelo; el de audio puede ser otro). Para cambiar de proveedor o de modelo solo se editan estas variables, no el código.
-
-Nunca se exponen al cliente — solo las leen las funciones serverless en `api/`.
 
 ## Scripts
 
 | Comando | Qué hace |
 |---|---|
-| `pnpm dev` | Servidor de desarrollo (Vite) |
-| `pnpm dev:vercel` | Servidor de desarrollo con funciones `/api/*` (Vercel CLI) |
-| `pnpm build` | Type-check (`tsc -b`) + build de producción |
-| `pnpm lint` | ESLint sobre todo el proyecto |
-| `pnpm preview` | Sirve el build de producción localmente |
+| `pnpm dev` | Servidor de desarrollo con `/api/*` incluido |
+| `pnpm build` | Type-check + build + prerender de cada ruta y `sitemap.xml` |
+| `pnpm lint` | ESLint |
+| `pnpm preview` | Sirve el build localmente |
 
-## Despliegue
+## Convenciones
 
-El proyecto está desplegado en Vercel. `pnpm build` prerenderiza cada ruta (`dist/<ruta>/index.html`) y genera `dist/404.html`: Vercel responde con ese archivo y estado 404 a las rutas inexistentes. `/api/*` son funciones de Vercel.
-
-## Convenciones de diseño y código
-
-Todas las decisiones de estilo (paleta de colores, tipografía, patrones de componentes, anchos de contenedor, motion/accesibilidad) están documentadas y congeladas en [`CLAUDE.md`](./CLAUDE.md). Es la referencia obligatoria antes de tocar cualquier página o componente nuevo — evita reinventar patrones que ya existen en el proyecto.
+Las decisiones de estilo (paleta, tipografía, componentes, anchos, motion, accesibilidad, móvil) están documentadas en [`AGENTS.md`](./AGENTS.md). Toda herramienta nueva se registra en `src/data/tools.ts`, `src/data/seo.ts`, `src/data/toolInfo.ts` y su ruta en `App.tsx`.

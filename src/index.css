@@ -103,6 +103,28 @@
   body {
     overflow-wrap: break-word;
   }
+
+  /* Texto claro sobre fondo oscuro se ve más grueso de lo que es: suavizado en escala de grises. */
+  .dark body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Selección y cursor de escritura con el acento de la marca en vez del azul del sistema. */
+  ::selection {
+    background-color: var(--color-emerald-200);
+    color: var(--color-slate-950);
+  }
+
+  .dark ::selection {
+    background-color: oklch(from var(--color-emerald-500) l c h / 0.35);
+    color: var(--color-slate-50);
+  }
+
+  input,
+  textarea {
+    caret-color: var(--color-emerald-600);
+  }
   html {
     color-scheme: light;
   }

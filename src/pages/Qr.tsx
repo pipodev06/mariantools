@@ -9,7 +9,7 @@ import {
 } from 'react'
 import { writeClipboardText, writeClipboardImage } from '../lib/clipboard'
 import QRCode from 'qrcode'
-import jsQR from 'jsqr'
+import { decodeQrFromFile } from '../lib/qrDecode'
 import {
   IconCheck,
   IconCopy,
@@ -128,20 +128,9 @@ const Qr = () => {
     setReadError(false)
 
     try {
-      const bitmap = await createImageBitmap(file)
-      const canvas = document.createElement('canvas')
-      canvas.width = bitmap.width
-      canvas.height = bitmap.height
-      const ctx = canvas.getContext('2d')
-      if (!ctx) throw new Error('No se pudo crear el contexto de canvas')
-      ctx.drawImage(bitmap, 0, 0)
-      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
-      const result = jsQR(imageData.data, imageData.width, imageData.height)
-      if (result?.data) {
-        setReadResult(result.data)
-      } else {
-        setReadError(true)
-      }
+      const result = await decodeQrFromFile(file)
+      if (result) setReadResult(result)
+      else setReadError(true)
     } catch {
       setReadError(true)
     }
