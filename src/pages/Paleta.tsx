@@ -232,7 +232,7 @@ const Paleta = () => {
                           className="h-14 w-14 rounded-lg border border-slate-200 shadow-sm dark:border-slate-800"
                           style={{ backgroundColor: color.hex }}
                         />
-                        <span className="flex items-center gap-1 text-xs font-medium text-slate-800 dark:text-slate-100">
+                        <span className="flex items-center gap-1 text-xs text-slate-800 dark:text-slate-100">
                           {copiedHex === color.hex ? (
                             <IconCheck size={12} />
                           ) : (

@@ -440,7 +440,7 @@ const ImagenABase64 = () => {
                       key={format}
                       type="button"
                       onClick={() => setOutputFormat(format)}
-                      className={`cursor-pointer rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${FOCUS_RING} ${
+                      className={`cursor-pointer rounded-md px-3 py-1.5 text-sm transition-colors ${FOCUS_RING} ${
                         outputFormat === format
                           ? CHIP_ACTIVE
                           : CHIP_INACTIVE

@@ -127,7 +127,7 @@ const Inicio = () => {
                 type="button"
                 aria-pressed={category === c}
                 onClick={() => setCategory(c)}
-                className={`cursor-pointer rounded-lg border px-3 py-1.5 text-sm font-medium transition-colors ${FOCUS_RING} ${
+                className={`cursor-pointer rounded-lg border px-3 py-1.5 text-sm transition-colors ${FOCUS_RING} ${
                   category === c
                     ? CHIP_ACTIVE
                     : CHIP_INACTIVE

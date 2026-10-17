@@ -113,7 +113,7 @@ const CalculadoraFechas = () => {
                 key={m}
                 type="button"
                 onClick={() => setMode(m)}
-                className={`cursor-pointer rounded-md px-4 py-1.5 text-sm font-medium transition-colors ${FOCUS_RING} ${
+                className={`cursor-pointer rounded-md px-4 py-1.5 text-sm transition-colors ${FOCUS_RING} ${
                   mode === m
                     ? CHIP_ACTIVE
                     : CHIP_INACTIVE
@@ -174,7 +174,7 @@ const CalculadoraFechas = () => {
                         key={op}
                         type="button"
                         onClick={() => setOperation(op)}
-                        className={`flex-1 cursor-pointer rounded-md px-3 py-2 text-sm font-medium transition-colors ${FOCUS_RING} ${
+                        className={`flex-1 cursor-pointer rounded-md px-3 py-2 text-sm transition-colors ${FOCUS_RING} ${
                           operation === op
                             ? CHIP_ACTIVE
                             : CHIP_INACTIVE

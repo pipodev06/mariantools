@@ -29,7 +29,7 @@ const Privacidad = () => (
     <LegalSection title="Tu cuenta y tus créditos">
       <p>
         Si creas una cuenta guardamos tu correo electrónico, tu saldo de créditos y el historial de
-        movimientos (usos, devoluciones y recargas). Los datos se almacenan en Supabase. Usamos tu correo
+        movimientos (usos, devoluciones y recargas). Los datos se almacenan en Supabase. Si entras con Google, recibimos de Google tu correo y tu nombre público; solo usamos el correo para identificarte. Usamos tu correo
         solo para que puedas iniciar sesión.
       </p>
     </LegalSection>
@@ -56,7 +56,7 @@ const Privacidad = () => (
         {CONTACT_EMAIL ? (
           <>
             , escribiendo a{' '}
-            <a className="font-semibold text-emerald-600 dark:text-emerald-400" href={`mailto:${CONTACT_EMAIL}`}>
+            <a className="font-semibold text-emerald-800 dark:text-emerald-400" href={`mailto:${CONTACT_EMAIL}`}>
               {CONTACT_EMAIL}
             </a>
           </>

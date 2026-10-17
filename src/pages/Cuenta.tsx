@@ -1,10 +1,11 @@
-import { useEffect, useState, type FormEvent } from 'react'
+import { useEffect, useState } from 'react'
 import { IconLoader2 } from '@tabler/icons-react'
 import { NumberField } from '../components/FormFields'
+import LoginForm from '../components/LoginForm'
 import { refreshAccount, useAccount } from '../lib/account'
 import { CREDIT_PACKS } from '../lib/credits'
 import { authHeaders, getSupabase } from '../lib/supabase'
-import { FOCUS_RING, BUTTON_PRIMARY, BUTTON_SECONDARY, CARD } from '../lib/ui'
+import { BUTTON_SECONDARY, CARD } from '../lib/ui'
 
 type Movement = { id: number; delta: number; reason: string; tool: string | null; created_at: string }
 
@@ -13,49 +14,6 @@ const REASONS: Record<string, string> = {
   refund: 'Devolución',
   grant: 'Recarga',
   signup: 'Bienvenida',
-}
-
-const LoginForm = () => {
-  const [email, setEmail] = useState('')
-  const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle')
-
-  const submit = async (e: FormEvent) => {
-    e.preventDefault()
-    const supabase = await getSupabase()
-    if (!supabase) return setStatus('error')
-
-    setStatus('sending')
-    const { error } = await supabase.auth.signInWithOtp({
-      email: email.trim(),
-      options: { emailRedirectTo: `${window.location.origin}/cuenta` },
-    })
-    setStatus(error ? 'error' : 'sent')
-  }
-
-  return (
-    <form onSubmit={submit} className={`${CARD} max-w-md space-y-4`}>
-      <label htmlFor="cuenta-email" className="text-sm font-semibold text-slate-800 dark:text-slate-100">
-        Correo electrónico
-      </label>
-      <input
-        id="cuenta-email"
-        type="email"
-        required
-        autoComplete="email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        className={`w-full rounded-lg border border-slate-500 bg-white px-3 py-2 text-sm text-slate-800 dark:border-slate-500 dark:bg-slate-900 dark:text-slate-100 ${FOCUS_RING}`}
-      />
-      <button type="submit" disabled={status === 'sending' || !email} className={BUTTON_PRIMARY}>
-        {status === 'sending' && <IconLoader2 size={18} className="animate-spin" />}
-        Enviarme un enlace de acceso
-      </button>
-      <p role="status" className="text-sm text-slate-500 dark:text-slate-400">
-        {status === 'sent' && 'Revisa tu correo y abre el enlace para entrar.'}
-        {status === 'error' && 'No se pudo enviar el enlace. Inténtalo de nuevo.'}
-      </p>
-    </form>
-  )
 }
 
 const Account = () => {
@@ -165,7 +123,7 @@ const Cuenta = () => {
   const { status } = useAccount()
 
   return (
-    <section className="mx-auto max-w-7xl px-6 py-16">
+    <section className={`mx-auto max-w-7xl px-6 py-16 ${status === 'user' ? '' : 'text-center'}`}>
       <h1 className="text-3xl font-bold text-slate-800 sm:text-4xl dark:text-slate-100">Mi cuenta</h1>
       <p className="mt-2 text-base text-slate-500 dark:text-slate-400">
         Tus créditos para las herramientas con IA. Las demás herramientas son gratis.

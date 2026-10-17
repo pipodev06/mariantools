@@ -7,7 +7,7 @@ const Contacto = () => (
       {CONTACT_EMAIL ? (
         <p>
           Para consultas, errores o solicitudes sobre tus datos, escribe a{' '}
-          <a className="font-semibold text-emerald-600 dark:text-emerald-400" href={`mailto:${CONTACT_EMAIL}`}>
+          <a className="font-semibold text-emerald-800 dark:text-emerald-400" href={`mailto:${CONTACT_EMAIL}`}>
             {CONTACT_EMAIL}
           </a>
           .

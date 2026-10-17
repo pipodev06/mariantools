@@ -21,7 +21,7 @@ const PreguntasFrecuentes = () => (
       ¿No encontraste tu respuesta?{' '}
       <Link
         to="/comentarios"
-        className={`font-semibold text-emerald-600 dark:text-emerald-400 ${FOCUS_RING}`}
+        className={`font-semibold text-emerald-800 dark:text-emerald-400 ${FOCUS_RING}`}
       >
         Escríbenos
       </Link>

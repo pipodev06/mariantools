@@ -18,7 +18,7 @@ export const faq: FaqItem[] = [
   },
   {
     q: '¿Necesito una cuenta?',
-    a: 'No para las herramientas gratuitas. Para usar IA más allá del cupo diario necesitas una cuenta: entras con tu correo, sin contraseña, y recibes créditos de bienvenida.',
+    a: 'No para las herramientas gratuitas. Para usar IA más allá del cupo diario necesitas una cuenta: entras con Google o con un código que te enviamos al correo, sin contraseña, y recibes créditos de bienvenida.',
   },
   {
     q: '¿Cuánto cuesta comprar créditos?',
