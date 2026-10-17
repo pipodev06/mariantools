@@ -38,6 +38,12 @@ import {
   IconCropLandscape,
   IconRotate2,
   IconDeviceMobile,
+  IconCamera,
+  IconTypography,
+  IconWallet,
+  IconPercentage,
+  IconAbc,
+  IconBarcode,
 } from '@tabler/icons-react'
 
 export const categories = [
@@ -168,6 +174,13 @@ export const availableTools: Tool[] = [
     icon: IconFileTypePdf,
   },
   {
+    title: 'Escanear documento',
+    description: 'Foto derecha en JPG o PDF',
+    href: '/escanear-documento',
+    category: 'PDF',
+    icon: IconCamera,
+  },
+  {
     title: 'Editor de PDF',
     description: 'Une, divide o reordena páginas',
     href: '/editor-pdf',
@@ -254,6 +267,13 @@ export const availableTools: Tool[] = [
     icon: IconGitCompare,
   },
   {
+    title: 'Contador de palabras',
+    description: 'Palabras, caracteres y lectura',
+    href: '/contador-palabras',
+    category: 'Texto',
+    icon: IconTypography,
+  },
+  {
     title: 'Texto a voz',
     description: 'Audio narrado al instante',
     href: '/texto-a-voz',
@@ -310,11 +330,39 @@ export const availableTools: Tool[] = [
     icon: IconReceiptTax,
   },
   {
+    title: 'Calculadora de sueldo neto',
+    description: 'Descuentos de AFP, ONP y quinta',
+    href: '/calculadora-sueldo-neto',
+    category: 'Calculadoras',
+    icon: IconWallet,
+  },
+  {
+    title: 'Calculadora de renta de quinta',
+    description: 'Impuesto anual y retención',
+    href: '/calculadora-renta-quinta',
+    category: 'Calculadoras',
+    icon: IconPercentage,
+  },
+  {
     title: 'Validador de RUC',
     description: 'Formato y dígito verificador',
     href: '/validador-ruc',
     category: 'Utilidades',
     icon: IconId,
+  },
+  {
+    title: 'Número a letras',
+    description: 'Montos para facturas y cheques',
+    href: '/numero-a-letras',
+    category: 'Utilidades',
+    icon: IconAbc,
+  },
+  {
+    title: 'Generador de códigos de barras',
+    description: 'EAN-13 y Code 128 en PNG',
+    href: '/codigo-de-barras',
+    category: 'Utilidades',
+    icon: IconBarcode,
   },
   {
     title: 'Imagen a Base64',

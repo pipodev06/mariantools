@@ -42,6 +42,12 @@ const CalculadoraLiquidacion = lazy(() => import('./pages/CalculadoraLiquidacion
 const CalculadoraHorasExtras = lazy(() => import('./pages/CalculadoraHorasExtras'))
 const CalculadoraIgv = lazy(() => import('./pages/CalculadoraIgv'))
 const ValidadorRuc = lazy(() => import('./pages/ValidadorRuc'))
+const NumeroALetras = lazy(() => import('./pages/NumeroALetras'))
+const CalculadoraSueldoNeto = lazy(() => import('./pages/CalculadoraSueldoNeto'))
+const CalculadoraRentaQuinta = lazy(() => import('./pages/CalculadoraRentaQuinta'))
+const EscanearDocumento = lazy(() => import('./pages/EscanearDocumento'))
+const ContadorPalabras = lazy(() => import('./pages/ContadorPalabras'))
+const CodigoBarras = lazy(() => import('./pages/CodigoBarras'))
 const Cuenta = lazy(() => import('./pages/Cuenta'))
 const RecortarImagen = lazy(() => import('./pages/RecortarImagen'))
 const RotarImagen = lazy(() => import('./pages/RotarImagen'))
@@ -95,6 +101,12 @@ const App = () => {
         <Route path="calculadora-horas-extras" element={<CalculadoraHorasExtras />} />
         <Route path="calculadora-igv" element={<CalculadoraIgv />} />
         <Route path="validador-ruc" element={<ValidadorRuc />} />
+        <Route path="numero-a-letras" element={<NumeroALetras />} />
+        <Route path="calculadora-sueldo-neto" element={<CalculadoraSueldoNeto />} />
+        <Route path="calculadora-renta-quinta" element={<CalculadoraRentaQuinta />} />
+        <Route path="escanear-documento" element={<EscanearDocumento />} />
+        <Route path="contador-palabras" element={<ContadorPalabras />} />
+        <Route path="codigo-de-barras" element={<CodigoBarras />} />
         <Route path="recortar-imagen" element={<RecortarImagen />} />
         <Route path="rotar-imagen" element={<RotarImagen />} />
         <Route path="heic-a-jpg" element={<HeicAJpg />} />

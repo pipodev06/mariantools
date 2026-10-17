@@ -66,6 +66,7 @@ Paleta (congelada, elegida por el usuario entre 4 opciones — "Emerald + Slate"
   - Calculadora de fechas → `IconCalendar`
   - Comprimir PDF → `IconFileZip`; PDF a JPG → `IconPhotoDown`; PDF a Word → `IconFileTypeDocx`; Rotar PDF → `IconRotateClockwise2`; Numerar páginas → `IconListNumbers`; Recortar PDF → `IconCrop`
   - Recortar imagen → `IconCropLandscape`; Rotar y voltear imagen → `IconRotate2`; HEIC a JPG → `IconDeviceMobile`
+  - Escanear documento → `IconCamera`; Contador de palabras → `IconTypography`; Número a letras → `IconAbc`; Códigos de barras → `IconBarcode`; Sueldo neto → `IconWallet`; Renta de quinta → `IconPercentage`
   - Calculadora de CTS → `IconCalculator`; gratificación → `IconGift`; liquidación → `IconReportMoney`; horas extras → `IconClockHour4`; IGV → `IconReceiptTax`; Validador de RUC → `IconId`
 
 ## Motion / accesibilidad (congelado, introducido 2026-07-16 vía skill `frontend-design`)
@@ -134,6 +135,7 @@ Dominio `https://www.mariantools.com`. Meta por ruta en `src/data/seo.ts` (títu
 Español neutro tipo Perú (PE) — **nunca voseo argentino**. "transcribe" no "transcribí", "genera" no "generá", "crea"/"lee" no "creá"/"leé", etc. Usar conjugación de tercera persona/imperativo neutro, no vos. Aplica a todo texto de UI (`tools.ts`, páginas, componentes). `tools.md` es documento de planificación del usuario, no se toca.
 
 ## Convenciones al crear o tocar una tool
+- **Pruebas** (`pnpm test`, Vitest, carpeta `tests/`): la lógica pura va en `src/lib/` y se prueba ahí (calculadoras, codificadores, motores). `vitest.config.ts` no carga `.env.local` y `tests/sin-secretos.test.ts` lo vigila: ninguna prueba debe leer claves reales. No poner pruebas dentro de `api/` (Vercel las publicaría como endpoints). Valores oficiales que cambian cada año (UIT, tasas AFP/ONP) viven en `src/lib/planilla.ts`: actualizarlos ahí y en sus pruebas.
 - Seguir el patrón de `Ocr.tsx` (`docs/herramientas/ocr-tsx.md`) para layout, dropzone y resultados.
 - Al instalar un paquete nuevo, `pnpm-workspace.yaml` tiene un bloque `allowBuilds`: hay que aprobar explícitamente su script de instalación o `pnpm install`/`build` fallan.
 - Bugs que ya se repitieron al hacer tools (tipos de `Blob` con `pdf-lib`, lint `react-hooks/set-state-in-effect` en efectos async): ver `docs/herramientas/tools-sin-ia-segunda-tanda.md` antes de volver a resolverlos.
