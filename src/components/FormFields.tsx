@@ -163,7 +163,7 @@ export const ResultCard = ({ rows, note }: { rows: ResultRow[]; note?: string })
           key={row.label}
           className={`flex items-baseline justify-between gap-4 text-sm ${
             row.strong
-              ? 'border-t border-slate-200 pt-3 text-base font-bold text-emerald-600 dark:border-slate-800 dark:text-emerald-400'
+              ? 'border-t border-slate-200 pt-3 text-base font-bold text-emerald-800 dark:border-slate-800 dark:text-emerald-400'
               : 'text-slate-800 dark:text-slate-100'
           }`}
         >

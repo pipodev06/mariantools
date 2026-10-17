@@ -10,7 +10,7 @@ const NoEncontrada = () => (
       La dirección que buscas no existe.{' '}
       <Link
         to="/"
-        className={`font-semibold text-emerald-600 hover:underline dark:text-emerald-400 ${FOCUS_RING}`}
+        className={`font-semibold text-emerald-800 hover:underline dark:text-emerald-400 ${FOCUS_RING}`}
       >
         Volver al inicio
       </Link>

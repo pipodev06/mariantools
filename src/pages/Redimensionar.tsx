@@ -93,7 +93,7 @@ const Redimensionar = () => {
                     key={p.key}
                     type="button"
                     onClick={() => setPresetKey(p.key)}
-                    className={`cursor-pointer rounded-lg border px-3 py-2 text-left text-xs font-medium transition-colors ${FOCUS_RING} ${
+                    className={`cursor-pointer rounded-lg border px-3 py-2 text-left text-xs transition-colors ${FOCUS_RING} ${
                       presetKey === p.key
                         ? CHIP_SELECTED
                         : CHIP_INACTIVE
@@ -116,7 +116,7 @@ const Redimensionar = () => {
                         key={m}
                         type="button"
                         onClick={() => setMode(m)}
-                        className={`flex-1 cursor-pointer rounded-md px-2 py-2 text-xs font-medium transition-colors ${FOCUS_RING} ${
+                        className={`flex-1 cursor-pointer rounded-md px-2 py-2 text-xs transition-colors ${FOCUS_RING} ${
                           mode === m
                             ? CHIP_ACTIVE
                             : CHIP_INACTIVE

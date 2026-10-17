@@ -169,7 +169,7 @@ const ComprimirImagen = () => {
                         key={f}
                         type="button"
                         onClick={() => setFormat(f)}
-                        className={`cursor-pointer rounded-md px-4 py-1.5 text-sm font-medium transition-colors ${FOCUS_RING} ${
+                        className={`cursor-pointer rounded-md px-4 py-1.5 text-sm transition-colors ${FOCUS_RING} ${
                           format === f
                             ? CHIP_ACTIVE
                             : CHIP_INACTIVE
@@ -325,7 +325,7 @@ const ComprimirImagen = () => {
                     <p className="mt-2 truncate text-xs text-slate-800 dark:text-slate-100">{r.outputName}</p>
                     <p className="text-xs text-slate-500 dark:text-slate-400">
                       {formatFileSize(r.file.size)} → {formatFileSize(r.outputSize)}
-                      {reduction > 0 && <span className="text-emerald-700 dark:text-emerald-400"> (-{reduction}%)</span>}
+                      {reduction > 0 && <span className="text-emerald-800 dark:text-emerald-400"> (-{reduction}%)</span>}
                     </p>
                     <a
                       href={r.outputUrl}

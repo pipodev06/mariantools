@@ -105,7 +105,7 @@ const RecortarImagen = () => {
                 type="button"
                 aria-pressed={shapeKey === s.key}
                 onClick={() => setShapeKey(s.key)}
-                className={`cursor-pointer rounded-lg border px-3 py-1.5 text-sm font-medium transition-colors ${FOCUS_RING} ${
+                className={`cursor-pointer rounded-lg border px-3 py-1.5 text-sm transition-colors ${FOCUS_RING} ${
                   shapeKey === s.key
                     ? CHIP_ACTIVE
                     : CHIP_INACTIVE

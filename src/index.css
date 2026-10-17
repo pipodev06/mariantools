@@ -2,32 +2,38 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
-@font-face {
-  font-family: 'Comfortaa';
-  src: url('./assets/fonts/comfortaa/Comfortaa-Regular.ttf') format('truetype');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Comfortaa';
-  src: url('./assets/fonts/comfortaa/Comfortaa-SemiBold.ttf') format('truetype');
-  font-weight: 600;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Comfortaa';
-  src: url('./assets/fonts/comfortaa/Comfortaa-Bold.ttf') format('truetype');
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
-}
+@import '@fontsource-variable/sora';
+@import '@fontsource-variable/manrope';
 
 @theme {
-  --font-sans: 'Comfortaa', ui-sans-serif, system-ui, sans-serif;
+  --font-sans: 'Manrope Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-display: 'Sora Variable', 'Manrope Variable', ui-sans-serif, system-ui, sans-serif;
+
+  /* Pizarra: neutros azul marino. */
+  --color-slate-50: #f6f8fc;
+  --color-slate-100: #eaeff8;
+  --color-slate-200: #d7deec;
+  --color-slate-300: #b9c4dc;
+  --color-slate-400: #9aa8c4;
+  --color-slate-500: #62708f;
+  --color-slate-600: #475472;
+  --color-slate-700: #2f3a56;
+  --color-slate-800: #1b2740;
+  --color-slate-900: #15223a;
+  --color-slate-950: #0e1726;
+
+  /* Pizarra: el acento de marca (antes emerald) es coral. */
+  --color-emerald-50: #fff1ee;
+  --color-emerald-100: #ffe0da;
+  --color-emerald-200: #ffc2b8;
+  --color-emerald-300: #ff9c8c;
+  --color-emerald-400: #ff8570;
+  --color-emerald-500: #ff6b57;
+  --color-emerald-600: #e8503b;
+  --color-emerald-700: #c8321f;
+  --color-emerald-800: #a52a1a;
+  --color-emerald-900: #7f2014;
+  --color-emerald-950: #4a0f08;
 }
 
 @keyframes scan-sweep {
@@ -73,6 +79,12 @@
 
 /* Placeholders legibles: Tailwind v4 los pinta con currentColor al 50 %, que no llega a contraste AA en claro. */
 @layer base {
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+  }
+
   ::placeholder {
     color: var(--color-slate-500);
   }

@@ -39,7 +39,7 @@ const ToolNote = () => {
   return (
     <div className="mx-auto max-w-7xl px-6 pt-6">
       <p
-        className={`inline-block rounded-full px-3 py-1 text-sm font-medium ${
+        className={`inline-block rounded-full px-3 py-1 text-sm ${
           tool.ai
             ? BADGE.emerald
             : BADGE.slate

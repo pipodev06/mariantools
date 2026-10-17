@@ -247,7 +247,7 @@ const Contrasenas = () => {
                     key={m}
                     type="button"
                     onClick={() => setMode(m)}
-                    className={`cursor-pointer rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${FOCUS_RING} ${
+                    className={`cursor-pointer rounded-md px-3 py-1.5 text-sm transition-colors ${FOCUS_RING} ${
                       mode === m
                         ? CHIP_ACTIVE
                         : CHIP_INACTIVE
@@ -306,7 +306,7 @@ const Contrasenas = () => {
                         >
                           {active[opt.key] && <IconCheck size={14} />}
                         </span>
-                        <span className="text-sm font-medium text-slate-800 dark:text-slate-100">
+                        <span className="text-sm text-slate-800 dark:text-slate-100">
                           {opt.name}
                         </span>
                       </span>
@@ -362,7 +362,7 @@ const Contrasenas = () => {
                       >
                         {memorableUpper && <IconCheck size={14} />}
                       </span>
-                      <span className="text-sm font-medium text-slate-800 dark:text-slate-100">
+                      <span className="text-sm text-slate-800 dark:text-slate-100">
                         Letras mayúsculas
                       </span>
                     </span>
@@ -388,7 +388,7 @@ const Contrasenas = () => {
                       >
                         {memorableNumbers && <IconCheck size={14} />}
                       </span>
-                      <span className="text-sm font-medium text-slate-800 dark:text-slate-100">
+                      <span className="text-sm text-slate-800 dark:text-slate-100">
                         Números
                       </span>
                     </span>
@@ -513,7 +513,7 @@ const Contrasenas = () => {
               <button
                 type="button"
                 onClick={() => setInfoOpen(true)}
-                className={`mt-1 cursor-pointer text-sm font-medium text-emerald-600 hover:underline dark:text-emerald-400 ${FOCUS_RING}`}
+                className={`mt-1 cursor-pointer text-sm text-emerald-800 hover:underline dark:text-emerald-400 ${FOCUS_RING}`}
               >
                 ¿Cómo saber si mi contraseña es vulnerable?
               </button>
@@ -612,7 +612,7 @@ const Contrasenas = () => {
                   conocida — vale la pena revisar de vez en cuando.
                 </li>
               </ul>
-              <p className="font-medium text-emerald-800 dark:text-emerald-400">
+              <p className="text-emerald-800 dark:text-emerald-400">
                 La buena noticia: no tienes que memorizar nada de esto. Usando el generador de
                 arriba ya estás dando el paso más importante.
               </p>

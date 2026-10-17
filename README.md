@@ -39,7 +39,7 @@ Ver `tools.md` para el catálogo completo, incluidas las herramientas planeadas 
 - [Tesseract.js](https://github.com/naptha/tesseract.js) para OCR local
 - Proveedor de IA intercambiable (cualquier API compatible con OpenAI, configurado por variables `AI_*`) para OCR/extracción/transcripción, vía funciones serverless propias
 - [pdf-lib](https://pdf-lib.js.org/) (editar/unir/firmar/marca de agua en PDF), [jsPDF](https://github.com/parallax/jsPDF) (generar PDF desde imágenes o Markdown), [docx](https://docx.js.org/) (generar `.docx`), [marked](https://marked.js.org/) (parseo de Markdown), [exifr](https://github.com/MikeKovarik/exifr) (metadatos EXIF)
-- Fuente self-hosted: [Comfortaa](https://fonts.google.com/specimen/Comfortaa)
+- Fuente self-hosted: Manrope + Sora (@fontsource-variable)
 - Despliegue en [Vercel](https://vercel.com/)
 
 ## Estructura del proyecto

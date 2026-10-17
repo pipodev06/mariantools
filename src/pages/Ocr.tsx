@@ -469,7 +469,7 @@ const Ocr = () => {
                     </h3>
                     {result.engine === 'fast' && (
                       <span
-                        className={`mt-1 inline-block rounded-full px-2 py-0.5 text-xs font-medium ${confidenceLevel.className}`}
+                        className={`mt-1 inline-block rounded-full px-2 py-0.5 text-xs ${confidenceLevel.className}`}
                       >
                         {confidenceLevel.label}
                       </span>

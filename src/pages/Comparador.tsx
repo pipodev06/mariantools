@@ -64,7 +64,7 @@ const Comparador = () => {
                 key={m}
                 type="button"
                 onClick={() => setMode(m)}
-                className={`cursor-pointer rounded-md px-4 py-1.5 text-sm font-medium transition-colors ${FOCUS_RING} ${
+                className={`cursor-pointer rounded-md px-4 py-1.5 text-sm transition-colors ${FOCUS_RING} ${
                   mode === m
                     ? CHIP_ACTIVE
                     : CHIP_INACTIVE
@@ -133,7 +133,7 @@ const Comparador = () => {
             {hasInput && (
               <div className="flex items-center gap-3">
                 <span className="text-xs text-slate-500 dark:text-slate-400">
-                  <span className="text-emerald-700 dark:text-emerald-400">+{stats.added}</span>
+                  <span className="text-emerald-800 dark:text-emerald-400">+{stats.added}</span>
                   {' / '}
                   <span className="text-red-700 dark:text-red-400">-{stats.removed}</span>
                   {mode === 'word' ? ' palabras' : ' líneas'}

@@ -259,7 +259,7 @@ const FirmaPdf = () => {
                         key={p.key}
                         type="button"
                         onClick={() => setPosition(p.key)}
-                        className={`cursor-pointer rounded-lg border px-2 py-2 text-xs font-medium transition-colors ${FOCUS_RING} ${
+                        className={`cursor-pointer rounded-lg border px-2 py-2 text-xs transition-colors ${FOCUS_RING} ${
                           position === p.key
                             ? CHIP_SELECTED
                             : CHIP_INACTIVE

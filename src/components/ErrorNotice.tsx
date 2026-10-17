@@ -8,7 +8,7 @@ type Props = {
 
 /** Chip de error genérico (role="alert"). */
 const ErrorNotice = ({ message, className = '' }: Props) => (
-  <p role="alert" className={`inline-block rounded-full px-3 py-1 text-sm font-medium ${BADGE.red} ${className}`.trim()}>
+  <p role="alert" className={`inline-block rounded-full px-3 py-1 text-sm ${BADGE.red} ${className}`.trim()}>
     {message}
   </p>
 )

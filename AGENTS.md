@@ -10,9 +10,11 @@ Suite de herramientas (OCR, PDF, imagen, texto, etc.). Ver `tools.md` para catá
 
 ## Tipografía
 
-Fuente principal: **Comfortaa**, self-hosted (no Google Fonts CDN) desde `src/assets/fonts/comfortaa/*.ttf`, declarada vía `@font-face` en `src/index.css` y seteada como `--font-sans` (Tailwind v4 la propaga a `html`/body vía preflight, sin tocar `App.tsx`). Solo se guardan los 3 pesos que realmente se usan en el código — `Regular`(400) para texto normal, `SemiBold`(600) para `font-semibold`, `Bold`(700) para `font-bold`. `Light` y `Medium` se borraron por no usarse. Si se necesita un peso nuevo, agregar el `.ttf` a esa carpeta + su `@font-face` correspondiente (no reintroducir el import de Google Fonts).
+Dirección visual **Pizarra** (aprobada por el usuario 2026-10-16, reemplaza Comfortaa + Emerald/Slate). Texto: **Manrope** (`--font-sans`); títulos `h1`-`h3`: **Sora** (`--font-display`, vía capa base en `src/index.css`). Ambas variables y self-hosted por los paquetes `@fontsource-variable/*` (se empaquetan en el build, sin CDN). Los pesos son continuos, así que `font-medium` ya es válido. Texto pequeño de acento sobre fondo claro usa `text-emerald-800`; `-600` queda para íconos y títulos grandes.
 
-**Sin monospace, en ningún lado** (pedido explícito del usuario, 2026-08-14): ni `font-mono` ni el `<code>` semántico (que Tailwind v4 preflight pone en monospace por default) — Comfortaa es la única familia tipográfica de todo el sitio, incluso para contraseñas y strings base64. Usar `<span>`/`<p>` en vez de `<code>` para mostrar ese tipo de texto, y `break-all` (no `font-mono`) para que quiebre línea. Corregido retroactivamente en `Contrasenas.tsx` e `ImagenABase64.tsx`, que sí usaban `font-mono` — si aparece un caso nuevo, sacarlo también.
+**Los nombres de clase no cambiaron:** en `@theme` de `src/index.css` se redefinieron las escalas `slate` (azul marino: `slate-950` #0e1726 fondo oscuro, `slate-900` #15223a superficie) y `emerald` (ahora **coral**: `500` #ff6b57, `700` #c8321f para CTA con texto blanco, `400` para acento en oscuro). Donde esta guía dice "emerald" léase coral. No reintroducir un verde ni otro acento.
+
+**Sin monospace, en ningún lado** (pedido explícito del usuario, 2026-08-14): ni `font-mono` ni el `<code>` semántico (que Tailwind v4 preflight pone en monospace por default) — Manrope (con Sora en títulos) son las únicas familias del sitio, incluso para contraseñas y strings base64. Usar `<span>`/`<p>` en vez de `<code>` para mostrar ese tipo de texto, y `break-all` (no `font-mono`) para que quiebre línea. Corregido retroactivamente en `Contrasenas.tsx` e `ImagenABase64.tsx`, que sí usaban `font-mono` — si aparece un caso nuevo, sacarlo también.
 
 ## Estilo/diseño
 
@@ -143,4 +145,5 @@ Español neutro tipo Perú (PE) — **nunca voseo argentino**. "transcribe" no "
 - [Tools con IA — tanda 1 (2026-10-16)](docs/herramientas/tools-ia-tanda-1.md)
 - [Tanda 2 — PDF a texto, Audio a texto, Quitar fondo (2026-10-16)](docs/herramientas/tools-ia-tanda-2.md)
 - [Tanda 3 — herramientas PDF y calculadoras de Perú (2026-10-16)](docs/herramientas/tools-pdf-y-calculadoras-peru.md)
+- [Inicio de sesión en producción: SMTP, plantillas, Google (2026-10-16)](docs/auth-produccion.md) — configuración de paneles que el código no hace
 - [Créditos y medición de IA (2026-10-16)](docs/decisiones-creditos.md) — toda tool con IA nueva pasa por `reserve`/`refund` de `api/_billing.ts`
