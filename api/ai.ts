@@ -1,12 +1,8 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
 
 import { isDenied, refund, reserve } from './_billing.js'
+import { callWithFailover, endpoint, failureResponse, getProviders } from './_providers.js'
 
-const AI_TIMEOUT_MS = 25_000
-// Reintento ante 503: dentro de los 30 s de `maxDuration` de la función (vercel.json).
-const AI_TOTAL_BUDGET_MS = 28_000
-const RETRY_DELAY_MS = 1_000
-const MIN_RETRY_BUDGET_MS = 5_000
 // Tope de salida por llamada: acota el costo de una respuesta (la salida es lo más caro de los tokens).
 const MAX_OUTPUT_TOKENS = 4096
 
@@ -19,14 +15,6 @@ const TASK_COST: Record<string, number> = {
   'traducir-imagen': 1,
   corregir: 1,
   resumir: 1,
-}
-
-// Proveedor intercambiable: cualquier API compatible con OpenAI (/chat/completions) con visión.
-// Se configura solo por variables de entorno, sin nombres de modelo ni URLs en el código.
-const getConfig = () => {
-  const { AI_API_KEY: apiKey, AI_BASE_URL: baseUrl, AI_MODEL: model } = process.env
-  if (!apiKey || !baseUrl || !model) return null
-  return { apiKey, model, url: `${baseUrl.replace(/\/+$/, '')}/chat/completions` }
 }
 
 const MAX_TEXT_LENGTH = 20000
@@ -134,9 +122,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return
   }
 
-  const config = getConfig()
-  if (!config) {
-    console.error('Faltan AI_API_KEY, AI_BASE_URL o AI_MODEL')
+  const providers = getProviders('chat')
+  if (providers.length === 0) {
+    console.error('Faltan AI_API_KEY, AI_BASE_URL o AI_MODEL (o AI_1_*)')
     res.status(503).json({ error: 'Servicio no disponible' })
     return
   }
@@ -190,60 +178,34 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     res.status(status).json({ error })
   }
 
-  const payload = JSON.stringify({
-    model: config.model,
-    temperature: 0.2,
-    max_tokens: MAX_OUTPUT_TOKENS,
-    ...(job.json ? { response_format: { type: 'json_object' } } : {}),
-    messages,
-  })
-  const callProvider = (timeoutMs: number) =>
-    fetch(config.url, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${config.apiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: payload,
-      signal: AbortSignal.timeout(timeoutMs),
+  const payloadFor = (model: string) =>
+    JSON.stringify({
+      model,
+      temperature: 0.2,
+      max_tokens: MAX_OUTPUT_TOKENS,
+      ...(job.json ? { response_format: { type: 'json_object' } } : {}),
+      messages,
     })
 
+  const result = await callWithFailover(providers, (provider, signal) =>
+    fetch(endpoint(provider, '/chat/completions'), {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${provider.apiKey}`, 'Content-Type': 'application/json' },
+      body: payloadFor(provider.model),
+      signal,
+    }),
+  )
+  if (!result.response) {
+    const { status, error } = failureResponse(result, 'La IA no pudo procesar la solicitud')
+    await fail(status, error)
+    return
+  }
+
   try {
-    const startedAt = Date.now()
-    let aiResponse = await callProvider(AI_TIMEOUT_MS)
-
-    // 503 = proveedor saturado (suele ser momentáneo): un solo reintento dentro del tiempo total.
-    if (aiResponse.status === 503) {
-      await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY_MS))
-      const remaining = AI_TOTAL_BUDGET_MS - (Date.now() - startedAt)
-      if (remaining >= MIN_RETRY_BUDGET_MS) {
-        await aiResponse.body?.cancel()
-        aiResponse = await callProvider(remaining)
-      }
-    }
-
-    if (!aiResponse.ok) {
-      console.error('Proveedor de IA error', aiResponse.status, await aiResponse.text())
-      // Solo se expone 429 (límite); el resto (401/402/5xx) no debe filtrar el estado del proveedor.
-      if (aiResponse.status === 429) {
-        await fail(429, 'Demasiadas solicitudes, intenta en un momento')
-      } else {
-        await fail(502, 'La IA no pudo procesar la solicitud')
-      }
-      return
-    }
-
-    const data = (await aiResponse.json()) as {
-      choices?: { message?: { content?: string } }[]
-    }
+    const data = (await result.response.json()) as { choices?: { message?: { content?: string } }[] }
     res.status(200).json({ result: data.choices?.[0]?.message?.content ?? '' })
   } catch (err) {
-    const timedOut = err instanceof Error && err.name === 'TimeoutError'
-    console.error('Proveedor de IA fetch falló', err)
-    if (timedOut) {
-      await fail(504, 'La IA tardó demasiado, intenta de nuevo')
-    } else {
-      await fail(502, 'No se pudo contactar a la IA')
-    }
+    console.error('Respuesta de IA no válida', err)
+    await fail(502, 'La IA no pudo procesar la solicitud')
   }
 }

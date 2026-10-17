@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type ChangeEvent, type ClipboardEvent, type DragEvent, type ReactNode } from 'react'
+import { writeClipboardText } from '../lib/clipboard'
 import {
   IconCheck,
   IconCopy,
@@ -160,7 +161,7 @@ const ImageAiTool = <T,>({
   }
 
   const copyResult = async (value: T, index: number) => {
-    await navigator.clipboard.writeText(toText(value))
+    if (!(await writeClipboardText(toText(value)))) return
     setCopiedIndex(index)
     setTimeout(() => setCopiedIndex((current) => (current === index ? null : current)), 1500)
   }

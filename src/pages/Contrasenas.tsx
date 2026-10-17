@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { writeClipboardText } from '../lib/clipboard'
 import { IconCheck, IconChevronDown, IconCopy, IconRefresh, IconX } from '@tabler/icons-react'
 import { WORDLIST } from '../lib/wordlist'
 import { FOCUS_RING, BUTTON_PRIMARY, CHIP_ACTIVE, CHIP_INACTIVE, BADGE } from '../lib/ui'
@@ -217,7 +218,7 @@ const Contrasenas = () => {
   }
 
   const copyText = async (text: string, index: number) => {
-    await navigator.clipboard.writeText(text)
+    if (!(await writeClipboardText(text))) return
     setCopiedIndex(index)
     setTimeout(() => setCopiedIndex((current) => (current === index ? null : current)), 1500)
   }

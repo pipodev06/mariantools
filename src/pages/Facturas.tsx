@@ -1,4 +1,5 @@
 import { useEffect, useId, useRef, useState, type ChangeEvent, type ClipboardEvent, type DragEvent } from 'react'
+import { writeClipboardText } from '../lib/clipboard'
 import {
   IconCheck,
   IconCopy,
@@ -164,7 +165,7 @@ const Facturas = () => {
 
   const copyResult = async (result: FacturaResult, index: number) => {
     const text = FIELDS.map((f) => `${f.label}: ${result.data[f.key] ?? '-'}`).join('\n')
-    await navigator.clipboard.writeText(text)
+    if (!(await writeClipboardText(text))) return
     setCopiedIndex(index)
     setTimeout(() => setCopiedIndex((current) => (current === index ? null : current)), 1500)
   }

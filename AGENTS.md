@@ -117,7 +117,7 @@ Dominio `https://www.mariantools.com`. Meta por ruta en `src/data/seo.ts` (títu
 
 - **Header**: a la derecha `AccountLink` (`Iniciar sesión` sin sesión; chip con `IconCoin` y el saldo con sesión; nada si no hay Supabase). **Footer**: enlaces a Mi cuenta, Privacidad, Términos, Contacto.
 - **ToolCard**: pastilla "IA" arriba a la izquierda cuando `Tool.ai` existe. `ai: { cost, optional? }` en `tools.ts` marca toda tool que llama a `api/ai.ts`/`api/transcribe.ts`; una tool de IA nueva debe llevarlo.
-- **`ToolNote`** (en `MainLayout`, sobre cada tool): "Gratis · se procesa en tu navegador" o "Con IA · costo · usos gratis hoy · se envía a un proveedor de IA"; además registra la tool en recientes (`lib/recent.ts`, localStorage) que el Home muestra en "Recientes".
+- **`RecentTracker`** (en `MainLayout`, sin interfaz): registra la tool abierta en recientes (`lib/recent.ts`, localStorage) que el Home muestra en "Recientes". Ya no hay franja de costo/gratis sobre las tools (el usuario la pidió quitar, 2026-10-16).
 - **Estado de cuenta único**: `lib/account.ts` (`useAccount`, `refreshAccount`, `refreshQuota`); no consultar sesión/saldo por separado. `api/quota.ts` (GET) informa el cupo gratis restante.
 - **"Cómo usar"** bajo cada tool (`ToolInfo`, datos en `src/data/toolInfo.ts` por `href`: pasos, consejos, preguntas frecuentes; también va al HTML prerenderizado). Una tool nueva debe sumar su entrada ahí además de `tools.ts`, `seo.ts` y la ruta. Orden del catálogo: las herramientas de nicho (Base64, EXIF, Paleta, Markdown, Contraseñas) van al final de `availableTools`.
 - **Comentarios** (`/comentarios`, `api/feedback.ts`, tabla `feedback` en Supabase solo legible por el servidor; honeypot + 5 mensajes por día y por IP) y **Preguntas frecuentes** (`/preguntas-frecuentes`, datos en `src/data/faq.ts`, con JSON-LD FAQPage en el prerender). Las tools de un archivo con resultado descargable usan `FileTransformTool` (`PdfTransformTool` es su variante PDF). Acceso a Supabase desde la API: `api/_supabase.ts`.
@@ -147,6 +147,7 @@ Español neutro tipo Perú (PE) — **nunca voseo argentino**. "transcribe" no "
 - [Tanda 3 — herramientas PDF y calculadoras de Perú (2026-10-16)](docs/herramientas/tools-pdf-y-calculadoras-peru.md)
 - [Inicio de sesión en producción: SMTP, plantillas, Google (2026-10-16)](docs/auth-produccion.md) — configuración de paneles que el código no hace
 - [Créditos y medición de IA (2026-10-16)](docs/decisiones-creditos.md) — toda tool con IA nueva pasa por `reserve`/`refund` de `api/_billing.ts`
+- [Proveedores de IA con rotación (2026-10-16)](docs/proveedores-ia.md) — variables `AI_1_*`, failover, qué revisar para abrir sin login
 
 ## Móvil y modo oscuro (2026-10-16)
 

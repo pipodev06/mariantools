@@ -1,4 +1,5 @@
 import { useId, useMemo, useState } from 'react'
+import { writeClipboardText } from '../lib/clipboard'
 import { diffLines, diffWords } from 'diff'
 import { IconArrowsLeftRight, IconCheck, IconCopy, IconTrash } from '@tabler/icons-react'
 import { FOCUS_RING, BUTTON_SECONDARY, CHIP_ACTIVE, CHIP_INACTIVE, BADGE } from '../lib/ui'
@@ -42,7 +43,7 @@ const Comparador = () => {
   }
 
   const copyResult = async () => {
-    await navigator.clipboard.writeText(nuevo)
+    if (!(await writeClipboardText(nuevo))) return
     setCopied(true)
     setTimeout(() => setCopied(false), 1500)
   }

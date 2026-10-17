@@ -1,5 +1,6 @@
 import { useId } from 'react'
 import { INPUT } from '../lib/ui'
+import Select from './Select'
 
 const LABEL = 'text-sm font-semibold text-slate-800 dark:text-slate-100'
 
@@ -136,18 +137,7 @@ export const SelectField = ({
       <label htmlFor={id} className={LABEL}>
         {label}
       </label>
-      <select
-        id={id}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        className={`${INPUT} cursor-pointer`}
-      >
-        {options.map((o) => (
-          <option key={o.value} value={o.value}>
-            {o.label}
-          </option>
-        ))}
-      </select>
+      <Select id={id} value={value} onChange={onChange} options={options} />
     </div>
   )
 }

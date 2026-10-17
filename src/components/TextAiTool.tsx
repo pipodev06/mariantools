@@ -1,4 +1,5 @@
 import { useState, type ReactNode } from 'react'
+import { writeClipboardText } from '../lib/clipboard'
 import { IconCheck, IconCopy, IconLoader2, IconTrash } from '@tabler/icons-react'
 import { MAX_AI_TEXT_LENGTH } from '../lib/ai'
 import { AiError } from '../lib/aiClient'
@@ -57,7 +58,7 @@ const TextAiTool = ({
   }
 
   const copyOutput = async () => {
-    await navigator.clipboard.writeText(output)
+    if (!(await writeClipboardText(output))) return
     setCopied(true)
     setTimeout(() => setCopied(false), 1500)
   }

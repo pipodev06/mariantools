@@ -7,6 +7,7 @@ import {
   type ClipboardEvent,
   type DragEvent,
 } from 'react'
+import { writeClipboardText, writeClipboardImage } from '../lib/clipboard'
 import QRCode from 'qrcode'
 import jsQR from 'jsqr'
 import {
@@ -18,6 +19,7 @@ import {
   IconUpload,
   IconX,
 } from '@tabler/icons-react'
+import Select from '../components/Select'
 import { FOCUS_RING, BUTTON_PRIMARY_BASE, BUTTON_PRIMARY, BUTTON_SECONDARY_BASE, BUTTON_SECONDARY, INPUT, CARD_BASE, CHIP_ACTIVE, CHIP_SELECTED, CHIP_INACTIVE } from '../lib/ui'
 
 const ACCEPTED_TYPES = ['image/jpeg', 'image/png', 'image/webp']
@@ -28,6 +30,12 @@ const CAN_COPY_IMAGE = typeof window !== 'undefined' && 'ClipboardItem' in windo
 type Mode = 'generate' | 'read'
 type QrType = 'text' | 'url' | 'wifi' | 'contact'
 type WifiSecurity = 'WPA' | 'WEP' | 'nopass'
+
+const WIFI_SECURITY_OPTIONS = [
+  { value: 'WPA', label: 'WPA/WPA2' },
+  { value: 'WEP', label: 'WEP' },
+  { value: 'nopass', label: 'Sin contraseña' },
+]
 
 const QR_TYPES: { key: QrType; label: string }[] = [
   { key: 'text', label: 'Texto' },
@@ -102,7 +110,7 @@ const Qr = () => {
     if (!canvas) return
     canvas.toBlob(async (blob) => {
       if (!blob) return
-      await navigator.clipboard.write([new ClipboardItem({ [blob.type]: blob })])
+      if (!(await writeClipboardImage(blob))) return
       setCopiedImage(true)
       setTimeout(() => setCopiedImage(false), 1500)
     })
@@ -183,7 +191,7 @@ const Qr = () => {
 
   const copyReadResult = async () => {
     if (!readResult) return
-    await navigator.clipboard.writeText(readResult)
+    if (!(await writeClipboardText(readResult))) return
     setCopiedText(true)
     setTimeout(() => setCopiedText(false), 1500)
   }
@@ -287,15 +295,12 @@ const Qr = () => {
                     <label htmlFor={`${uid}-security`} className="text-sm font-semibold text-slate-800 dark:text-slate-100">
                       Seguridad
                     </label>
-                    <select id={`${uid}-security`}
+                    <Select
+                      id={`${uid}-security`}
                       value={wifiSecurity}
-                      onChange={(e) => setWifiSecurity(e.target.value as WifiSecurity)}
-                      className={`${INPUT} cursor-pointer`}
-                    >
-                      <option value="WPA">WPA/WPA2</option>
-                      <option value="WEP">WEP</option>
-                      <option value="nopass">Sin contraseña</option>
-                    </select>
+                      onChange={(v) => setWifiSecurity(v as WifiSecurity)}
+                      options={WIFI_SECURITY_OPTIONS}
+                    />
                   </div>
                   {wifiSecurity !== 'nopass' && (
                     <div>

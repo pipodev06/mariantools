@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import ImageAiTool from '../components/ImageAiTool'
 import { TARGET_LANGUAGES, translateImage } from '../lib/ai'
+import Select from '../components/Select'
 import { FOCUS_RING } from '../lib/ui'
 
 const TraductorImagen = () => {
@@ -16,18 +17,13 @@ const TraductorImagen = () => {
       toText={(value) => value}
       downloadExt="txt"
       controls={
-        <select
+        <Select
           value={lang}
-          onChange={(e) => setLang(e.target.value)}
-          aria-label="Idioma de destino"
-          className={`cursor-pointer rounded-lg border border-slate-500 bg-white px-3 py-3 text-sm text-slate-800 dark:border-slate-500 dark:bg-slate-900 dark:text-slate-100 ${FOCUS_RING}`}
-        >
-          {TARGET_LANGUAGES.map((l) => (
-            <option key={l.value} value={l.value}>
-              {l.label}
-            </option>
-          ))}
-        </select>
+          onChange={setLang}
+          ariaLabel="Idioma de destino"
+          options={TARGET_LANGUAGES}
+          className={`rounded-lg border border-slate-500 bg-white px-3 py-3 text-sm text-slate-800 dark:border-slate-500 dark:bg-slate-900 dark:text-slate-100 ${FOCUS_RING}`}
+        />
       }
     />
   )

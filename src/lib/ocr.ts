@@ -1,7 +1,10 @@
 import { createWorker, OEM, type Worker } from 'tesseract.js'
 import { callAi } from './aiClient'
 
+// Tesseract (local) aprovecha la resolución; los modelos de IA no ganan precisión pasado ~1600 px, solo tiempo de subida.
 const MAX_DIMENSION = 2000
+const AI_MAX_DIMENSION = 1600
+const AI_JPEG_QUALITY = 0.8
 
 export type OcrResult = {
   text: string
@@ -36,8 +39,8 @@ const loadBitmap = (file: File) => createImageBitmap(file)
 
 // Achica imágenes gigantes (fotos de celular, 4000px+) antes de procesar.
 // Tesseract y los modelos de IA no ganan precisión pasado cierto tamaño, solo tiempo.
-const drawScaled = (bitmap: ImageBitmap): HTMLCanvasElement => {
-  const scale = Math.min(1, MAX_DIMENSION / Math.max(bitmap.width, bitmap.height))
+const drawScaled = (bitmap: ImageBitmap, maxDimension = MAX_DIMENSION): HTMLCanvasElement => {
+  const scale = Math.min(1, maxDimension / Math.max(bitmap.width, bitmap.height))
   const canvas = document.createElement('canvas')
   canvas.width = Math.round(bitmap.width * scale)
   canvas.height = Math.round(bitmap.height * scale)
@@ -265,8 +268,8 @@ export const recognizeCanvasWithTesseract = async (
   return { text: data.text.trim(), confidence: data.confidence }
 }
 
-const canvasToDataUrl = (canvas: HTMLCanvasElement): string =>
-  canvas.toDataURL('image/jpeg', 0.85)
+const canvasToDataUrl = (canvas: HTMLCanvasElement, quality = 0.85): string =>
+  canvas.toDataURL('image/jpeg', quality)
 
 const fileToDataUrl = (file: File): Promise<string> =>
   new Promise((resolve, reject) => {
@@ -280,7 +283,7 @@ const fileToDataUrl = (file: File): Promise<string> =>
 export const prepareImageForAi = async (file: File): Promise<string> => {
   try {
     const bitmap = await loadBitmap(file)
-    return canvasToDataUrl(drawScaled(bitmap))
+    return canvasToDataUrl(drawScaled(bitmap, AI_MAX_DIMENSION), AI_JPEG_QUALITY)
   } catch {
     return fileToDataUrl(file)
   }
