@@ -9,7 +9,7 @@ import ToolNote from "../components/ToolNote";
 
 const MainLayout = () => {
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="flex min-h-dvh flex-col">
       <RouteSeo />
       <ScrollToTop />
       <Header />
