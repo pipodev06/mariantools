@@ -361,7 +361,7 @@ const Qr = () => {
                   type="color"
                   value={fgColor}
                   onChange={(e) => setFgColor(e.target.value)}
-                  className={`mt-1 h-10 w-full cursor-pointer rounded-lg border border-slate-500 dark:border-slate-500 ${FOCUS_RING}`}
+                  className={`mt-1 h-10 pointer-coarse:h-11 w-full cursor-pointer rounded-lg border border-slate-500 dark:border-slate-500 ${FOCUS_RING}`}
                 />
               </div>
               <div>
@@ -372,7 +372,7 @@ const Qr = () => {
                   type="color"
                   value={bgColor}
                   onChange={(e) => setBgColor(e.target.value)}
-                  className={`mt-1 h-10 w-full cursor-pointer rounded-lg border border-slate-500 dark:border-slate-500 ${FOCUS_RING}`}
+                  className={`mt-1 h-10 pointer-coarse:h-11 w-full cursor-pointer rounded-lg border border-slate-500 dark:border-slate-500 ${FOCUS_RING}`}
                 />
               </div>
             </div>
@@ -444,7 +444,7 @@ const Qr = () => {
                     removeReadFile()
                   }}
                   aria-label="Quitar imagen"
-                  className={`absolute -right-2 -top-2 cursor-pointer rounded-full bg-slate-800 p-1 text-white hover:bg-emerald-700 ${FOCUS_RING}`}
+                  className={`absolute -right-2 -top-2 cursor-pointer rounded-full bg-slate-800 p-1 pointer-coarse:p-3 text-white hover:bg-emerald-700 ${FOCUS_RING}`}
                 >
                   <IconX size={16} />
                 </button>

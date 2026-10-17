@@ -259,7 +259,7 @@ const ComprimirImagen = () => {
                           type="button"
                           onClick={() => removeFile(i)}
                           aria-label={`Quitar ${file.name}`}
-                          className={`shrink-0 cursor-pointer rounded text-slate-500 hover:text-emerald-600 dark:text-slate-400 ${FOCUS_RING}`}
+                          className={`shrink-0 cursor-pointer rounded text-slate-500 hover:text-emerald-700 dark:text-slate-400 ${FOCUS_RING}`}
                         >
                           <IconX size={18} />
                         </button>

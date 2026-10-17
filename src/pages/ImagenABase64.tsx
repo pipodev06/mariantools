@@ -385,7 +385,7 @@ const ImagenABase64 = () => {
                           type="button"
                           onClick={() => removeFile(i)}
                           aria-label={`Quitar ${file.name}`}
-                          className={`shrink-0 cursor-pointer rounded text-slate-500 hover:text-emerald-600 dark:text-slate-400 ${FOCUS_RING}`}
+                          className={`shrink-0 cursor-pointer rounded text-slate-500 hover:text-emerald-700 dark:text-slate-400 ${FOCUS_RING}`}
                         >
                           <IconX size={18} />
                         </button>
@@ -505,7 +505,7 @@ const ImagenABase64 = () => {
                         type="button"
                         onClick={() => copyText(getEncodedText(item, outputFormat), i)}
                         aria-label={`Copiar base64 de ${item.file.name}`}
-                        className={`cursor-pointer rounded-lg border border-slate-200 p-2 text-slate-500 hover:text-emerald-600 dark:border-slate-800 dark:text-slate-400 ${FOCUS_RING}`}
+                        className={`cursor-pointer rounded-lg border border-slate-200 p-2 text-slate-500 hover:text-emerald-700 dark:border-slate-800 dark:text-slate-400 ${FOCUS_RING}`}
                       >
                         {copiedIndex === i ? <IconCheck size={18} /> : <IconCopy size={18} />}
                       </button>
@@ -518,7 +518,7 @@ const ImagenABase64 = () => {
                           )
                         }
                         aria-label={`Descargar base64 de ${item.file.name}`}
-                        className={`cursor-pointer rounded-lg border border-slate-200 p-2 text-slate-500 hover:text-emerald-600 dark:border-slate-800 dark:text-slate-400 ${FOCUS_RING}`}
+                        className={`cursor-pointer rounded-lg border border-slate-200 p-2 text-slate-500 hover:text-emerald-700 dark:border-slate-800 dark:text-slate-400 ${FOCUS_RING}`}
                       >
                         <IconDownload size={18} />
                       </button>
@@ -575,7 +575,7 @@ const ImagenABase64 = () => {
                               type="button"
                               onClick={() => copyImage(item, i)}
                               aria-label={`Copiar imagen ${i + 1}`}
-                              className={`cursor-pointer rounded-lg p-1.5 text-slate-500 hover:text-emerald-600 dark:text-slate-400 ${FOCUS_RING}`}
+                              className={`cursor-pointer rounded-lg p-1.5 pointer-coarse:p-3 text-slate-500 hover:text-emerald-700 dark:text-slate-400 ${FOCUS_RING}`}
                             >
                               {copiedIndex === i ? (
                                 <IconCheck size={16} />
@@ -588,7 +588,7 @@ const ImagenABase64 = () => {
                             type="button"
                             onClick={() => downloadImage(item, i)}
                             aria-label={`Descargar imagen ${i + 1}`}
-                            className={`cursor-pointer rounded-lg p-1.5 text-slate-500 hover:text-emerald-600 dark:text-slate-400 ${FOCUS_RING}`}
+                            className={`cursor-pointer rounded-lg p-1.5 pointer-coarse:p-3 text-slate-500 hover:text-emerald-700 dark:text-slate-400 ${FOCUS_RING}`}
                           >
                             <IconDownload size={16} />
                           </button>

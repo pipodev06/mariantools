@@ -50,7 +50,7 @@ const PreviewModal = ({ image, onClose }: PreviewModalProps) => {
         role="dialog"
         aria-modal="true"
         aria-label={image.name}
-        className="max-h-[85vh] w-full max-w-3xl overflow-hidden rounded-xl bg-white motion-safe:animate-[modal-pop_0.18s_ease-out] dark:bg-slate-900"
+        className="max-h-[85dvh] w-full max-w-3xl overflow-hidden rounded-xl bg-white motion-safe:animate-[modal-pop_0.18s_ease-out] dark:bg-slate-900"
       >
         <div className="flex items-center justify-between border-b border-slate-200 px-4 py-3 dark:border-slate-800">
           <h3 className="truncate font-semibold text-slate-800 dark:text-slate-100">{image.name}</h3>
@@ -59,7 +59,7 @@ const PreviewModal = ({ image, onClose }: PreviewModalProps) => {
             type="button"
             onClick={onClose}
             aria-label="Cerrar vista previa"
-            className={`ml-3 shrink-0 cursor-pointer rounded p-1 text-slate-500 hover:text-emerald-600 dark:text-slate-400 dark:hover:text-emerald-400 ${FOCUS_RING}`}
+            className={`ml-3 shrink-0 cursor-pointer rounded p-1 pointer-coarse:p-3 text-slate-500 hover:text-emerald-700 dark:text-slate-400 dark:hover:text-emerald-400 ${FOCUS_RING}`}
           >
             <IconX size={20} />
           </button>
@@ -67,7 +67,7 @@ const PreviewModal = ({ image, onClose }: PreviewModalProps) => {
         <img
           src={image.url}
           alt={image.name}
-          className="max-h-[calc(85vh-53px)] w-full object-contain"
+          className="max-h-[calc(85dvh-53px)] w-full object-contain"
         />
       </div>
     </div>

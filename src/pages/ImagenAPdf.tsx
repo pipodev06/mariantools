@@ -177,7 +177,7 @@ const ImagenAPdf = () => {
                             disabled={i === 0}
                             onClick={() => moveFile(i, -1)}
                             aria-label={`Subir ${file.name}`}
-                            className={`cursor-pointer rounded text-slate-500 hover:text-emerald-600 disabled:cursor-not-allowed disabled:opacity-30 dark:text-slate-400 ${FOCUS_RING}`}
+                            className={`cursor-pointer rounded text-slate-500 hover:text-emerald-700 disabled:cursor-not-allowed disabled:opacity-30 dark:text-slate-400 ${FOCUS_RING}`}
                           >
                             <IconArrowUp size={18} />
                           </button>
@@ -186,7 +186,7 @@ const ImagenAPdf = () => {
                             disabled={i === files.length - 1}
                             onClick={() => moveFile(i, 1)}
                             aria-label={`Bajar ${file.name}`}
-                            className={`cursor-pointer rounded text-slate-500 hover:text-emerald-600 disabled:cursor-not-allowed disabled:opacity-30 dark:text-slate-400 ${FOCUS_RING}`}
+                            className={`cursor-pointer rounded text-slate-500 hover:text-emerald-700 disabled:cursor-not-allowed disabled:opacity-30 dark:text-slate-400 ${FOCUS_RING}`}
                           >
                             <IconArrowDown size={18} />
                           </button>
@@ -194,7 +194,7 @@ const ImagenAPdf = () => {
                             type="button"
                             onClick={() => removeFile(i)}
                             aria-label={`Quitar ${file.name}`}
-                            className={`cursor-pointer rounded text-slate-500 hover:text-emerald-600 dark:text-slate-400 ${FOCUS_RING}`}
+                            className={`cursor-pointer rounded text-slate-500 hover:text-emerald-700 dark:text-slate-400 ${FOCUS_RING}`}
                           >
                             <IconX size={18} />
                           </button>

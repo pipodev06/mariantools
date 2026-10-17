@@ -141,7 +141,7 @@ const Comparador = () => {
                 <button
                   type="button"
                   onClick={copyResult}
-                  className={`inline-flex cursor-pointer items-center gap-1 text-xs font-semibold text-slate-500 hover:text-emerald-600 dark:text-slate-400 dark:hover:text-emerald-400 ${FOCUS_RING}`}
+                  className={`inline-flex cursor-pointer items-center gap-1 pointer-coarse:min-h-11 text-xs font-semibold text-slate-500 hover:text-emerald-700 dark:text-slate-400 dark:hover:text-emerald-400 ${FOCUS_RING}`}
                 >
                   {copied ? <IconCheck size={14} /> : <IconCopy size={14} />}
                   Copiar texto nuevo

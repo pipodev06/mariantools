@@ -6,8 +6,9 @@ import { removeBackground } from '../lib/removeBackground'
 import { BUTTON_SECONDARY } from '../lib/ui'
 
 const CHECKERBOARD = {
+  backgroundColor: '#fff',
   backgroundImage:
-    'linear-gradient(45deg, #cbd5e1 25%, transparent 25%, transparent 75%, #cbd5e1 75%), linear-gradient(45deg, #cbd5e1 25%, transparent 25%, transparent 75%, #cbd5e1 75%)',
+    'linear-gradient(45deg, #e2e8f0 25%, transparent 25%, transparent 75%, #e2e8f0 75%), linear-gradient(45deg, #e2e8f0 25%, transparent 25%, transparent 75%, #e2e8f0 75%)',
   backgroundSize: '20px 20px',
   backgroundPosition: '0 0, 10px 10px',
 }

@@ -147,3 +147,9 @@ Español neutro tipo Perú (PE) — **nunca voseo argentino**. "transcribe" no "
 - [Tanda 3 — herramientas PDF y calculadoras de Perú (2026-10-16)](docs/herramientas/tools-pdf-y-calculadoras-peru.md)
 - [Inicio de sesión en producción: SMTP, plantillas, Google (2026-10-16)](docs/auth-produccion.md) — configuración de paneles que el código no hace
 - [Créditos y medición de IA (2026-10-16)](docs/decisiones-creditos.md) — toda tool con IA nueva pasa por `reserve`/`refund` de `api/_billing.ts`
+
+## Móvil y modo oscuro (2026-10-16)
+
+- Targets táctiles de 44 px con `pointer-coarse:` (`pointer-coarse:min-h-11` en botones/enlaces, `pointer-coarse:p-3` en íconos pequeños); los botones y `INPUT` de `ui.ts` ya lo traen. Los campos usan 16 px en pantallas táctiles (`index.css`) para que iOS no haga zoom. Alturas con `dvh`, no `vh`. Nada que dependa solo de `hover` (usar `pointer-coarse:opacity-100`).
+- `color-scheme` sigue a la clase `dark` en `index.css`. Lienzos y vistas previas con color fijo (firma, QR, checkerboard de Quitar fondo) llevan fondo fijo claro, no `dark:`.
+- Texto pequeño con hover en acento: `hover:text-emerald-700` (el `-600` no llega a AA en claro).

@@ -160,7 +160,7 @@ const Exif = () => {
                     removeImage()
                   }}
                   aria-label="Quitar imagen"
-                  className={`absolute -right-2 -top-2 cursor-pointer rounded-full bg-slate-800 p-1 text-white hover:bg-emerald-700 ${FOCUS_RING}`}
+                  className={`absolute -right-2 -top-2 cursor-pointer rounded-full bg-slate-800 p-1 pointer-coarse:p-3 text-white hover:bg-emerald-700 ${FOCUS_RING}`}
                 >
                   <IconX size={16} />
                 </button>

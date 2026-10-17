@@ -463,7 +463,7 @@ const Contrasenas = () => {
                       type="button"
                       onClick={() => copyText(featured, -1)}
                       aria-label="Copiar contraseña"
-                      className={`shrink-0 cursor-pointer rounded-lg border border-slate-200 p-2 text-slate-500 hover:text-emerald-600 dark:border-slate-800 dark:text-slate-400 ${FOCUS_RING}`}
+                      className={`shrink-0 cursor-pointer rounded-lg border border-slate-200 p-2 text-slate-500 hover:text-emerald-700 dark:border-slate-800 dark:text-slate-400 ${FOCUS_RING}`}
                     >
                       {copiedIndex === -1 ? <IconCheck size={18} /> : <IconCopy size={18} />}
                     </button>
@@ -540,7 +540,7 @@ const Contrasenas = () => {
                         type="button"
                         onClick={() => copyText(pwd, i)}
                         aria-label={`Copiar contraseña ${i + 2}`}
-                        className={`shrink-0 cursor-pointer rounded text-slate-500 hover:text-emerald-600 dark:text-slate-400 ${FOCUS_RING}`}
+                        className={`shrink-0 cursor-pointer rounded text-slate-500 hover:text-emerald-700 dark:text-slate-400 ${FOCUS_RING}`}
                       >
                         {copiedIndex === i ? <IconCheck size={16} /> : <IconCopy size={16} />}
                       </button>
@@ -565,7 +565,7 @@ const Contrasenas = () => {
             role="dialog"
             aria-modal="true"
             aria-label="¿Cómo saber si mi contraseña es vulnerable?"
-            className="max-h-[85vh] w-full max-w-2xl overflow-y-auto rounded-xl border-2 border-emerald-500 bg-white motion-safe:animate-[modal-pop_0.18s_ease-out] dark:border-emerald-400 dark:bg-slate-900"
+            className="max-h-[85dvh] w-full max-w-2xl overflow-y-auto rounded-xl border-2 border-emerald-500 bg-white motion-safe:animate-[modal-pop_0.18s_ease-out] dark:border-emerald-400 dark:bg-slate-900"
           >
             <div className="sticky top-0 flex items-center justify-between border-b border-emerald-200 bg-white px-6 py-5 dark:border-emerald-900 dark:bg-slate-900">
               <h2 className="text-lg font-semibold text-slate-800 dark:text-slate-100">
@@ -575,7 +575,7 @@ const Contrasenas = () => {
                 type="button"
                 onClick={() => setInfoOpen(false)}
                 aria-label="Cerrar"
-                className={`ml-3 shrink-0 cursor-pointer rounded text-slate-500 hover:text-emerald-600 dark:text-slate-400 dark:hover:text-emerald-400 ${FOCUS_RING}`}
+                className={`ml-3 shrink-0 cursor-pointer rounded pointer-coarse:p-2 text-slate-500 hover:text-emerald-700 dark:text-slate-400 dark:hover:text-emerald-400 ${FOCUS_RING}`}
               >
                 <IconX size={20} />
               </button>

@@ -130,7 +130,7 @@ const Cuenta = () => {
       </p>
 
       <div className="mt-8">
-        {status === 'loading' && <IconLoader2 size={24} className="animate-spin text-slate-500" />}
+        {status === 'loading' && <IconLoader2 size={24} className="animate-spin text-slate-500 dark:text-slate-400" />}
         {status === 'anon' && <LoginForm />}
         {status === 'off' && (
           <p className="text-sm text-slate-500 dark:text-slate-400">

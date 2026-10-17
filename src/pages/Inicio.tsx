@@ -60,7 +60,7 @@ const Inicio = () => {
             aria-hidden="true"
           >
             <div className="relative h-32 w-56 overflow-hidden rounded-xl border border-white/40 bg-white/70 shadow-sm sm:w-64 dark:border-slate-700/40 dark:bg-slate-900/60">
-              <div className="absolute inset-x-0 top-0 h-0.5 bg-emerald-500/80 shadow-[0_0_10px_1px_rgba(16,185,129,0.55)] motion-safe:animate-[scan-sweep_2.6s_ease-in-out_infinite]" />
+              <div className="absolute inset-x-0 top-0 h-0.5 bg-emerald-500/80 shadow-[0_0_10px_1px_rgba(255,107,87,0.55)] motion-safe:animate-[scan-sweep_2.6s_ease-in-out_infinite]" />
               <div className="flex h-full flex-col justify-center gap-2 p-4">
                 <div className="h-2 w-4/5 rounded-full bg-slate-300/70 dark:bg-slate-700/70" />
                 <div className="h-2 w-full rounded-full bg-slate-300/70 dark:bg-slate-700/70" />
