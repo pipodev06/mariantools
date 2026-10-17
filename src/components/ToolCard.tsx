@@ -7,7 +7,7 @@ type ToolCardProps = Tool & { comingSoon?: boolean }
 const ToolCard = ({ title, description, href, icon: Icon, ai, comingSoon }: ToolCardProps) => {
   const content = (
     <div
-      className={`relative flex aspect-square flex-col items-center justify-center gap-2 overflow-hidden rounded-xl border border-slate-200 bg-white p-5 text-center transition-colors dark:border-slate-800 dark:bg-slate-900 ${
+      className={`relative flex h-full min-h-44 sm:h-auto flex-col items-center justify-center gap-2 overflow-hidden rounded-xl border border-slate-200 bg-white p-4 text-center sm:aspect-square sm:p-5 transition-colors dark:border-slate-800 dark:bg-slate-900 ${
         comingSoon ? '' : 'hover:border-emerald-600 dark:hover:border-emerald-400'
       }`}
     >
@@ -22,13 +22,18 @@ const ToolCard = ({ title, description, href, icon: Icon, ai, comingSoon }: Tool
         </span>
       )}
       <Icon className="text-emerald-600 dark:text-emerald-400" size={44} stroke={1.5} />
-      <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-100">{title}</h3>
-      <p className="line-clamp-2 text-base text-slate-500 dark:text-slate-400">{description}</p>
+      {/* La marca de ancho cero deja partir "Comprimir/convertir" en móvil. */}
+      <h3 className="text-base font-semibold text-slate-800 sm:text-lg dark:text-slate-100">{title.replace('/', '/​')}</h3>
+      <p className="line-clamp-3 text-sm sm:line-clamp-2 text-slate-500 sm:text-base dark:text-slate-400">{description}</p>
     </div>
   )
 
   if (href && !comingSoon) {
-    return <Link to={href}>{content}</Link>
+    return (
+      <Link to={href} className="block h-full sm:h-auto">
+        {content}
+      </Link>
+    )
   }
 
   return content

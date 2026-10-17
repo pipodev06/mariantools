@@ -29,6 +29,10 @@ export const toolInfo: Record<string, ToolInfoEntry> = {
         q: '¿Cuánto cuesta?',
         a: 'Cada imagen usa 1 crédito, después de tus usos gratis del día.',
       },
+      {
+        q: '¿Qué datos extrae de una factura?',
+        a: 'Fecha, monto, moneda, RUC, proveedor y número de comprobante, que puedes corregir y descargar en CSV.',
+      },
     ],
   },
   '/comprimir-pdf': {
@@ -46,6 +50,10 @@ export const toolInfo: Record<string, ToolInfoEntry> = {
       {
         q: '¿Mi PDF se sube a un servidor?',
         a: 'No. Se comprime dentro de tu navegador y el archivo no sale de tu equipo.',
+      },
+      {
+        q: '¿Por qué el texto del PDF comprimido ya no se puede seleccionar?',
+        a: 'Para reducir el peso, las páginas se convierten en imagen. Si necesitas el texto, conserva el PDF original.',
       },
     ],
   },
@@ -69,6 +77,10 @@ export const toolInfo: Record<string, ToolInfoEntry> = {
         q: '¿Reemplaza una liquidación oficial?',
         a: 'No. Es una referencia: tu empleador o un contador debe confirmar el monto.',
       },
+      {
+        q: '¿Cuándo se deposita la CTS?',
+        a: 'En mayo (semestre noviembre–abril) y en noviembre (semestre mayo–octubre).',
+      },
     ],
   },
   '/ocr': {
@@ -88,6 +100,14 @@ export const toolInfo: Record<string, ToolInfoEntry> = {
         q: '¿Qué diferencia hay entre el modo gratis y la IA?',
         a: 'El modo gratis se procesa en tu navegador y no sube la imagen. La IA suele leer mejor fotos difíciles, pero envía la imagen a un proveedor y usa 1 crédito después de tus usos gratis del día.',
       },
+      {
+        q: '¿Qué formatos de imagen admite?',
+        a: 'JPG, PNG y WebP, y puedes subir varias imágenes a la vez.',
+      },
+      {
+        q: '¿Puedo pasar una foto a texto desde el celular?',
+        a: 'Sí. Funciona en el navegador del celular: elige o toma la foto y pulsa para convertirla.',
+      },
     ],
   },
   '/pdf-a-texto': {
@@ -102,6 +122,10 @@ export const toolInfo: Record<string, ToolInfoEntry> = {
       {
         q: '¿Mi PDF se sube a un servidor?',
         a: 'No. Todo se procesa en tu navegador.',
+      },
+      {
+        q: '¿Funciona con PDF escaneados?',
+        a: 'Sí. Si el PDF no tiene texto seleccionable, cada página se lee con OCR en tu navegador, por eso tarda más.',
       },
     ],
   },
@@ -123,6 +147,10 @@ export const toolInfo: Record<string, ToolInfoEntry> = {
       {
         q: '¿Se guarda mi audio?',
         a: 'No lo guardamos. Se envía a un proveedor de IA solo para transcribirlo.',
+      },
+      {
+        q: '¿Qué formatos de audio admite?',
+        a: 'MP3, WAV, M4A u OGG, de hasta 20 MB.',
       },
     ],
   },
@@ -226,6 +254,14 @@ export const toolInfo: Record<string, ToolInfoEntry> = {
         q: '¿Mi imagen se sube a un servidor?',
         a: 'No. El fondo se quita dentro de tu navegador.',
       },
+      {
+        q: '¿Qué formato obtengo?',
+        a: 'Un PNG con fondo transparente, listo para usar en otros diseños.',
+      },
+      {
+        q: '¿Por qué tarda la primera vez?',
+        a: 'La primera vez se descarga el modelo de IA al navegador. Después puede ser más rápido.',
+      },
     ],
   },
   '/comprimir': {
@@ -246,6 +282,10 @@ export const toolInfo: Record<string, ToolInfoEntry> = {
       {
         q: '¿Mis imágenes se suben a un servidor?',
         a: 'No. Todo se procesa en tu navegador.',
+      },
+      {
+        q: '¿Cómo reduzco una imagen a un peso exacto, por ejemplo 100 KB?',
+        a: 'Elige JPG o WebP y escribe el máximo en KB: la calidad se ajusta sola. Si no alcanza, también se reducen las dimensiones de la imagen.',
       },
     ],
   },
@@ -352,6 +392,14 @@ export const toolInfo: Record<string, ToolInfoEntry> = {
         q: '¿Mis PDF se suben a un servidor?',
         a: 'No. Todo se procesa en tu navegador.',
       },
+      {
+        q: '¿Cómo uno varios PDF en uno solo?',
+        a: 'Sube todos los PDF: se unen en el orden en que los agregaste. Reordena las páginas con las flechas y descarga el resultado.',
+      },
+      {
+        q: '¿Cómo divido un PDF?',
+        a: 'Quita las páginas que no quieres, deja solo las que necesitas y descarga. También puedes descargar una sola página.',
+      },
     ],
   },
   '/firma-pdf': {
@@ -371,6 +419,10 @@ export const toolInfo: Record<string, ToolInfoEntry> = {
         q: '¿Mi PDF se sube a un servidor?',
         a: 'No. Se firma dentro de tu navegador.',
       },
+      {
+        q: '¿Puedo firmar un PDF desde el celular?',
+        a: 'Sí. Dibuja tu firma con el dedo en el recuadro, sube el PDF y colócala en la página que quieras.',
+      },
     ],
   },
   '/pdf-a-jpg': {
@@ -384,6 +436,10 @@ export const toolInfo: Record<string, ToolInfoEntry> = {
       {
         q: '¿Mi PDF se sube a un servidor?',
         a: 'No. Todo se procesa en tu navegador.',
+      },
+      {
+        q: '¿Cuántas imágenes obtengo?',
+        a: 'Una imagen JPG por cada página del PDF, todas juntas en un archivo ZIP.',
       },
     ],
   },
@@ -401,6 +457,10 @@ export const toolInfo: Record<string, ToolInfoEntry> = {
       {
         q: '¿Mi PDF se sube a un servidor?',
         a: 'No. Todo se procesa en tu navegador.',
+      },
+      {
+        q: '¿Conserva el formato del PDF?',
+        a: 'No. Solo pasa el texto; el diseño, las columnas y las imágenes originales no se conservan.',
       },
     ],
   },
@@ -459,6 +519,10 @@ export const toolInfo: Record<string, ToolInfoEntry> = {
       {
         q: '¿Se guardan mis datos?',
         a: 'No. El QR se genera y se lee en tu navegador.',
+      },
+      {
+        q: '¿Qué puedo guardar en un código QR?',
+        a: 'Una URL, un texto o los datos de una red WiFi. También puedes leer un QR existente subiendo una imagen.',
       },
     ],
   },
@@ -600,6 +664,14 @@ export const toolInfo: Record<string, ToolInfoEntry> = {
         q: '¿Reemplaza una liquidación oficial?',
         a: 'No. Es referencial y corresponde al régimen laboral general. Tu empleador o un contador debe confirmar el monto.',
       },
+      {
+        q: '¿Cuándo se paga la gratificación?',
+        a: 'En julio, por el semestre enero–junio, y en diciembre, por el semestre julio–diciembre.',
+      },
+      {
+        q: '¿Qué es la bonificación extraordinaria?',
+        a: 'Es un adicional que se suma a la gratificación: 9 % si aportas a EsSalud o 6.75 % si tienes EPS.',
+      },
     ],
   },
   '/calculadora-liquidacion': {
@@ -622,6 +694,10 @@ export const toolInfo: Record<string, ToolInfoEntry> = {
         q: '¿Reemplaza una liquidación oficial?',
         a: 'No. Es una estimación del régimen laboral general. Tu empleador o un contador debe confirmar el monto.',
       },
+      {
+        q: '¿Qué beneficios incluye?',
+        a: 'La CTS trunca, las vacaciones truncas y la gratificación trunca. No incluye indemnizaciones ni descuentos.',
+      },
     ],
   },
   '/calculadora-horas-extras': {
@@ -641,6 +717,10 @@ export const toolInfo: Record<string, ToolInfoEntry> = {
       {
         q: '¿Reemplaza el cálculo de planilla?',
         a: 'No. Es referencial: tu empleador o un contador debe confirmar el pago.',
+      },
+      {
+        q: '¿Cuánto se paga la hora extra en Perú?',
+        a: 'Las dos primeras horas extras del día se pagan con 25 % de recargo sobre la hora normal, y desde la tercera con 35 %.',
       },
     ],
   },
@@ -670,6 +750,10 @@ export const toolInfo: Record<string, ToolInfoEntry> = {
       {
         q: '¿Confirma que el RUC existe en SUNAT?',
         a: 'No. Solo comprueba el formato y el dígito verificador. Para saber si está activo, consulta a SUNAT.',
+      },
+      {
+        q: '¿Cómo sé si un RUC es de una persona o de una empresa?',
+        a: 'Los RUC de personas naturales empiezan con 10 y los de empresas con 20.',
       },
     ],
   },
