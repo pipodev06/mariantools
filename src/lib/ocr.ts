@@ -1,5 +1,6 @@
 import { createWorker, OEM, type Worker } from 'tesseract.js'
 import { callAi } from './aiClient'
+import { cleanOcrText, readPage, type Reading } from './ocrText'
 
 // Tesseract (local) aprovecha la resolución; los modelos de IA no ganan precisión pasado ~1600 px, solo tiempo de subida.
 const MAX_DIMENSION = 2000
@@ -216,7 +217,11 @@ const rotateByAngle = (source: HTMLCanvasElement, degrees: number): HTMLCanvasEl
 const TARGET_LINE_HEIGHT = 32
 const MAX_UPSCALE = 3
 // Tope de píxeles de la imagen que se manda a Tesseract (memoria y tiempo acotados).
-const MAX_OCR_PIXELS = 8_000_000
+const MAX_OCR_PIXELS = 4_000_000
+// Franjas más bajas que esto no son renglones legibles: suelen ser textura de fotos (pelo, follaje).
+const MIN_LINE_RUN = 6
+// Si la primera lectura ya tardó esto, no se prueban variantes (la imagen es pesada o casi sin texto).
+const RETRY_TIME_BUDGET_MS = 4_000
 // Debajo de esta confianza se prueba también la versión en grises y se queda la mejor.
 const RETRY_CONFIDENCE = 70
 
@@ -268,7 +273,7 @@ const estimateLineHeight = (canvas: HTMLCanvasElement): number | null => {
     if (y < height) for (let x = 0; x < width; x++) count += ink[y * width + x]
     if (y < height && count >= minInk) run++
     else {
-      if (run >= 3) runs.push(run)
+      if (run >= MIN_LINE_RUN) runs.push(run)
       run = 0
     }
   }
@@ -314,6 +319,48 @@ const binarized = (source: HTMLCanvasElement): HTMLCanvasElement => {
   return canvas
 }
 
+// Texto claro sobre una foto (memes, subtítulos, carteles): quedan como tinta solo los píxeles casi blancos
+// y sin color; la foto de fondo, colorida, desaparece. Tesseract lee el resultado como texto negro sobre blanco.
+const LIGHT_MIN = 200
+const LIGHT_MAX_CHROMA = 45
+
+const isLightNeutral = (r: number, g: number, b: number) =>
+  Math.min(r, g, b) >= LIGHT_MIN && Math.max(r, g, b) - Math.min(r, g, b) <= LIGHT_MAX_CHROMA
+
+const lightTextMask = (source: HTMLCanvasElement): HTMLCanvasElement => {
+  const canvas = copyCanvas(source)
+  const ctx = canvas.getContext('2d')
+  if (!ctx) throw new Error('No se pudo crear el contexto de canvas')
+  const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
+  const { data } = imageData
+  for (let i = 0; i < data.length; i += 4) {
+    const v = isLightNeutral(data[i], data[i + 1], data[i + 2]) ? 0 : 255
+    data[i] = data[i + 1] = data[i + 2] = v
+  }
+  ctx.putImageData(imageData, 0, 0)
+  return canvas
+}
+
+/** Foto colorida con poco blanco neutro: candidata a tener un subtítulo o texto claro encima. */
+const looksLikeCaptionedPhoto = (canvas: HTMLCanvasElement): boolean => {
+  const ctx = canvas.getContext('2d')
+  if (!ctx) return false
+  const { data } = ctx.getImageData(0, 0, canvas.width, canvas.height)
+  const step = 4 * Math.max(1, Math.floor(data.length / 4 / 50_000))
+  let samples = 0
+  let light = 0
+  let colorful = 0
+  for (let i = 0; i < data.length; i += step) {
+    const r = data[i]
+    const g = data[i + 1]
+    const b = data[i + 2]
+    samples++
+    if (isLightNeutral(r, g, b)) light++
+    else if (Math.max(r, g, b) - Math.min(r, g, b) > 50) colorful++
+  }
+  return light / samples > 0.005 && light / samples < 0.3 && colorful / samples > 0.15
+}
+
 // Grises con el contraste estirado (percentiles 1-99): conserva trazos finos que el umbral puede borrar.
 const stretchedGray = (source: HTMLCanvasElement, smooth = false): HTMLCanvasElement => {
   const canvas = copyCanvas(source)
@@ -340,15 +387,6 @@ const stretchedGray = (source: HTMLCanvasElement, smooth = false): HTMLCanvasEle
   ctx.putImageData(imageData, 0, 0)
   return canvas
 }
-
-/** Limpia la salida de Tesseract: espacios al final, palabras cortadas con guion al final de línea y saltos repetidos. */
-export const cleanOcrText = (text: string): string =>
-  text
-    .replace(/\r/g, '')
-    .replace(/[ \t]+$/gm, '')
-    .replace(/(\p{Ll})-\n(\p{Ll})/gu, '$1$2')
-    .replace(/\n{3,}/g, '\n\n')
-    .trim()
 
 // `legacyCore`/`legacyLang` habilitan worker.detect() (OSD), que usa el motor
 // legacy de Tesseract solo para detectar orientación — no afecta la precisión
@@ -381,17 +419,21 @@ const recognizeSource = async (worker: Worker, source: Drawable): Promise<OcrRes
     if (scale > previewScale * 1.1) work = rotateCanvas(copyCanvas(source, scale), rotation)
   }
 
-  // Primero blanco y negro; si la confianza sale baja, se prueban versiones alternativas
-  // (grises suavizados contra el ruido, que binarizado se vuelve manchas, y grises sin suavizar) y se queda la de mayor confianza.
+  // Primero blanco y negro; si la lectura sale dudosa, se prueban versiones alternativas (grises
+  // suavizados contra el ruido, que binarizado se vuelve manchas, y grises sin suavizar) y se queda
+  // la que tenga más texto confiable.
   const straight = deskew(work)
-  const variants = [() => binarized(straight), () => stretchedGray(straight, true), () => stretchedGray(straight)]
-  let best = { text: '', confidence: -1 }
+  const general = [() => binarized(straight), () => stretchedGray(straight, true), () => stretchedGray(straight)]
+  const variants = looksLikeCaptionedPhoto(straight) ? [() => lightTextMask(straight), ...general] : general
+  let best: Reading = { text: '', confidence: 0, score: -1 }
+  const startedAt = performance.now()
   for (const variant of variants) {
-    const { data } = await worker.recognize(variant())
-    if (data.text.trim() && data.confidence > best.confidence) best = { text: data.text, confidence: data.confidence }
-    if (best.confidence >= RETRY_CONFIDENCE) break
+    const { data } = await worker.recognize(variant(), {}, { text: true, blocks: true })
+    const reading = readPage(data)
+    if (reading.score > best.score) best = reading
+    if (best.confidence >= RETRY_CONFIDENCE || performance.now() - startedAt > RETRY_TIME_BUDGET_MS) break
   }
-  return { text: cleanOcrText(best.text), confidence: Math.max(0, best.confidence) }
+  return { text: cleanOcrText(best.text), confidence: best.confidence }
 }
 
 /**
@@ -431,3 +473,6 @@ export const recognizeWithAi = async (file: File): Promise<OcrResult> => ({
   text: await callAi({ task: 'ocr', image: await prepareImageForAi(file) }),
   confidence: 100,
 })
+
+/** Blanco y negro tipo escáner (mismo umbral adaptativo que usa el OCR). */
+export const binarizeDocument = (canvas: HTMLCanvasElement): HTMLCanvasElement => binarized(canvas)

@@ -757,4 +757,65 @@ export const toolInfo: Record<string, ToolInfoEntry> = {
       },
     ],
   },
+  '/numero-a-letras': {
+    steps: ['Escribe el monto con decimales si los tiene.', 'Elige la moneda: soles, dólares o sin moneda.', 'Copia el texto en letras.'],
+    tips: ['Los céntimos se escriben como fracción de 100, como en las facturas: 50/100.'],
+    faq: [
+      { q: '¿Hasta qué monto funciona?', a: 'Hasta 999 999 999 999,99.' },
+      { q: '¿Cómo se escribe 1 000 en una factura?', a: 'MIL CON 00/100 SOLES. Delante de «mil» no se escribe «un».' },
+    ],
+  },
+  '/calculadora-sueldo-neto': {
+    steps: [
+      'Escribe tu sueldo bruto mensual.',
+      'Elige tu sistema de pensiones (AFP u ONP) y tu seguro de salud.',
+      'Si estás en una AFP, elige cuál y el tipo de comisión.',
+      'Lee cada descuento y tu sueldo neto.',
+    ],
+    tips: [
+      'La ONP descuenta 13 %. La AFP descuenta 10 % para tu fondo, más la prima de seguro y la comisión.',
+      'Con comisión mixta, la AFP cobra sobre tu saldo acumulado y no sobre tu sueldo.',
+    ],
+    faq: [
+      { q: '¿Qué valores usa?', a: 'UIT 2026 de S/ 5 500 y las tasas de AFP publicadas por la SBS para 2026: prima de seguro 1.37 % y comisiones de 1.47 % a 1.69 % según la AFP.' },
+      { q: '¿Reemplaza mi boleta de pago?', a: 'No. Es referencial: tu empleador puede tener otros descuentos o ingresos.' },
+    ],
+  },
+  '/calculadora-renta-quinta': {
+    steps: [
+      'Escribe tu sueldo bruto mensual y tu seguro de salud.',
+      'Agrega otros ingresos del año, como bonos o utilidades, si los tienes.',
+      'Lee el impuesto anual y la retención mensual aproximada.',
+    ],
+    tips: ['Si tu sueldo anual no supera 7 UIT (S/ 38 500 en 2026), no pagas renta de quinta.'],
+    faq: [
+      { q: '¿Cómo se calcula?', a: 'Se suman 12 sueldos, 2 gratificaciones con su bonificación extraordinaria y los otros ingresos. Se restan 7 UIT y al resto se aplica la escala: 8 % hasta 5 UIT, 14 % hasta 20, 17 % hasta 35, 20 % hasta 45 y 30 % por encima.' },
+      { q: '¿Por qué mi retención real es distinta?', a: 'SUNAT reparte la retención de forma escalonada durante el año y tu empleador recalcula cuando cambian tus ingresos. Aquí se muestra el promedio: impuesto anual entre 12.' },
+    ],
+  },
+  '/escanear-documento': {
+    steps: [
+      'Toma una foto de la hoja con el celular o sube una foto.',
+      'Arrastra los cuatro círculos hasta las esquinas del documento.',
+      'Elige color o blanco y negro y pulsa «Enderezar».',
+      'Descarga el documento en JPG o en PDF.',
+    ],
+    tips: ['Fotografía la hoja sobre una superficie oscura y con buena luz: las esquinas se ven mejor.', 'Para leer el texto después, usa «Imagen a texto» con el JPG.'],
+    faq: [{ q: '¿Mi foto se sube a un servidor?', a: 'No. La corrección se hace dentro de tu navegador.' }],
+  },
+  '/contador-palabras': {
+    steps: ['Escribe o pega tu texto.', 'Mira al instante las palabras, caracteres, oraciones, párrafos y el tiempo de lectura.'],
+    tips: ['El tiempo de lectura usa 200 palabras por minuto, y en voz alta, 130.'],
+    faq: [{ q: '¿Mi texto se sube a un servidor?', a: 'No. Se cuenta dentro de tu navegador.' }],
+  },
+  '/codigo-de-barras': {
+    steps: ['Elige el tipo de código: EAN-13 o Code 128.', 'Escribe el número o el texto.', 'Descarga el código en PNG.'],
+    tips: [
+      'En EAN-13 puedes escribir 12 dígitos y el verificador se calcula solo.',
+      'Code 128 acepta letras, números y signos, pero no tildes ni ñ.',
+    ],
+    faq: [
+      { q: '¿Puedo usar cualquier número EAN-13 en mis productos?', a: 'Para venderlos en tiendas necesitas códigos asignados por GS1 Perú. Para uso interno, como inventario, puedes generar los tuyos.' },
+    ],
+  },
 }

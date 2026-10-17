@@ -60,7 +60,8 @@ export const TextField = ({
   value,
   onChange,
   maxLength,
-}: FieldProps & { maxLength?: number }) => {
+  inputMode = 'numeric',
+}: FieldProps & { maxLength?: number; inputMode?: 'numeric' | 'text' }) => {
   const id = useId()
   return (
     <div>
@@ -70,7 +71,7 @@ export const TextField = ({
       <input
         id={id}
         type="text"
-        inputMode="numeric"
+        inputMode={inputMode}
         maxLength={maxLength}
         value={value}
         onChange={(e) => onChange(e.target.value)}

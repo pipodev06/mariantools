@@ -1,6 +1,6 @@
 # MarianTools
 
-**40 herramientas web gratis para trabajar con archivos:** OCR, PDF, imágenes, texto y calculadoras laborales de Perú. La mayoría corre 100% en el navegador (el archivo no sale del equipo); las que necesitan comprensión de lenguaje usan IA con usos gratis cada día.
+**46 herramientas web gratis para trabajar con archivos:** OCR, PDF, imágenes, texto y calculadoras laborales de Perú. La mayoría corre 100% en el navegador (el archivo no sale del equipo); las que necesitan comprensión de lenguaje usan IA con usos gratis cada día.
 
 🌐 [mariantools.vercel.app](https://mariantools.vercel.app) · dominio final previsto: `www.mariantools.com`
 
@@ -13,15 +13,15 @@ El proyecto nació como un "OCR para contadores": extraer datos de facturas y re
 | Categoría | Herramientas |
 |---|---|
 | **Extracción** | ✨ Facturas y recibos (fecha, monto, RUC, proveedor → CSV) · 🖥️✨ Imagen a texto (OCR local o con IA) · 🖥️ PDF a texto (con OCR para escaneos) · ✨ Audio a texto · ✨ Manuscrito a texto · ✨ Extractor de tablas (→ CSV) |
-| **PDF** | Imagen a PDF · Editor (unir, dividir, reordenar) · Firma · Comprimir · PDF a JPG · PDF a Word · Rotar · Numerar páginas · Recortar márgenes — todas 🖥️ |
+| **PDF** | Escanear documento con la cámara (corrige la perspectiva) · Imagen a PDF · Editor (unir, dividir, reordenar) · Firma · Comprimir · PDF a JPG · PDF a Word · Rotar · Numerar páginas · Recortar márgenes — todas 🖥️ |
 | **Imagen** | 🖥️ Quitar fondo (modelo en el navegador) · ✨ Traductor de imagen · Comprimir/convertir (a peso exacto en KB) · Redimensionar para redes · Recortar · Rotar y voltear · HEIC a JPG · Marca de agua · Base64 · Metadatos EXIF · Paleta de colores |
-| **Texto** | ✨ Resumen · ✨ Corrector ortográfico · 🖥️ Comparador de textos · 🖥️ Texto a voz · 🖥️ Markdown a PDF/Word |
-| **Calculadoras (Perú)** | CTS · Gratificación · Liquidación · Horas extras · IGV · Fechas y días hábiles — todas 🖥️, régimen general, referenciales |
-| **Utilidades** | Generador/lector QR · Validador de RUC · Contraseñas seguras — todas 🖥️ |
+| **Texto** | ✨ Resumen · ✨ Corrector ortográfico · 🖥️ Comparador de textos · 🖥️ Contador de palabras · 🖥️ Texto a voz · 🖥️ Markdown a PDF/Word |
+| **Calculadoras (Perú)** | Sueldo neto (AFP/ONP y quinta) · Renta de quinta categoría · CTS · Gratificación · Liquidación · Horas extras · IGV · Fechas y días hábiles — todas 🖥️, régimen general, referenciales |
+| **Utilidades** | Número a letras (facturas y cheques) · Códigos de barras EAN-13 y Code 128 · Generador/lector QR · Validador de RUC · Contraseñas seguras — todas 🖥️ |
 
 ### Motores locales
 
-- **OCR (Tesseract.js, español + inglés):** detecta la orientación, agranda el texto chico hasta ~32 px de alto, endereza la inclinación, invierte capturas en modo oscuro y binariza con umbral adaptativo. Si la confianza sale baja, prueba en grises suavizados (contra el ruido) y se queda con la mejor lectura.
+- **OCR (Tesseract.js, español + inglés):** detecta la orientación, agranda el texto chico hasta ~32 px de alto, endereza la inclinación, invierte capturas en modo oscuro y binariza con umbral adaptativo. Descarta las líneas dudosas (textura de fotos que Tesseract lee como símbolos) y, si la lectura sale débil, prueba en grises suavizados y se queda con la que tenga más texto confiable.
 - **PDF a texto / Word:** une los fragmentos de la capa de texto por su posición (sin palabras partidas en letras sueltas) y pasa las páginas escaneadas por el OCR a ~216 DPI.
 - **Lector QR:** lector nativo del navegador cuando existe (`BarcodeDetector`) y jsQR a varias escalas, con margen blanco añadido y soporte de QR invertidos.
 - **Paleta:** k-means en espacio CIELAB (distancia perceptual) con fusión de tonos casi iguales.
@@ -80,6 +80,7 @@ node --env-file=.env.local scripts/check-ai.mjs
 | `pnpm dev` | Servidor de desarrollo con `/api/*` incluido |
 | `pnpm build` | Type-check + build + prerender de cada ruta y `sitemap.xml` |
 | `pnpm lint` | ESLint |
+| `pnpm test` | Pruebas automáticas (Vitest): calculadoras, codificadores, motores locales y rotación de IA |
 | `pnpm preview` | Sirve el build localmente |
 
 ## Convenciones

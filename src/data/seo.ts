@@ -218,6 +218,36 @@ export const toolSeo: Record<string, SeoEntry> = {
     description:
       'Deja el fondo de tu imagen transparente y descarga un PNG. Funciona mejor con personas y se procesa en tu navegador.',
   },
+  '/numero-a-letras': {
+    title: 'Número a letras: montos para facturas',
+    description:
+      'Convierte un monto a letras en soles o dólares, al estilo de facturas, recibos y cheques: «MIL DOSCIENTOS CON 50/100 SOLES». Gratis y al instante.',
+  },
+  '/calculadora-sueldo-neto': {
+    title: 'Calculadora de sueldo neto en Perú',
+    description:
+      'Calcula tu sueldo neto mensual con los descuentos de AFP u ONP y la retención de renta de quinta categoría. Valores 2026, cálculo referencial.',
+  },
+  '/calculadora-renta-quinta': {
+    title: 'Calculadora de renta de quinta categoría',
+    description:
+      'Calcula el impuesto a la renta anual de tu sueldo en Perú y la retención mensual aproximada, con la deducción de 7 UIT y la escala 2026.',
+  },
+  '/escanear-documento': {
+    title: 'Escanear documento con el celular',
+    description:
+      'Toma una foto de una hoja, ajusta sus esquinas y obtén un documento derecho en JPG o PDF, en color o blanco y negro. Gratis y en tu navegador.',
+  },
+  '/contador-palabras': {
+    title: 'Contador de palabras y caracteres',
+    description:
+      'Cuenta palabras, caracteres con y sin espacios, oraciones y párrafos, y estima el tiempo de lectura de tu texto. Gratis y al instante.',
+  },
+  '/codigo-de-barras': {
+    title: 'Generador de códigos de barras gratis',
+    description:
+      'Crea códigos de barras EAN-13 para productos o Code 128 para texto y números, y descárgalos en PNG. Gratis, sin registro y en tu navegador.',
+  },
 }
 
 // Páginas informativas (no son herramientas): entran al sitemap con schema WebPage.

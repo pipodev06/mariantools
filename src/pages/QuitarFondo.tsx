@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import ErrorNotice from '../components/ErrorNotice'
 import { IconDownload, IconLoader2, IconRefresh } from '@tabler/icons-react'
+import ConfirmModal from '../components/ConfirmModal'
 import FileDropzone from '../components/FileDropzone'
 import { removeBackground } from '../lib/removeBackground'
 import { BUTTON_SECONDARY } from '../lib/ui'
@@ -12,6 +13,8 @@ const CHECKERBOARD = {
   backgroundSize: '20px 20px',
   backgroundPosition: '0 0, 10px 10px',
 }
+
+const MODEL_NOTICE_KEY = 'mariantools:modelo-quitar-fondo'
 
 type State = {
   file: File
@@ -33,7 +36,32 @@ const QuitarFondo = () => {
     }
   }, [state])
 
-  const handleFile = async (file: File) => {
+  // El modelo pesa ~30 MB: se avisa antes de la primera descarga y la aceptación queda en este navegador.
+  const [pending, setPending] = useState<File | null>(null)
+
+  const handleFile = (file: File) => {
+    let accepted = false
+    try {
+      accepted = localStorage.getItem(MODEL_NOTICE_KEY) === 'ok'
+    } catch {
+      // Sin almacenamiento (modo privado): se vuelve a avisar, no es un error.
+    }
+    if (accepted) void process(file)
+    else setPending(file)
+  }
+
+  const confirmDownload = () => {
+    try {
+      localStorage.setItem(MODEL_NOTICE_KEY, 'ok')
+    } catch {
+      // Ídem: sin almacenamiento solo se pierde el recordatorio.
+    }
+    const file = pending
+    setPending(null)
+    if (file) void process(file)
+  }
+
+  const process = async (file: File) => {
     if (!file.type.startsWith('image/')) {
       setState({ file, originalUrl: '', error: 'El archivo no es una imagen' })
       return
@@ -146,6 +174,19 @@ const QuitarFondo = () => {
           </div>
         )}
       </section>
+      <ConfirmModal
+        open={pending !== null}
+        title="Se descargará un modelo de IA"
+        confirmLabel="Descargar y continuar"
+        onConfirm={confirmDownload}
+        onCancel={() => setPending(null)}
+      >
+        <p>
+          Para quitar el fondo en tu navegador, la primera vez se descargan unos 30 MB. Con datos móviles puede
+          tardar y consumir tu plan; mejor usa WiFi.
+        </p>
+        <p>Tu imagen no se sube a ningún servidor. Las siguientes veces será más rápido.</p>
+      </ConfirmModal>
     </>
   )
 }
