@@ -1,22 +1,10 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
 
 import { isDenied, refund, reserve } from './_billing.js'
+import { callWithFailover, endpoint, failureResponse, getProviders } from './_providers.js'
 
-const AI_TIMEOUT_MS = 25_000
 // Cada trozo de audio (~100 s) cuesta 1 crédito.
 const AUDIO_CHUNK_COST = 1
-
-// Proveedor de transcripción intercambiable: cualquier API compatible con OpenAI
-// (/audio/transcriptions). Si AI_AUDIO_* no está definido, reutiliza AI_API_KEY y AI_BASE_URL;
-// el modelo (AI_AUDIO_MODEL) siempre es explícito porque el de texto/visión no sirve para audio.
-const getConfig = () => {
-  const env = process.env
-  const apiKey = env.AI_AUDIO_API_KEY || env.AI_API_KEY
-  const baseUrl = env.AI_AUDIO_BASE_URL || env.AI_BASE_URL
-  const model = env.AI_AUDIO_MODEL
-  if (!apiKey || !baseUrl || !model) return null
-  return { apiKey, model, url: `${baseUrl.replace(/\/+$/, '')}/audio/transcriptions` }
-}
 
 // Vercel corta los cuerpos de más de 4.5 MB; el cliente manda trozos WAV más chicos.
 const MAX_AUDIO_BYTES = 4_400_000
@@ -44,9 +32,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return
   }
 
-  const config = getConfig()
-  if (!config) {
-    console.error('Faltan AI_AUDIO_MODEL y la key/URL (AI_AUDIO_* o AI_API_KEY y AI_BASE_URL)')
+  const providers = getProviders('audio')
+  if (providers.length === 0) {
+    console.error('Faltan AI_AUDIO_MODEL y la key/URL (AI_AUDIO_* o AI_API_KEY y AI_BASE_URL, o AI_AUDIO_1_*)')
     res.status(503).json({ error: 'Servicio no disponible' })
     return
   }
@@ -74,37 +62,28 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     res.status(status).json({ error })
   }
 
-  try {
+  const result = await callWithFailover(providers, (provider, signal) => {
     const form = new FormData()
-    form.append('model', config.model)
+    form.append('model', provider.model)
     form.append('file', new Blob([new Uint8Array(audio)], { type: 'audio/wav' }), 'audio.wav')
-
-    const aiResponse = await fetch(config.url, {
+    return fetch(endpoint(provider, '/audio/transcriptions'), {
       method: 'POST',
-      headers: { Authorization: `Bearer ${config.apiKey}` },
+      headers: { Authorization: `Bearer ${provider.apiKey}` },
       body: form,
-      signal: AbortSignal.timeout(AI_TIMEOUT_MS),
+      signal,
     })
+  })
+  if (!result.response) {
+    const { status, error } = failureResponse(result, 'La IA no pudo procesar el audio')
+    await fail(status, error)
+    return
+  }
 
-    if (!aiResponse.ok) {
-      console.error('Proveedor de IA error', aiResponse.status, await aiResponse.text())
-      if (aiResponse.status === 429) {
-        await fail(429, 'Demasiadas solicitudes, intenta en un momento')
-      } else {
-        await fail(502, 'La IA no pudo procesar el audio')
-      }
-      return
-    }
-
-    const data = (await aiResponse.json()) as { text?: string }
+  try {
+    const data = (await result.response.json()) as { text?: string }
     res.status(200).json({ text: data.text ?? '' })
   } catch (err) {
-    const timedOut = err instanceof Error && err.name === 'TimeoutError'
-    console.error('Proveedor de IA fetch falló', err)
-    if (timedOut) {
-      await fail(504, 'La IA tardó demasiado, intenta de nuevo')
-    } else {
-      await fail(502, 'No se pudo contactar a la IA')
-    }
+    console.error('Respuesta de IA no válida', err)
+    await fail(502, 'La IA no pudo procesar el audio')
   }
 }

@@ -79,6 +79,30 @@
 
 /* Placeholders legibles: Tailwind v4 los pinta con currentColor al 50 %, que no llega a contraste AA en claro. */
 @layer base {
+  /* Controles nativos con la marca: sliders y checkboxes en coral en vez del azul del navegador. */
+  input {
+    accent-color: var(--color-emerald-600);
+  }
+
+  /* El selector de color llena su caja igual en todos los navegadores. */
+  input[type='color'] {
+    padding: 2px;
+  }
+
+  input[type='color']::-webkit-color-swatch-wrapper {
+    padding: 0;
+  }
+
+  input[type='color']::-webkit-color-swatch,
+  input[type='color']::-moz-color-swatch {
+    border: 0;
+    border-radius: 0.375rem;
+  }
+
+  /* Palabras o cadenas muy largas (base64, URLs) no ensanchan la página. */
+  body {
+    overflow-wrap: break-word;
+  }
   html {
     color-scheme: light;
   }

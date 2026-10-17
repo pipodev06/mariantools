@@ -1,5 +1,6 @@
 import { useEffect, useId, useRef, useState } from 'react'
 import { IconPlayerPlay, IconPlayerStop, IconVolume } from '@tabler/icons-react'
+import Select from '../components/Select'
 import { FOCUS_RING, BUTTON_PRIMARY, BUTTON_SECONDARY_BASE, INPUT, CARD_BASE } from '../lib/ui'
 
 const CAN_SPEAK = typeof window !== 'undefined' && 'speechSynthesis' in window
@@ -85,18 +86,12 @@ const TextoAVoz = () => {
 
               <div className="mt-4">
                 <label htmlFor={`${uid}-voz`} className="text-sm font-semibold text-slate-800 dark:text-slate-100">Voz</label>
-                <select
+                <Select
                   id={`${uid}-voz`}
-                  value={voiceIndex}
-                  onChange={(e) => setVoiceIndex(Number(e.target.value))}
-                  className={`${INPUT} cursor-pointer`}
-                >
-                  {voices.map((v, i) => (
-                    <option key={`${v.name}-${v.lang}`} value={i}>
-                      {v.name} ({v.lang})
-                    </option>
-                  ))}
-                </select>
+                  value={String(voiceIndex)}
+                  onChange={(v) => setVoiceIndex(Number(v))}
+                  options={voices.map((v, i) => ({ value: String(i), label: `${v.name} (${v.lang})` }))}
+                />
               </div>
 
               <div className="mt-4 grid grid-cols-2 gap-4">

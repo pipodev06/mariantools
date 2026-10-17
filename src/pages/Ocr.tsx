@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type ChangeEvent, type ClipboardEvent, type DragEvent } from 'react'
+import { writeClipboardText } from '../lib/clipboard'
 import {
   IconBolt,
   IconCheck,
@@ -178,7 +179,7 @@ const Ocr = () => {
   }
 
   const copyText = async (text: string, index: number) => {
-    await navigator.clipboard.writeText(text)
+    if (!(await writeClipboardText(text))) return
     setCopiedIndex(index)
     setTimeout(() => setCopiedIndex((current) => (current === index ? null : current)), 1500)
   }
@@ -198,7 +199,7 @@ const Ocr = () => {
 
   const copyAllText = async () => {
     if (!results) return
-    await navigator.clipboard.writeText(combineResultsText(results))
+    if (!(await writeClipboardText(combineResultsText(results)))) return
     setCopiedAll(true)
     setTimeout(() => setCopiedAll(false), 1500)
   }

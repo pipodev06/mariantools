@@ -6,6 +6,7 @@ import {
   type ClipboardEvent,
   type DragEvent,
 } from 'react'
+import { writeClipboardText } from '../lib/clipboard'
 import { IconCheck, IconCopy, IconDownload, IconPalette, IconUpload, IconX } from '@tabler/icons-react'
 import { extractPalette, type PaletteColor } from '../lib/palette'
 import { FOCUS_RING, BUTTON_SECONDARY_BASE } from '../lib/ui'
@@ -91,7 +92,7 @@ const Paleta = () => {
   }
 
   const copyHex = async (hex: string) => {
-    await navigator.clipboard.writeText(hex)
+    if (!(await writeClipboardText(hex))) return
     setCopiedHex(hex)
     setTimeout(() => setCopiedHex((current) => (current === hex ? null : current)), 1500)
   }

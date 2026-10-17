@@ -5,7 +5,7 @@ import Footer from "../components/Footer";
 import RouteSeo from "../components/RouteSeo";
 import ScrollToTop from "../components/ScrollToTop";
 import ToolExtras from "../components/ToolExtras";
-import ToolNote from "../components/ToolNote";
+import RecentTracker from "../components/RecentTracker";
 
 const MainLayout = () => {
   return (
@@ -15,7 +15,7 @@ const MainLayout = () => {
       <Header />
 
       <main className="flex-1 bg-slate-50 dark:bg-slate-950">
-        <ToolNote />
+        <RecentTracker />
         <Suspense fallback={null}>
           <Outlet />
         </Suspense>

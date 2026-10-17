@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type ChangeEvent, type ClipboardEvent, type DragEvent } from 'react'
+import { writeClipboardText, writeClipboardImage } from '../lib/clipboard'
 import {
   IconCheck,
   IconCopy,
@@ -192,7 +193,7 @@ const ImagenABase64 = () => {
   }
 
   const copyText = async (text: string, index: number) => {
-    await navigator.clipboard.writeText(text)
+    if (!(await writeClipboardText(text))) return
     setCopiedIndex(index)
     setTimeout(() => setCopiedIndex((current) => (current === index ? null : current)), 1500)
   }
@@ -212,7 +213,7 @@ const ImagenABase64 = () => {
 
   const copyAllText = async () => {
     if (!results || results.mode !== 'encode') return
-    await navigator.clipboard.writeText(combineEncodedText(results.items))
+    if (!(await writeClipboardText(combineEncodedText(results.items)))) return
     setCopiedAll(true)
     setTimeout(() => setCopiedAll(false), 1500)
   }
@@ -234,7 +235,7 @@ const ImagenABase64 = () => {
 
   const copyImage = async (item: DecodeResult, index: number) => {
     const blob = await dataUrlToBlob(item.dataUrl)
-    await navigator.clipboard.write([new ClipboardItem({ [blob.type]: blob })])
+    if (!(await writeClipboardImage(blob))) return
     setCopiedIndex(index)
     setTimeout(() => setCopiedIndex((current) => (current === index ? null : current)), 1500)
   }

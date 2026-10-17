@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { writeClipboardText } from '../lib/clipboard'
 import { IconCheck, IconCopy, IconDownload, IconLoader2, IconRefresh } from '@tabler/icons-react'
 import { AiError } from '../lib/aiClient'
 import AiErrorNotice from './AiErrorNotice'
@@ -60,7 +61,7 @@ const SingleFileTextTool = ({
 
   const copyText = async () => {
     if (!output) return
-    await navigator.clipboard.writeText(output.text)
+    if (!(await writeClipboardText(output.text))) return
     setCopied(true)
     setTimeout(() => setCopied(false), 1500)
   }

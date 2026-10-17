@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import TextAiTool from '../components/TextAiTool'
 import { SUMMARY_LENGTH_OPTIONS, summarizeText } from '../lib/ai'
+import Select from '../components/Select'
 import { FOCUS_RING } from '../lib/ui'
 
 const ResumenTexto = () => {
@@ -16,18 +17,13 @@ const ResumenTexto = () => {
       busyLabel="Resumiendo..."
       run={(text) => summarizeText(text, length)}
       controls={
-        <select
+        <Select
           value={length}
-          onChange={(e) => setLength(e.target.value)}
-          aria-label="Largo del resumen"
-          className={`cursor-pointer rounded-lg border border-slate-500 bg-white px-3 py-3 text-sm text-slate-800 dark:border-slate-500 dark:bg-slate-900 dark:text-slate-100 ${FOCUS_RING}`}
-        >
-          {SUMMARY_LENGTH_OPTIONS.map((o) => (
-            <option key={o.value} value={o.value}>
-              {o.label}
-            </option>
-          ))}
-        </select>
+          onChange={setLength}
+          ariaLabel="Largo del resumen"
+          options={SUMMARY_LENGTH_OPTIONS}
+          className={`rounded-lg border border-slate-500 bg-white px-3 py-3 text-sm text-slate-800 dark:border-slate-500 dark:bg-slate-900 dark:text-slate-100 ${FOCUS_RING}`}
+        />
       }
     />
   )
