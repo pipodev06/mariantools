@@ -167,7 +167,7 @@ const EditorPdf = () => {
                         disabled={i === 0}
                         onClick={() => moveEntry(i, -1)}
                         aria-label={`Subir página ${i + 1}`}
-                        className={`cursor-pointer rounded text-slate-500 hover:text-emerald-600 disabled:cursor-not-allowed disabled:opacity-30 dark:text-slate-400 ${FOCUS_RING}`}
+                        className={`cursor-pointer rounded text-slate-500 hover:text-emerald-700 disabled:cursor-not-allowed disabled:opacity-30 dark:text-slate-400 ${FOCUS_RING}`}
                       >
                         <IconArrowUp size={16} />
                       </button>
@@ -176,7 +176,7 @@ const EditorPdf = () => {
                         disabled={i === entries.length - 1}
                         onClick={() => moveEntry(i, 1)}
                         aria-label={`Bajar página ${i + 1}`}
-                        className={`cursor-pointer rounded text-slate-500 hover:text-emerald-600 disabled:cursor-not-allowed disabled:opacity-30 dark:text-slate-400 ${FOCUS_RING}`}
+                        className={`cursor-pointer rounded text-slate-500 hover:text-emerald-700 disabled:cursor-not-allowed disabled:opacity-30 dark:text-slate-400 ${FOCUS_RING}`}
                       >
                         <IconArrowDown size={16} />
                       </button>
@@ -185,7 +185,7 @@ const EditorPdf = () => {
                         title="Descargar solo esta página"
                         aria-label={`Descargar solo la página ${i + 1}`}
                         onClick={() => downloadSinglePage(entry, i + 1)}
-                        className={`cursor-pointer rounded text-slate-500 hover:text-emerald-600 dark:text-slate-400 ${FOCUS_RING}`}
+                        className={`cursor-pointer rounded text-slate-500 hover:text-emerald-700 dark:text-slate-400 ${FOCUS_RING}`}
                       >
                         <IconDownload size={16} />
                       </button>
@@ -193,7 +193,7 @@ const EditorPdf = () => {
                         type="button"
                         onClick={() => removeEntry(entry.id)}
                         aria-label={`Quitar página ${i + 1}`}
-                        className={`cursor-pointer rounded text-slate-500 hover:text-emerald-600 dark:text-slate-400 ${FOCUS_RING}`}
+                        className={`cursor-pointer rounded text-slate-500 hover:text-emerald-700 dark:text-slate-400 ${FOCUS_RING}`}
                       >
                         <IconX size={16} />
                       </button>

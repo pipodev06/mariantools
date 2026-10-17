@@ -156,7 +156,7 @@ const FirmaPdf = () => {
                 <button
                   type="button"
                   onClick={clearSignature}
-                  className={`inline-flex cursor-pointer items-center gap-1 text-xs font-semibold text-slate-500 hover:text-emerald-600 dark:text-slate-400 dark:hover:text-emerald-400 ${FOCUS_RING}`}
+                  className={`inline-flex cursor-pointer items-center gap-1 pointer-coarse:min-h-11 text-xs font-semibold text-slate-500 hover:text-emerald-700 dark:text-slate-400 dark:hover:text-emerald-400 ${FOCUS_RING}`}
                 >
                   <IconEraser size={14} />
                   Limpiar
@@ -172,7 +172,7 @@ const FirmaPdf = () => {
                 onPointerCancel={handlePointerUp}
                 aria-label="Lienzo para dibujar tu firma"
                 onPointerLeave={handlePointerUp}
-                className={`mt-2 w-full touch-none rounded-lg border border-dashed border-slate-500 bg-slate-50 dark:border-slate-500 dark:bg-slate-950 ${FOCUS_RING}`}
+                className={`mt-2 w-full touch-none rounded-lg border border-dashed border-slate-500 bg-white dark:border-slate-500 ${FOCUS_RING}`}
               />
             </div>
 
@@ -201,7 +201,7 @@ const FirmaPdf = () => {
                       setResultUrl(null)
                     }}
                     aria-label="Quitar archivo"
-                    className={`cursor-pointer rounded-full bg-slate-800 p-1 text-white hover:bg-emerald-700 ${FOCUS_RING}`}
+                    className={`cursor-pointer rounded-full bg-slate-800 p-1 pointer-coarse:p-3 text-white hover:bg-emerald-700 ${FOCUS_RING}`}
                   >
                     <IconX size={14} />
                   </button>

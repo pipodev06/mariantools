@@ -79,6 +79,14 @@
 
 /* Placeholders legibles: Tailwind v4 los pinta con currentColor al 50 %, que no llega a contraste AA en claro. */
 @layer base {
+  html {
+    color-scheme: light;
+  }
+
+  html.dark {
+    color-scheme: dark;
+  }
+
   h1,
   h2,
   h3 {

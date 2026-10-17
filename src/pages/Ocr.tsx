@@ -386,7 +386,7 @@ const Ocr = () => {
                         type="button"
                         onClick={() => removeFile(i)}
                         aria-label={`Quitar ${file.name}`}
-                        className={`shrink-0 cursor-pointer rounded text-slate-500 hover:text-emerald-600 dark:text-slate-400 ${FOCUS_RING}`}
+                        className={`shrink-0 cursor-pointer rounded text-slate-500 hover:text-emerald-700 dark:text-slate-400 ${FOCUS_RING}`}
                       >
                         <IconX size={18} />
                       </button>
@@ -486,7 +486,7 @@ const Ocr = () => {
                       title={
                         result.engine === 'fast' ? 'Reintentar con IA' : 'Reintentar con Rápido'
                       }
-                      className={`cursor-pointer rounded-lg border border-slate-200 p-2 text-slate-500 hover:text-emerald-600 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-800 dark:text-slate-400 ${FOCUS_RING}`}
+                      className={`cursor-pointer rounded-lg border border-slate-200 p-2 text-slate-500 hover:text-emerald-700 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-800 dark:text-slate-400 ${FOCUS_RING}`}
                     >
                       {retryingIndex === i ? (
                         <IconLoader2 size={18} className="animate-spin" />
@@ -498,7 +498,7 @@ const Ocr = () => {
                       type="button"
                       onClick={() => copyText(result.text, i)}
                       aria-label={`Copiar texto de ${result.file.name}`}
-                      className={`cursor-pointer rounded-lg border border-slate-200 p-2 text-slate-500 hover:text-emerald-600 dark:border-slate-800 dark:text-slate-400 ${FOCUS_RING}`}
+                      className={`cursor-pointer rounded-lg border border-slate-200 p-2 text-slate-500 hover:text-emerald-700 dark:border-slate-800 dark:text-slate-400 ${FOCUS_RING}`}
                     >
                       {copiedIndex === i ? <IconCheck size={18} /> : <IconCopy size={18} />}
                     </button>
@@ -506,7 +506,7 @@ const Ocr = () => {
                       type="button"
                       onClick={() => downloadText(result.file.name, result.text)}
                       aria-label={`Descargar texto de ${result.file.name}`}
-                      className={`cursor-pointer rounded-lg border border-slate-200 p-2 text-slate-500 hover:text-emerald-600 dark:border-slate-800 dark:text-slate-400 ${FOCUS_RING}`}
+                      className={`cursor-pointer rounded-lg border border-slate-200 p-2 text-slate-500 hover:text-emerald-700 dark:border-slate-800 dark:text-slate-400 ${FOCUS_RING}`}
                     >
                       <IconDownload size={18} />
                     </button>

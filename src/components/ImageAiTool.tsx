@@ -266,7 +266,7 @@ const ImageAiTool = <T,>({
                           type="button"
                           onClick={() => removeFile(i)}
                           aria-label={`Quitar ${file.name}`}
-                          className={`shrink-0 cursor-pointer rounded p-2 text-slate-500 hover:text-emerald-600 dark:text-slate-400 ${FOCUS_RING}`}
+                          className={`shrink-0 cursor-pointer rounded p-2 text-slate-500 hover:text-emerald-700 dark:text-slate-400 ${FOCUS_RING}`}
                         >
                           <IconX size={18} />
                         </button>
@@ -339,7 +339,7 @@ const ImageAiTool = <T,>({
                           type="button"
                           onClick={() => copyResult(result.value as T, i)}
                           aria-label="Copiar resultado"
-                          className={`cursor-pointer rounded-lg border border-slate-200 p-2.5 text-slate-500 hover:text-emerald-600 dark:border-slate-800 dark:text-slate-400 ${FOCUS_RING}`}
+                          className={`cursor-pointer rounded-lg border border-slate-200 p-2.5 text-slate-500 hover:text-emerald-700 dark:border-slate-800 dark:text-slate-400 ${FOCUS_RING}`}
                         >
                           {copiedIndex === i ? <IconCheck size={18} /> : <IconCopy size={18} />}
                         </button>
@@ -347,7 +347,7 @@ const ImageAiTool = <T,>({
                           type="button"
                           onClick={() => downloadResult(result)}
                           aria-label="Descargar resultado"
-                          className={`cursor-pointer rounded-lg border border-slate-200 p-2.5 text-slate-500 hover:text-emerald-600 dark:border-slate-800 dark:text-slate-400 ${FOCUS_RING}`}
+                          className={`cursor-pointer rounded-lg border border-slate-200 p-2.5 text-slate-500 hover:text-emerald-700 dark:border-slate-800 dark:text-slate-400 ${FOCUS_RING}`}
                         >
                           <IconDownload size={18} />
                         </button>

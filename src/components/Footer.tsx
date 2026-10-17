@@ -22,7 +22,7 @@ const Footer = () => {
             <Link
               key={to}
               to={to}
-              className={`rounded text-sm text-slate-500 transition-colors hover:text-emerald-600 dark:text-slate-400 dark:hover:text-emerald-400 ${FOCUS_RING}`}
+              className={`inline-flex items-center pointer-coarse:min-h-11 rounded text-sm text-slate-500 transition-colors hover:text-emerald-700 dark:text-slate-400 dark:hover:text-emerald-400 ${FOCUS_RING}`}
             >
               {label}
             </Link>

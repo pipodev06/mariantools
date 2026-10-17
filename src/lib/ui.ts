@@ -8,7 +8,7 @@ export const BUTTON_PRIMARY_BASE = `inline-flex cursor-pointer items-center gap-
 
 export const BUTTON_PRIMARY = `${BUTTON_PRIMARY_BASE} px-6 py-3 text-sm`
 
-export const BUTTON_SECONDARY_BASE = `inline-flex cursor-pointer items-center gap-2 pointer-coarse:min-h-11 rounded-lg border border-slate-200 font-semibold text-slate-800 transition-colors hover:border-emerald-600 hover:text-emerald-600 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-800 dark:text-slate-100 dark:hover:border-emerald-400 dark:hover:text-emerald-400 ${FOCUS_RING}`
+export const BUTTON_SECONDARY_BASE = `inline-flex cursor-pointer items-center gap-2 pointer-coarse:min-h-11 rounded-lg border border-slate-200 font-semibold text-slate-800 transition-colors hover:border-emerald-600 hover:text-emerald-700 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-800 dark:text-slate-100 dark:hover:border-emerald-400 dark:hover:text-emerald-400 ${FOCUS_RING}`
 
 export const BUTTON_SECONDARY = `${BUTTON_SECONDARY_BASE} px-4 py-2 text-sm`
 
@@ -27,7 +27,7 @@ export const CHIP_SELECTED =
   'border-emerald-600 bg-emerald-50 text-emerald-800 dark:border-emerald-400 dark:bg-emerald-500/10 dark:text-emerald-400'
 
 export const CHIP_INACTIVE =
-  'border-slate-200 text-slate-500 hover:border-emerald-600 hover:text-emerald-600 dark:border-slate-800 dark:text-slate-400 dark:hover:border-emerald-400 dark:hover:text-emerald-400'
+  'border-slate-200 text-slate-500 hover:border-emerald-600 hover:text-emerald-700 dark:border-slate-800 dark:text-slate-400 dark:hover:border-emerald-400 dark:hover:text-emerald-400'
 
 export type BadgeTone = 'emerald' | 'amber' | 'red' | 'slate'
 

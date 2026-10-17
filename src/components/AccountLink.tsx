@@ -13,7 +13,7 @@ const AccountLink = () => {
     return (
       <Link
         to="/cuenta"
-        className={`rounded-lg text-sm font-semibold text-slate-800 transition-colors hover:text-emerald-600 dark:text-slate-100 dark:hover:text-emerald-400 ${FOCUS_RING}`}
+        className={`inline-flex items-center pointer-coarse:min-h-11 rounded-lg text-sm font-semibold text-slate-800 transition-colors hover:text-emerald-700 dark:text-slate-100 dark:hover:text-emerald-400 ${FOCUS_RING}`}
       >
         Iniciar sesión
       </Link>
