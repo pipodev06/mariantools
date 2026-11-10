@@ -51,7 +51,7 @@ src/
 scripts/             prerender.mjs (HTML por ruta + sitemap) y check-ai.mjs (prueba los proveedores)
 supabase/migrations/ Esquema de créditos y comentarios
 docs/                Decisiones y configuración (auth, créditos, proveedores de IA, herramientas)
-AGENTS.md            Convenciones de diseño y código congeladas (fuente de verdad)
+CLAUDE.md            Convenciones de diseño y código congeladas (fuente de verdad)
 ```
 
 ## Empezar
@@ -85,4 +85,4 @@ node --env-file=.env.local scripts/check-ai.mjs
 
 ## Convenciones
 
-Las decisiones de estilo (paleta, tipografía, componentes, anchos, motion, accesibilidad, móvil) están documentadas en [`AGENTS.md`](./AGENTS.md). Toda herramienta nueva se registra en `src/data/tools.ts`, `src/data/seo.ts`, `src/data/toolInfo.ts` y su ruta en `App.tsx`.
+Las decisiones de estilo (paleta, tipografía, componentes, anchos, motion, accesibilidad, móvil) están documentadas en [`CLAUDE.md`](./CLAUDE.md). Toda herramienta nueva se registra en `src/data/tools.ts`, `src/data/seo.ts`, `src/data/toolInfo.ts` y su ruta en `App.tsx`.

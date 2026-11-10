@@ -1,4 +1,4 @@
-// Clases Tailwind compartidas (ver AGENTS.md, sección Estilo/diseño). Una sola definición por patrón.
+// Clases Tailwind compartidas (ver CLAUDE.md, sección Estilo/diseño). Una sola definición por patrón.
 
 export const FOCUS_RING =
   'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 dark:focus-visible:ring-emerald-400 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900'
