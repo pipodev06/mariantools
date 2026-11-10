@@ -1,47 +1,67 @@
 # Herramientas — MarianTools
 
-## Disponible
+Catálogo de las 46 herramientas disponibles. La fuente es `src/data/tools.ts` (orden, categorías, precio): si cambia, actualizar esta lista. Sin marca = gratis en el navegador; **IA** = usa créditos en el servidor.
 
-- **Imagen a texto** (`/ocr`) — OCR de imágenes, con dos motores a elección:
-  - **Rápido**: Tesseract.js, corre en el navegador, sin backend ni API key.
-  - **IA**: Mistral Pixtral, entiende layout con columnas/gráficos y no necesita que la imagen esté derecha.
-  - Soporta varios archivos a la vez (click, arrastrar y soltar, o pegar con Ctrl+V).
-  - Resultado por archivo: texto editable, copiar (con confirmación) y descargar.
+## Extracción (6)
 
-## Extracción / conversión
+- **Facturas y recibos** (`/facturas`) — Fecha, monto y RUC con IA — **IA**, 1 crédito
+- **Imagen a texto** (`/ocr`) — Con OCR e IA para conversiones — **IA**, 1 crédito (también modo gratis)
+- **PDF a texto** (`/pdf-a-texto`) — Incluso si está escaneado
+- **Audio a texto** (`/audio-a-texto`) — Transcribe notas de voz — **IA**, 1 crédito cada ~100 s de audio
+- **Manuscrito a texto** (`/manuscrito`) — Reconoce letra a mano — **IA**, 1 crédito
+- **Extractor de tablas** (`/extractor-tablas`) — De imagen a CSV para Excel — **IA**, 2 créditos
 
-- **PDF a texto** — Extraé el texto de un PDF, incluso si es escaneado.
-- **Audio a texto** — Transcribí notas de voz o audios a texto plano.
-- **Extractor de tablas** — Convertí una tabla en imagen o PDF a Excel/CSV.
-- **Facturas y recibos** — Sacá fecha, monto y RUC automáticamente con IA.
-- **Manuscrito a texto** — Reconocimiento de letra a mano.
+## Imagen (11)
 
-## Imagen
+- **Quitar fondo de imagen** (`/quitar-fondo`) — Fondo transparente al instante
+- **Traductor de imagen** (`/traductor-imagen`) — OCR más traducción — **IA**, 1 crédito
+- **Comprimir/convertir imagen** (`/comprimir`) — Menos peso, otro formato
+- **Redimensionar para redes** (`/redimensionar`) — Presets para cada red social
+- **Recortar imagen** (`/recortar-imagen`) — Rectángulo, proporción o círculo
+- **Rotar y voltear imagen** (`/rotar-imagen`) — Gira o da la vuelta a tu foto
+- **HEIC a JPG** (`/heic-a-jpg`) — Fotos de iPhone a JPG o PNG
+- **Marca de agua** (`/marca-de-agua`) — Sobre imágenes o PDF
+- **Imagen a Base64** (`/base64`) — Data URL o base64 puro
+- **Metadatos EXIF** (`/exif`) — Ubicación, cámara y fecha
+- **Paleta de colores** (`/paleta`) — Colores dominantes de una foto
 
-- **Quitar fondo de imagen** — Eliminá el fondo de una foto en un click.
-- **Comprimir/convertir imagen** — Reducí el peso o cambiá entre PNG, JPG y WebP.
-- **Imagen a PDF** — Juntá una o varias imágenes en un solo PDF.
-- **Traductor de imagen** — OCR más traducción, en un solo paso.
-- **Redimensionar para redes** — Presets listos para Instagram, LinkedIn y más.
-- **Paleta de colores** — Extraé los colores dominantes de una imagen.
-- **Marca de agua** — Agregá una marca de agua a tus imágenes o PDF.
-- **Metadatos EXIF** — Mirá ubicación, cámara y fecha de una foto.
+## PDF (10)
 
-## PDF
+- **Imagen a PDF** (`/imagen-a-pdf`) — Varias imágenes, un solo PDF
+- **Escanear documento** (`/escanear-documento`) — Foto derecha en JPG o PDF
+- **Editor de PDF** (`/editor-pdf`) — Une, divide o reordena páginas
+- **Firma digital en PDF** (`/firma-pdf`) — Tu firma sobre el documento
+- **Comprimir PDF** (`/comprimir-pdf`) — Menos peso para enviarlo
+- **PDF a JPG** (`/pdf-a-jpg`) — Cada página como imagen
+- **PDF a Word** (`/pdf-a-word`) — Texto editable en Word
+- **Rotar PDF** (`/rotar-pdf`) — Gira todas las páginas
+- **Numerar páginas** (`/numerar-paginas-pdf`) — Número al pie de cada hoja
+- **Recortar PDF** (`/recortar-pdf`) — Quita márgenes de las páginas
 
-- **Editor de PDF** — Uní, dividí, reordená o eliminá páginas.
-- **Firma digital en PDF** — Subí tu firma y colocala sobre el documento.
+## Texto (6)
 
-## Texto
+- **Resumen de texto** (`/resumen`) — Documentos largos, en segundos — **IA**, 1 crédito
+- **Corrector ortográfico** (`/corrector`) — Ortografía y gramática — **IA**, 1 crédito
+- **Comparador de textos** (`/comparador`) — Diferencias entre dos versiones
+- **Contador de palabras** (`/contador-palabras`) — Palabras, caracteres y lectura
+- **Texto a voz** (`/texto-a-voz`) — Audio narrado al instante
+- **Markdown a PDF/Word** (`/markdown`) — Con formato listo para usar
 
-- **Texto a voz** — Convertí texto escrito en audio narrado.
-- **Corrector ortográfico** — Revisá ortografía y gramática de un texto.
-- **Resumen de texto** — Resumí un documento largo en segundos.
-- **Comparador de textos** — Mirá las diferencias entre dos textos o versiones.
-- **Markdown a PDF/Word** — Convertí Markdown a un documento con formato.
+## Calculadoras (8)
 
-## Otros
+- **Calculadora de fechas** (`/calculadora-fechas`) — Días entre fechas, días hábiles
+- **Calculadora de CTS** (`/calculadora-cts`) — Tu CTS del semestre
+- **Calculadora de gratificación** (`/calculadora-gratificacion`) — Julio o diciembre, con bonificación
+- **Calculadora de liquidación** (`/calculadora-liquidacion`) — Beneficios sociales al cese
+- **Calculadora de horas extras** (`/calculadora-horas-extras`) — Pago al 25% y al 35%
+- **Calculadora de IGV** (`/calculadora-igv`) — Agrega o quita el IGV
+- **Calculadora de sueldo neto** (`/calculadora-sueldo-neto`) — Descuentos de AFP, ONP y quinta
+- **Calculadora de renta de quinta** (`/calculadora-renta-quinta`) — Impuesto anual y retención
 
-- **Generador/lector QR** — Creá o leé códigos QR al instante.
-- **Contraseñas seguras** — Generá contraseñas fuertes y aleatorias.
-- **Calculadora de fechas** — Diferencia entre fechas, días hábiles y más.
+## Utilidades (5)
+
+- **Generador/lector QR** (`/qr`) — Crea o lee al instante
+- **Validador de RUC** (`/validador-ruc`) — Formato y dígito verificador
+- **Número a letras** (`/numero-a-letras`) — Montos para facturas y cheques
+- **Generador de códigos de barras** (`/codigo-de-barras`) — EAN-13 y Code 128 en PNG
+- **Contraseñas seguras** (`/contrasenas`) — Fuertes y aleatorias
