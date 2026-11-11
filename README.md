@@ -50,8 +50,6 @@ src/
   data/              Catálogo (tools.ts), SEO (seo.ts), ayuda de cada herramienta (toolInfo.ts)
 scripts/             prerender.mjs (HTML por ruta + sitemap) y check-ai.mjs (prueba los proveedores)
 supabase/migrations/ Esquema de créditos y comentarios
-docs/                Decisiones y configuración (auth, créditos, proveedores de IA, herramientas)
-CLAUDE.md            Convenciones de diseño y código congeladas (fuente de verdad)
 ```
 
 ## Empezar
@@ -64,7 +62,7 @@ pnpm dev                     # http://localhost:5173, también sirve /api/*
 
 Las herramientas locales funcionan sin ninguna variable. Para las de IA y los créditos hacen falta:
 
-- **IA:** `AI_API_KEY`, `AI_BASE_URL`, `AI_MODEL` (o varios proveedores con `AI_1_*`, `AI_2_*` …) y `AI_AUDIO_*` para audio. Detalle en [`docs/proveedores-ia.md`](docs/proveedores-ia.md).
+- **IA:** `AI_API_KEY`, `AI_BASE_URL`, `AI_MODEL` (o varios proveedores con `AI_1_*`, `AI_2_*` …) y `AI_AUDIO_*` para audio. Con varios proveedores, si uno falla o tarda se usa el siguiente. Para probarlos: `node --env-file=.env.local scripts/check-ai.mjs` (no imprime claves).
 - **Supabase:** `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, `FREE_DAILY_USES`, `BILLING_SALT`.
 
 Las claves solo las leen las funciones de `api/`; nunca llegan al navegador. Para validar los proveedores configurados:
@@ -85,4 +83,4 @@ node --env-file=.env.local scripts/check-ai.mjs
 
 ## Convenciones
 
-Las decisiones de estilo (paleta, tipografía, componentes, anchos, motion, accesibilidad, móvil) están documentadas en [`CLAUDE.md`](./CLAUDE.md). Toda herramienta nueva se registra en `src/data/tools.ts`, `src/data/seo.ts`, `src/data/toolInfo.ts` y su ruta en `App.tsx`.
+Toda herramienta nueva se registra en `src/data/tools.ts`, `src/data/seo.ts`, `src/data/toolInfo.ts` y su ruta en `App.tsx`.

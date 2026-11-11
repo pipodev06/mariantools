@@ -30,3 +30,7 @@ dist-ssr
 
 # Salida de scripts/check-*
 .check/
+
+# Interno: solo local (repo público)
+CLAUDE.md
+deuda-fix-bugs-fix-mejoras.md
